@@ -2,6 +2,7 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { PMOToolbox } from '../components/toolbox/PMOToolbox';
 import { SSCToolbox } from '../components/toolbox/SSCToolbox';
+import { PresidentToolbox } from '../components/toolbox/PresidentToolbox';
 import { Box, Container, Paper, Typography } from '@mui/material';
 
 export const ToolboxPage: React.FC = () => {
@@ -18,6 +19,10 @@ export const ToolboxPage: React.FC = () => {
 
   if (user.role === 'Directora SSC') {
     return <SSCToolbox />;
+  }
+
+  if (user.role === 'Presidente') {
+    return <PresidentToolbox />;
   }
 
   // For other roles, show empty toolbox
