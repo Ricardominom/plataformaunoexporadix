@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { PMOToolbox } from '../components/toolbox/PMOToolbox';
+import { SSCToolbox } from '../components/toolbox/SSCToolbox';
 import { Box, Container, Paper, Typography } from '@mui/material';
 
 export const ToolboxPage: React.FC = () => {
@@ -10,12 +11,16 @@ export const ToolboxPage: React.FC = () => {
     return null;
   }
 
-  // Renderizar el Toolbox específico para PMO
+  // Render specific toolbox based on user role
   if (user.role === 'PMO') {
     return <PMOToolbox />;
   }
 
-  // Para otros roles, mostrar un Toolbox vacío
+  if (user.role === 'Directora SSC') {
+    return <SSCToolbox />;
+  }
+
+  // For other roles, show empty toolbox
   return (
     <Box sx={{
       pt: 'calc(var(--nav-height) + 24px)',
