@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { CssBaseline } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -7,41 +7,49 @@ import { AgreementsPage } from './pages/AgreementsPage';
 import { TodosPage } from './pages/TodosPage';
 import { ToolboxPage } from './pages/ToolboxPage';
 import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
 import { Login } from './pages/LoginPage';
+import { useAuth } from './context/AuthContext';
 
-// Mock user data - replace with actual auth
-const mockUser = {
-  name: 'María González',
-  role: 'assistant'
+const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
 };
 
 function App() {
   return (
-    <ThemeProvider>
-      <BrowserRouter>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <CssBaseline />
-          <div className="min-h-screen">
-            <Routes>
-              <Route path="/" element={<Login />} />
-              <Route
-                path="/*"
-                element={
-                  <>
-                    <Navbar user={mockUser} />
-                    <Routes>
-                      <Route path="/agreements" element={<AgreementsPage />} />
-                      <Route path="/todos" element={<TodosPage />} />
-                      <Route path="/toolbox" element={<ToolboxPage />} />
-                    </Routes>
-                  </>
-                }
-              />
-            </Routes>
-          </div>
-        </LocalizationProvider>
-      </BrowserRouter>
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider>
+        <BrowserRouter>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <CssBaseline />
+            <div className="min-h-screen">
+              <Routes>
+                <Route path="/" element={<Login />} />
+                <Route
+                  path="/*"
+                  element={
+                    <ProtectedRoute>
+                      <>
+                        <Navbar />
+                        <Routes>
+                          <Route path="/agreements" element={<AgreementsPage />} />
+                          <Route path="/todos" element={<TodosPage />} />
+                          <Route path="/toolbox" element={<ToolboxPage />} />
+                        </Routes>
+                      </>
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </div>
+          </LocalizationProvider>
+        </BrowserRouter>
+      </ThemeProvider>
+    </AuthProvider>
   );
 }
 
