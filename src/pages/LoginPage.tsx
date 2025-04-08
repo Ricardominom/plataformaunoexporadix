@@ -1,7 +1,8 @@
-import React, { useState, FormEvent, useCallback, useMemo } from 'react';
+import React, { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building2 } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
+import { useAuth } from '../context/AuthContext';
 
 interface FormState {
   email: string;
@@ -16,31 +17,26 @@ export function Login() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { theme } = useTheme();
+  const { login } = useAuth();
 
-  // Use memoization for styles calculation
-  const styles = useMemo(() => {
-    const isDark = theme === 'dark';
-    return {
-      container: isDark ? 'bg-gray-900' : 'bg-background',
-      text: isDark ? 'text-gray-200' : 'text-gray-800',
-      secondaryText: isDark ? 'text-gray-400' : 'text-gray-500',
-      inputBg: 'bg-secondary', // Siempre bg-secondary
-      inputBorder: isDark ? 'border-gray-600' : 'border-gray-300',
-      formBg: isDark ? 'bg-gray-800' : 'bg-gray-100',
-      placeholder: isDark ? 'placeholder-gray-500' : 'placeholder-gray-400',
-      inputText: 'text-black', // Texto negro para evitar que se pierda en modo oscuro
-    };
-  }, [theme]);
+  const styles = {
+    container: theme === 'dark' ? 'bg-gray-900' : 'bg-background',
+    text: theme === 'dark' ? 'text-gray-200' : 'text-gray-800',
+    secondaryText: theme === 'dark' ? 'text-gray-400' : 'text-gray-500',
+    inputBg: 'bg-secondary',
+    inputBorder: theme === 'dark' ? 'border-gray-600' : 'border-gray-300',
+    formBg: theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100',
+    placeholder: theme === 'dark' ? 'placeholder-gray-500' : 'placeholder-gray-400',
+    inputText: 'text-black',
+  };
 
-  // Use callback for input change handling
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing again
     if (error) setError(null);
-  }, [error]);
+  };
 
-  const handleSubmit = useCallback((e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     const { email, password } = formData;
 
@@ -49,9 +45,13 @@ export function Login() {
       return;
     }
 
-    setError(null);
-    navigate('/agreements');
-  }, [formData, navigate]);
+    const success = await login(email, password);
+    if (success) {
+      navigate('/agreements');
+    } else {
+      setError('Credenciales incorrectas. Por favor, intenta de nuevo.');
+    }
+  };
 
   return (
     <div className={`min-h-screen flex flex-col justify-center py-6 px-4 sm:px-6 lg:px-8 ${styles.container}`}>
@@ -71,7 +71,7 @@ export function Login() {
         <div className={`py-6 px-4 sm:py-8 sm:px-6 shadow sm:rounded-lg ${styles.formBg}`}>
           <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit} noValidate>
             {error && (
-              <div className="text-red-500 text-sm" role="alert">
+              <div className="text-red-500 text-sm text-center" role="alert">
                 {error}
               </div>
             )}
