@@ -4,6 +4,7 @@ import { PMOToolbox } from '../components/toolbox/PMOToolbox';
 import { SSCToolbox } from '../components/toolbox/SSCToolbox';
 import { PresidentToolbox } from '../components/toolbox/PresidentToolbox';
 import { Box, Container, Paper, Typography } from '@mui/material';
+import { ComercialTool as ComercialToolbox } from '../components/toolbox/ComercialToolbox';
 
 export const ToolboxPage: React.FC = () => {
   const { user } = useAuth();
@@ -23,6 +24,10 @@ export const ToolboxPage: React.FC = () => {
 
   if (user.role === 'Presidente') {
     return <PresidentToolbox />;
+  }
+
+  if (user.role === 'Director comercial') {
+    return <ComercialToolbox />;
   }
 
   // For other roles, show empty toolbox
