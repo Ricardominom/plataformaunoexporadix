@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     Box,
     Container,
@@ -30,9 +30,9 @@ import {
     Clock,
     CheckCircle2,
     AlertCircle,
+    Upload,
 } from 'lucide-react';
 
-// Types
 interface AccountProgress {
     name: string;
     progress: {
@@ -62,7 +62,6 @@ interface FinancialData {
     growth: number;
 }
 
-// Mock data
 const mockAccounts: AccountProgress[] = [
     {
         name: "Cuenta 1",
@@ -159,9 +158,47 @@ const getStatusLabel = (status: ProgressReport['status']) => {
 
 export const PMOToolbox: React.FC = () => {
     const [currentTab, setCurrentTab] = useState(0);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
         setCurrentTab(newValue);
+    };
+
+    const handleFileSelect = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        if (file) {
+            if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
+                file.type === 'application/vnd.ms-excel') {
+                setSelectedFile(file);
+            } else {
+                alert('Por favor, selecciona un archivo Excel válido (.xlsx o .xls)');
+            }
+        }
+    };
+
+    const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+    };
+
+    const handleDrop = (event: React.DragEvent<HTMLDivElement>) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const file = event.dataTransfer.files[0];
+        if (file) {
+            if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
+                file.type === 'application/vnd.ms-excel') {
+                setSelectedFile(file);
+            } else {
+                alert('Por favor, selecciona un archivo Excel válido (.xlsx o .xls)');
+            }
+        }
     };
 
     const renderAccountProgress = () => (
@@ -197,30 +234,78 @@ export const PMOToolbox: React.FC = () => {
                             border: '2px dashed var(--border-color)',
                             borderRadius: '8px',
                             backgroundColor: 'var(--surface-secondary)',
+                            cursor: 'pointer',
+                            transition: 'all 0.2s ease',
+                            '&:hover': {
+                                borderColor: 'var(--text-primary)',
+                                backgroundColor: 'var(--hover-bg)',
+                            },
                         }}
+                        onClick={handleFileSelect}
+                        onDragOver={handleDragOver}
+                        onDrop={handleDrop}
                     >
-                        <FileSpreadsheet size={48} color="var(--text-secondary)" />
-                        <Button
-                            variant="outlined"
-                            sx={{
-                                color: 'var(--text-primary)',
-                                borderColor: 'var(--border-color)',
-                                '&:hover': {
-                                    borderColor: 'var(--text-primary)',
-                                },
-                            }}
-                        >
-                            Seleccionar archivo
-                        </Button>
-                        <Typography
-                            variant="caption"
-                            sx={{
-                                color: 'var(--text-secondary)',
-                                textAlign: 'center',
-                            }}
-                        >
-                            Arrastra y suelta tu archivo Excel o haz clic para seleccionarlo
-                        </Typography>
+                        <input
+                            type="file"
+                            ref={fileInputRef}
+                            onChange={handleFileChange}
+                            accept=".xlsx,.xls"
+                            style={{ display: 'none' }}
+                        />
+                        {selectedFile ? (
+                            <>
+                                <FileSpreadsheet size={48} color="var(--status-success-text)" />
+                                <Typography
+                                    sx={{
+                                        color: 'var(--text-primary)',
+                                        textAlign: 'center',
+                                        fontWeight: 500,
+                                    }}
+                                >
+                                    {selectedFile.name}
+                                </Typography>
+                                <Button
+                                    variant="contained"
+                                    startIcon={<Upload size={16} />}
+                                    sx={{
+                                        backgroundColor: 'var(--status-success-text)',
+                                        color: '#fff',
+                                        '&:hover': {
+                                            backgroundColor: 'var(--status-success-text)',
+                                            opacity: 0.9,
+                                        },
+                                    }}
+                                >
+                                    Subir archivo
+                                </Button>
+                            </>
+                        ) : (
+                            <>
+                                <FileSpreadsheet size={48} color="var(--text-secondary)" />
+                                <Button
+                                    variant="outlined"
+                                    sx={{
+                                        color: 'var(--text-primary)',
+                                        borderColor: 'var(--border-color)',
+                                        '&:hover': {
+                                            borderColor: 'var(--text-primary)',
+                                            backgroundColor: 'transparent',
+                                        },
+                                    }}
+                                >
+                                    Seleccionar archivo
+                                </Button>
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        color: 'var(--text-secondary)',
+                                        textAlign: 'center',
+                                    }}
+                                >
+                                    Arrastra y suelta tu archivo Excel o haz clic para seleccionarlo
+                                </Typography>
+                            </>
+                        )}
                     </Box>
                 </Paper>
             </Grid>
