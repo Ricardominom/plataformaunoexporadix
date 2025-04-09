@@ -1,6 +1,6 @@
 import React, { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, Mail, Lock, Loader2, CheckCircle2 } from 'lucide-react';
+import { Building2, Mail, Lock, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../context/AuthContext';
 
@@ -24,7 +24,7 @@ export function Login() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    if (error) setError(null);
+    setError(null); // Clear error when typing
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -41,12 +41,17 @@ export function Login() {
 
     if (success) {
       setIsSuccess(true);
-      // Simulate a loading sequence
       await new Promise(resolve => setTimeout(resolve, 800));
       navigate('/agreements');
     } else {
       setError('Credenciales incorrectas. Por favor, intenta de nuevo.');
       setIsLoading(false);
+
+      // Shake animation for form
+      const form = document.querySelector('.login-form');
+      form?.classList.remove('animate-shake');
+      void form?.offsetWidth; // Force reflow
+      form?.classList.add('animate-shake');
     }
   };
 
@@ -66,10 +71,10 @@ export function Login() {
                 }`}
               style={{
                 background: isSuccess
-                  ? '#30d158'
+                  ? 'var(--status-info-text)'
                   : theme === 'dark'
-                    ? 'linear-gradient(135deg, #0071e3 0%, #0077ED 100%)'
-                    : 'linear-gradient(135deg, #0071e3 0%, #40a9ff 100%)',
+                    ? 'linear-gradient(135deg, var(--status-info-text) 0%, #0077ED 100%)'
+                    : 'linear-gradient(135deg, var(--status-info-text) 0%, #40a9ff 100%)',
                 boxShadow: isLoading
                   ? '0 0 20px rgba(0, 113, 227, 0.5)'
                   : '0 8px 16px rgba(0, 113, 227, 0.2)'
@@ -108,21 +113,23 @@ export function Login() {
           }`}
           style={{
             backgroundColor: 'var(--surface-primary)',
-            border: '1px solid var(--border-color)',
+            border: `1px solid ${error ? 'var(--status-error-text)' : 'var(--border-color)'}`,
             transition: 'all 0.3s ease',
             transform: isSuccess ? 'translateY(10px)' : 'none',
           }}
         >
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
-              <div className="p-4 rounded-lg animate-shake" style={{
+              <div className="p-4 rounded-lg" style={{
                 backgroundColor: 'var(--status-error-bg)',
                 border: '1px solid var(--status-error-text)',
-                animation: 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
               }}>
-                <p className="text-sm" style={{ color: 'var(--status-error-text)' }}>
-                  {error}
-                </p>
+                <div className="flex items-center gap-2">
+                  <XCircle className="h-5 w-5" style={{ color: 'var(--status-error-text)' }} />
+                  <p className="text-sm" style={{ color: 'var(--status-error-text)' }}>
+                    {error}
+                  </p>
+                </div>
               </div>
             )}
 
@@ -133,8 +140,7 @@ export function Login() {
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Mail className={`h-5 w-5 transition-all duration-300 ${isLoading ? 'text-blue-500 animate-pulse' : ''
-                      }`} style={{ color: 'var(--text-secondary)' }} />
+                    <Mail className="h-5 w-5" style={{ color: error ? 'var(--status-error-text)' : 'var(--text-secondary)' }} />
                   </div>
                   <input
                     id="email"
@@ -142,18 +148,15 @@ export function Login() {
                     type="email"
                     autoComplete="email"
                     required
-                    disabled={isLoading}
                     value={formData.email}
                     onChange={handleInputChange}
-                    className={`block w-full pl-10 pr-3 py-2 rounded-lg text-sm transition-all duration-300 ${isLoading ? 'cursor-not-allowed' : 'hover:border-blue-500'
-                      }`}
+                    className="block w-full pl-10 pr-3 py-2 rounded-lg text-sm transition-all duration-300"
                     style={{
                       backgroundColor: 'var(--surface-secondary)',
                       color: 'var(--text-primary)',
-                      border: '1px solid var(--border-color)',
-                      boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.05)',
+                      border: `1px solid ${error ? 'var(--status-error-text)' : 'var(--border-color)'}`,
                     }}
-                    placeholder="nombre@empresa.com"
+                    placeholder="user"
                   />
                 </div>
               </div>
@@ -164,8 +167,7 @@ export function Login() {
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Lock className={`h-5 w-5 transition-all duration-300 ${isLoading ? 'text-blue-500 animate-pulse' : ''
-                      }`} style={{ color: 'var(--text-secondary)' }} />
+                    <Lock className="h-5 w-5" style={{ color: error ? 'var(--status-error-text)' : 'var(--text-secondary)' }} />
                   </div>
                   <input
                     id="password"
@@ -173,18 +175,15 @@ export function Login() {
                     type="password"
                     autoComplete="current-password"
                     required
-                    disabled={isLoading}
                     value={formData.password}
                     onChange={handleInputChange}
-                    className={`block w-full pl-10 pr-3 py-2 rounded-lg text-sm transition-all duration-300 ${isLoading ? 'cursor-not-allowed' : 'hover:border-blue-500'
-                      }`}
+                    className="block w-full pl-10 pr-3 py-2 rounded-lg text-sm transition-all duration-300"
                     style={{
                       backgroundColor: 'var(--surface-secondary)',
                       color: 'var(--text-primary)',
-                      border: '1px solid var(--border-color)',
-                      boxShadow: 'inset 0 2px 4px rgba(0, 0, 0, 0.05)',
+                      border: `1px solid ${error ? 'var(--status-error-text)' : 'var(--border-color)'}`,
                     }}
-                    placeholder="••••••••"
+                    placeholder="pasword"
                   />
                 </div>
               </div>
@@ -199,8 +198,8 @@ export function Login() {
                 }`}
               style={{
                 background: isSuccess
-                  ? '#30d158'
-                  : 'linear-gradient(135deg, #0071e3 0%, #40a9ff 100%)',
+                  ? 'var(--status-info-text)'
+                  : 'linear-gradient(135deg, var(--status-info-text) 0%, #40a9ff 100%)',
                 color: '#ffffff',
                 boxShadow: '0 4px 6px rgba(0, 113, 227, 0.2)',
               }}
@@ -220,34 +219,6 @@ export function Login() {
               )}
             </button>
           </form>
-
-          {/* Loading Overlay */}
-          {isLoading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-10 backdrop-blur-sm rounded-xl">
-              <div className="flex flex-col items-center space-y-4">
-                <div className="relative">
-                  <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <Building2 className="h-8 w-8 text-blue-600 animate-pulse" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Success Overlay */}
-          {isSuccess && (
-            <div
-              className="absolute inset-0 flex items-center justify-center bg-green-500 bg-opacity-20 backdrop-blur-sm rounded-xl"
-              style={{
-                animation: 'fadeIn 0.3s ease-out',
-              }}
-            >
-              <div className="flex flex-col items-center space-y-4">
-                <CheckCircle2 className="h-16 w-16 text-green-500 animate-success" />
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </div>

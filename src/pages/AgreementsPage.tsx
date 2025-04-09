@@ -111,25 +111,26 @@ const initialLists: List[] = [
 ];
 
 export const AgreementsPage: React.FC = () => {
-  const { user } = useAuth();
+  const { user, hasShownWelcome, setHasShownWelcome } = useAuth();
   const [agreements, setAgreements] = useState<Agreement[]>(mockAgreements);
   const [lists, setLists] = useState<List[]>(initialLists);
-  const [currentTab, setCurrentTab] = useState<number>(0);
+  const [currentTab, setCurrentTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [isNewAgreementOpen, setIsNewAgreementOpen] = useState(false);
   const [isNewListOpen, setIsNewListOpen] = useState(false);
   const [editingAgreement, setEditingAgreement] = useState<Agreement | null>(null);
   const [deletingAgreement, setDeletingAgreement] = useState<Agreement | null>(null);
   const [deletingList, setDeletingList] = useState<List | null>(null);
-  const [showWelcome, setShowWelcome] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowWelcome(false);
-    }, 5000);
+    if (!hasShownWelcome) {
+      const timer = setTimeout(() => {
+        setHasShownWelcome(true);
+      }, 5000);
 
-    return () => clearTimeout(timer);
-  }, []);
+      return () => clearTimeout(timer);
+    }
+  }, [hasShownWelcome, setHasShownWelcome]);
 
   const filteredAgreements = useMemo(() => {
     if (!searchTerm) return agreements;
@@ -147,11 +148,11 @@ export const AgreementsPage: React.FC = () => {
 
   const handleStatusChange = (id: string, status: AgreementStatus, isSJStatus = false) => {
     setAgreements(agreements.map(agreement =>
-      agreement.id === id
-        ? {
-          ...agreement,
-          [isSJStatus ? 'sjStatus' : 'status']: status
-        }
+      agreement.id === id 
+        ? { 
+            ...agreement, 
+            [isSJStatus ? 'sjStatus' : 'status']: status 
+          } 
         : agreement
     ));
   };
@@ -238,7 +239,7 @@ export const AgreementsPage: React.FC = () => {
   const currentTabAgreements = useMemo(() => {
     const currentList = lists[currentTab];
     if (!currentList) return [];
-
+    
     return filteredAgreements.filter(agreement => agreement.listId === currentList.id);
   }, [currentTab, filteredAgreements, lists]);
 
@@ -251,7 +252,7 @@ export const AgreementsPage: React.FC = () => {
       backgroundColor: 'var(--app-bg)',
     }}>
       <Container maxWidth="xl">
-        {showWelcome && (
+        {!hasShownWelcome && (
           <Paper
             sx={{
               p: 3,
