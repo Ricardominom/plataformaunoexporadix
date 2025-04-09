@@ -51,11 +51,11 @@ export function Login() {
         ? 'linear-gradient(to bottom, #000000, #1c1c1e)'
         : 'linear-gradient(to bottom, #f5f5f7, #ffffff)'
     }}>
-      <div className="max-w-md w-full space-y-8 relative">
+      <div className="max-w-md w-full space-y-8 relative login-container">
         {/* Logo and Title */}
-        <div className="text-center">
+        <div className="text-center login-logo">
           <div className="flex justify-center mb-6">
-            <div className="p-3 bg-blue-600 rounded-2xl shadow-lg">
+            <div className="p-3 bg-blue-600 rounded-2xl shadow-lg hover-scale">
               <Building2 className="h-8 w-8 text-white" />
             </div>
           </div>
@@ -68,7 +68,7 @@ export function Login() {
         </div>
 
         {/* Login Form */}
-        <div className="mt-8 p-8 rounded-xl shadow-xl" style={{ backgroundColor: 'var(--surface-primary)', border: '1px solid var(--border-color)' }}>
+        <div className="mt-8 p-8 rounded-xl shadow-xl login-form" style={{ backgroundColor: 'var(--surface-primary)', border: '1px solid var(--border-color)' }}>
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
               <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--status-error-bg)', border: '1px solid var(--status-error-text)' }}>
@@ -94,13 +94,13 @@ export function Login() {
                   required
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="block w-full pl-10 pr-3 py-2 rounded-lg text-sm"
+                  className="block w-full pl-10 pr-3 py-2 rounded-lg text-sm transition-all duration-200 ease-in-out focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                   style={{
                     backgroundColor: 'var(--surface-secondary)',
                     color: 'var(--text-primary)',
                     border: '1px solid var(--border-color)',
                   }}
-                  placeholder="user"
+                  placeholder="nombre@empresa.com"
                 />
               </div>
             </div>
@@ -121,13 +121,13 @@ export function Login() {
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  className="block w-full pl-10 pr-3 py-2 rounded-lg text-sm"
+                  className="block w-full pl-10 pr-3 py-2 rounded-lg text-sm transition-all duration-200 ease-in-out focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                   style={{
                     backgroundColor: 'var(--surface-secondary)',
                     color: 'var(--text-primary)',
                     border: '1px solid var(--border-color)',
                   }}
-                  placeholder="password"
+                  placeholder="••••••••"
                 />
               </div>
             </div>
@@ -135,7 +135,7 @@ export function Login() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center items-center py-2.5 px-4 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex justify-center items-center py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-200 ease-in-out transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
               style={{
                 backgroundColor: '#0071e3',
                 color: '#ffffff',

@@ -79,7 +79,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
         {/* Logo */}
         <Link
           to="/agreements"
-          className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+          className="flex items-center gap-3 hover:opacity-80 transition-opacity nav-logo"
         >
           <Building2
             className="h-10 w-10"
@@ -99,6 +99,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
               key={item.path}
               component={Link}
               to={item.path}
+              className="nav-item"
               sx={{
                 color: location.pathname === item.path ? 'var(--text-primary)' : 'var(--text-secondary)',
                 fontSize: '1rem',
@@ -112,6 +113,12 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
                 },
                 transition: 'all 0.2s ease',
                 height: 48,
+                '& svg': {
+                  transition: 'transform 0.3s ease',
+                },
+                '&:hover svg': {
+                  transform: 'scale(1.1)',
+                },
               }}
             >
               {item.icon}
@@ -125,6 +132,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
           <IconButton
             onClick={toggleTheme}
             size="large"
+            className="nav-icon-theme"
             sx={{
               color: 'var(--text-secondary)',
               '&:hover': {
@@ -138,6 +146,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
 
           <IconButton
             size="large"
+            className="nav-icon-bell"
             sx={{
               color: 'var(--text-secondary)',
               '&:hover': {
@@ -167,6 +176,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
           <IconButton
             onClick={handleMenu}
             size="small"
+            className="nav-icon-avatar"
             sx={{
               padding: 0.5,
               '&:hover': {
