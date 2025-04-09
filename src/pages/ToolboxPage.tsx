@@ -8,6 +8,7 @@ import { MapaToolbox } from '../components/toolbox/MapaToolbox';
 import { ComercialTool as ComercialToolbox } from '../components/toolbox/ComercialToolbox';
 import { AssistantToolbox } from '../components/toolbox/AssistantToolbox';
 import { InterlogisToolbox } from '../components/toolbox/InterlogisToolbox';
+import { AdminInterlogisToolbox } from '../components/toolbox/AdminInterlogisToolbox';
 import { Box, Container, Paper, Typography } from '@mui/material';
 
 export const ToolboxPage: React.FC = () => {
@@ -48,6 +49,10 @@ export const ToolboxPage: React.FC = () => {
 
   if (user.role === 'Gerente de Interlogis') {
     return <InterlogisToolbox />;
+  }
+
+  if (user.role === 'Administrador de Interlogis') {
+    return <AdminInterlogisToolbox />;
   }
 
   // For other roles, show empty toolbox
