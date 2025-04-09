@@ -4,6 +4,7 @@ import { PMOToolbox } from '../components/toolbox/PMOToolbox';
 import { SSCToolbox } from '../components/toolbox/SSCToolbox';
 import { PresidentToolbox } from '../components/toolbox/PresidentToolbox';
 import { EsporaToolbox } from '../components/toolbox/EsporaToolbox';
+import { MapaToolbox } from '../components/toolbox/MapaToolbox';
 import { ComercialTool as ComercialToolbox } from '../components/toolbox/ComercialToolbox';
 import { AssistantToolbox } from '../components/toolbox/AssistantToolbox';
 import { Box, Container, Paper, Typography } from '@mui/material';
@@ -34,6 +35,10 @@ export const ToolboxPage: React.FC = () => {
 
   if (user.role === 'Director General de Espora') {
     return <EsporaToolbox />;
+  }
+
+  if (user.role === 'Director de Mapa') {
+    return <MapaToolbox />;
   }
 
   if (user.role === 'Asistente') {
