@@ -3,9 +3,10 @@ import { useAuth } from '../context/AuthContext';
 import { PMOToolbox } from '../components/toolbox/PMOToolbox';
 import { SSCToolbox } from '../components/toolbox/SSCToolbox';
 import { PresidentToolbox } from '../components/toolbox/PresidentToolbox';
+import { EsporaToolbox } from '../components/toolbox/EsporaToolbox';
+import { ComercialTool as ComercialToolbox } from '../components/toolbox/ComercialToolbox';
 import { AssistantToolbox } from '../components/toolbox/AssistantToolbox';
 import { Box, Container, Paper, Typography } from '@mui/material';
-import { ComercialTool as ComercialToolbox } from '../components/toolbox/ComercialToolbox';
 
 export const ToolboxPage: React.FC = () => {
   const { user } = useAuth();
@@ -29,6 +30,10 @@ export const ToolboxPage: React.FC = () => {
 
   if (user.role === 'Director comercial') {
     return <ComercialToolbox />;
+  }
+
+  if (user.role === 'Director General de Espora') {
+    return <EsporaToolbox />;
   }
 
   if (user.role === 'Asistente') {
