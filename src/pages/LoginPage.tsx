@@ -1,6 +1,6 @@
 import React, { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, Mail, Lock, Loader2 } from 'lucide-react';
+import { Building2, Mail, Lock, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../context/AuthContext';
 
@@ -16,6 +16,7 @@ export function Login() {
   });
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const navigate = useNavigate();
   const { theme } = useTheme();
   const { login } = useAuth();
@@ -23,7 +24,7 @@ export function Login() {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
-    if (error) setError(null);
+    setError(null); // Clear error when typing
   };
 
   const handleSubmit = async (e: FormEvent) => {
@@ -37,29 +38,69 @@ export function Login() {
 
     setIsLoading(true);
     const success = await login(email, password);
+
     if (success) {
+      setIsSuccess(true);
+      await new Promise(resolve => setTimeout(resolve, 800));
       navigate('/agreements');
     } else {
       setError('Credenciales incorrectas. Por favor, intenta de nuevo.');
+      setIsLoading(false);
+
+      // Shake animation for form
+      const form = document.querySelector('.login-form');
+      form?.classList.remove('animate-shake');
+      void form?.offsetWidth; // Force reflow
+      form?.classList.add('animate-shake');
     }
-    setIsLoading(false);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8" style={{
       background: theme === 'dark'
-        ? 'linear-gradient(to bottom, #000000, #1c1c1e)'
-        : 'linear-gradient(to bottom, #f5f5f7, #ffffff)'
+        ? 'radial-gradient(circle at center, #1c1c1e 0%, #000000 100%)'
+        : 'radial-gradient(circle at center, #ffffff 0%, #f5f5f7 100%)',
+      transition: 'background 0.3s ease'
     }}>
-      <div className="max-w-md w-full space-y-8 relative">
+      <div className={`max-w-md w-full space-y-8 relative login-container ${isSuccess ? 'success-animation' : ''}`}>
         {/* Logo and Title */}
-        <div className="text-center">
+        <div className="text-center login-logo">
           <div className="flex justify-center mb-6">
-            <div className="p-3 bg-blue-600 rounded-2xl shadow-lg">
-              <Building2 className="h-8 w-8 text-white" />
+            <div
+              className={`relative p-3 rounded-2xl shadow-lg transform transition-all duration-300 ${isLoading ? 'scale-110' : 'hover:scale-105'
+                }`}
+              style={{
+                background: isSuccess
+                  ? 'var(--status-info-text)'
+                  : theme === 'dark'
+                    ? 'linear-gradient(135deg, var(--status-info-text) 0%, #0077ED 100%)'
+                    : 'linear-gradient(135deg, var(--status-info-text) 0%, #40a9ff 100%)',
+                boxShadow: isLoading
+                  ? '0 0 20px rgba(0, 113, 227, 0.5)'
+                  : '0 8px 16px rgba(0, 113, 227, 0.2)'
+              }}
+            >
+              {isSuccess ? (
+                <CheckCircle2 className="h-8 w-8 text-white animate-success" />
+              ) : (
+                <Building2
+                  className={`h-8 w-8 text-white transition-transform ${isLoading ? 'animate-pulse' : ''
+                    }`}
+                />
+              )}
+              <div className={`absolute inset-0 rounded-2xl ${isLoading ? 'animate-ping-slow' : ''
+                }`} style={{
+                  background: 'inherit',
+                  opacity: 0.2,
+                }} />
             </div>
           </div>
-          <h2 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
+          <h2 className="text-3xl font-bold tracking-tight transform transition-all duration-300"
+            style={{
+              color: 'var(--text-primary)',
+              textShadow: theme === 'dark' ? '0 2px 4px rgba(0,0,0,0.2)' : 'none',
+            }}
+          >
             Plataforma UNO
           </h2>
           <p className="mt-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
@@ -68,81 +109,111 @@ export function Login() {
         </div>
 
         {/* Login Form */}
-        <div className="mt-8 p-8 rounded-xl shadow-xl" style={{ backgroundColor: 'var(--surface-primary)', border: '1px solid var(--border-color)' }}>
+        <div className={`mt-8 p-8 rounded-xl shadow-xl login-form relative overflow-hidden ${isLoading ? 'opacity-50' : ''
+          }`}
+          style={{
+            backgroundColor: 'var(--surface-primary)',
+            border: `1px solid ${error ? 'var(--status-error-text)' : 'var(--border-color)'}`,
+            transition: 'all 0.3s ease',
+            transform: isSuccess ? 'translateY(10px)' : 'none',
+          }}
+        >
           <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
-              <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--status-error-bg)', border: '1px solid var(--status-error-text)' }}>
-                <p className="text-sm" style={{ color: 'var(--status-error-text)' }}>
-                  {error}
-                </p>
+              <div className="p-4 rounded-lg" style={{
+                backgroundColor: 'var(--status-error-bg)',
+                border: '1px solid var(--status-error-text)',
+              }}>
+                <div className="flex items-center gap-2">
+                  <XCircle className="h-5 w-5" style={{ color: 'var(--status-error-text)' }} />
+                  <p className="text-sm" style={{ color: 'var(--status-error-text)' }}>
+                    {error}
+                  </p>
+                </div>
               </div>
             )}
 
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
-                Correo electrónico
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5" style={{ color: 'var(--text-secondary)' }} />
+            <div className="space-y-4">
+              <div>
+                <label htmlFor="email" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
+                  Correo electrónico
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5" style={{ color: error ? 'var(--status-error-text)' : 'var(--text-secondary)' }} />
+                  </div>
+                  <input
+                    id="email"
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    className="block w-full pl-10 pr-3 py-2 rounded-lg text-sm transition-all duration-300"
+                    style={{
+                      backgroundColor: 'var(--surface-secondary)',
+                      color: 'var(--text-primary)',
+                      border: `1px solid ${error ? 'var(--status-error-text)' : 'var(--border-color)'}`,
+                    }}
+                    placeholder="user"
+                  />
                 </div>
-                <input
-                  id="email"
-                  name="email"
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="block w-full pl-10 pr-3 py-2 rounded-lg text-sm"
-                  style={{
-                    backgroundColor: 'var(--surface-secondary)',
-                    color: 'var(--text-primary)',
-                    border: '1px solid var(--border-color)',
-                  }}
-                  placeholder="user"
-                />
               </div>
-            </div>
 
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
-                Contraseña
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5" style={{ color: 'var(--text-secondary)' }} />
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
+                  Contraseña
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Lock className="h-5 w-5" style={{ color: error ? 'var(--status-error-text)' : 'var(--text-secondary)' }} />
+                  </div>
+                  <input
+                    id="password"
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    required
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className="block w-full pl-10 pr-3 py-2 rounded-lg text-sm transition-all duration-300"
+                    style={{
+                      backgroundColor: 'var(--surface-secondary)',
+                      color: 'var(--text-primary)',
+                      border: `1px solid ${error ? 'var(--status-error-text)' : 'var(--border-color)'}`,
+                    }}
+                    placeholder="pasword"
+                  />
                 </div>
-                <input
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  className="block w-full pl-10 pr-3 py-2 rounded-lg text-sm"
-                  style={{
-                    backgroundColor: 'var(--surface-secondary)',
-                    color: 'var(--text-primary)',
-                    border: '1px solid var(--border-color)',
-                  }}
-                  placeholder="password"
-                />
               </div>
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center items-center py-2.5 px-4 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className={`w-full flex justify-center items-center py-2.5 px-4 rounded-lg text-sm font-medium transition-all duration-300 transform ${isLoading
+                  ? 'cursor-not-allowed opacity-90'
+                  : 'hover:scale-[1.02] active:scale-[0.98] hover:shadow-lg'
+                }`}
               style={{
-                backgroundColor: '#0071e3',
+                background: isSuccess
+                  ? 'var(--status-info-text)'
+                  : 'linear-gradient(135deg, var(--status-info-text) 0%, #40a9ff 100%)',
                 color: '#ffffff',
+                boxShadow: '0 4px 6px rgba(0, 113, 227, 0.2)',
               }}
             >
               {isLoading ? (
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <div className="flex items-center">
+                  <Loader2 className="h-5 w-5 animate-spin mr-2" />
+                  <span>Iniciando sesión...</span>
+                </div>
+              ) : isSuccess ? (
+                <div className="flex items-center">
+                  <CheckCircle2 className="h-5 w-5 mr-2" />
+                  <span>¡Bienvenido!</span>
+                </div>
               ) : (
                 'Iniciar sesión'
               )}

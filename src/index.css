@@ -6,6 +6,7 @@
   --nav-height: 72px;
 }
 
+/* Theme Variables */
 :root[data-theme="light"] {
   --app-bg: #f5f5f7;
   --text-primary: #1d1d1f;
@@ -26,15 +27,6 @@
   --status-error-text: #ff2d55;
   --status-info-bg: rgba(0, 113, 227, 0.1);
   --status-info-text: #0071e3;
-
-  /* Typography */
-  --font-primary: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 :root[data-theme="dark"] {
@@ -57,29 +49,218 @@
   --status-error-text: #ff2d55;
   --status-info-bg: rgba(0, 113, 227, 0.2);
   --status-info-text: #0071e3;
-
-  /* Typography */
-  --font-primary: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.2);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
 }
 
+/* Typography */
 body {
-  background-color: var(--app-bg);
-  color: var(--text-primary);
-  font-family: var(--font-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  letter-spacing: -0.01em;
   margin: 0;
   transition: background-color 0.3s ease;
-  letter-spacing: -0.01em;
+  background-color: var(--app-bg);
+  color: var(--text-primary);
 }
 
-/* Glass effect */
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-8px);
+  }
+
+  75% {
+    transform: translateX(8px);
+  }
+}
+
+@keyframes ping-slow {
+  0% {
+    transform: scale(1);
+    opacity: 0.2;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 0.1;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 0.2;
+  }
+}
+
+@keyframes success {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes success-container {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 113, 227, 0.4);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 113, 227, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 113, 227, 0);
+  }
+}
+
+/* Navbar Animations */
+.nav-logo {
+  animation: slideIn 0.5s ease-out;
+}
+
+.nav-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-item::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background-color: var(--status-info-text);
+  transition: all 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.nav-item:hover::after {
+  width: 100%;
+}
+
+.nav-icon-theme,
+.nav-icon-bell,
+.nav-icon-avatar {
+  transition: transform 0.3s ease;
+}
+
+.nav-icon-theme:hover,
+.nav-icon-bell:hover,
+.nav-icon-avatar:hover {
+  transform: scale(1.1);
+}
+
+.nav-icon-bell .MuiBadge-badge {
+  animation: pulse 2s infinite;
+}
+
+/* Login Animations */
+.login-container {
+  animation: scaleIn 0.5s ease-out;
+}
+
+.login-form {
+  animation: fadeIn 0.5s ease-out 0.2s both;
+}
+
+.login-logo {
+  animation: slideIn 0.5s ease-out;
+}
+
+.success-animation {
+  animation: success-container 0.5s ease-out forwards;
+}
+
+.animate-success {
+  animation: success 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.animate-shake {
+  animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+}
+
+.animate-ping-slow {
+  animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Glass Effect */
 .glass-effect {
   backdrop-filter: saturate(180%) blur(20px);
   background-color: var(--glass-bg);
@@ -87,7 +268,7 @@ body {
   transition: all 0.3s ease;
 }
 
-/* Custom scrollbar */
+/* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -107,31 +288,59 @@ body {
   opacity: 0.7;
 }
 
-/* Typography utilities */
-.text-display {
-  font-family: var(--font-display);
-  letter-spacing: -0.025em;
+/* Utility Classes */
+.text-gradient {
+  background: linear-gradient(135deg, #0071e3, #40a9ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
-.text-body {
-  font-family: var(--font-primary);
-  letter-spacing: -0.01em;
+.shadow-soft {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
-/* Animation utilities */
 .transition-all {
+  transition: all 0.3s ease;
+}
+
+/* Dark Mode Overrides */
+[data-theme="dark"] .glass-effect {
+  backdrop-filter: saturate(180%) blur(20px);
+  background-color: rgba(28, 28, 30, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="dark"] .shadow-soft {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+/* MUI Component Overrides */
+.MuiButton-root {
+  text-transform: none;
+  font-weight: 500;
+}
+
+.MuiChip-root {
+  font-weight: 500;
+}
+
+.MuiTableCell-root {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.MuiPaper-root {
+  transition: all 0.3s ease;
+}
+
+.MuiIconButton-root {
   transition: all 0.2s ease;
 }
 
-.hover-scale {
-  transition: transform 0.2s ease;
+.MuiLinearProgress-root {
+  border-radius: 8px;
 }
 
-.hover-scale:hover {
-  transform: scale(1.02);
-}
-
-/* Status indicators */
+/* Status Indicators */
 .status-success {
   background-color: var(--status-success-bg);
   color: var(--status-success-text);
@@ -150,104 +359,4 @@ body {
 .status-info {
   background-color: var(--status-info-bg);
   color: var(--status-info-text);
-}
-
-/* Dark mode overrides for MUI components */
-[data-theme="dark"] {
-  & .MuiPaper-root {
-    background-color: var(--surface-primary);
-    color: var(--text-primary);
-  }
-
-  & .MuiTypography-root {
-    color: var(--text-primary);
-  }
-
-  & .MuiInputBase-root {
-    color: var(--text-primary);
-  }
-
-  & .MuiOutlinedInput-notchedOutline {
-    border-color: var(--border-color);
-  }
-
-  & .MuiButton-outlined {
-    border-color: var(--border-color);
-    color: var(--text-primary);
-  }
-
-  & .MuiListItemButton-root:hover {
-    background-color: var(--hover-bg);
-  }
-
-  & .MuiDivider-root {
-    border-color: var(--border-color);
-  }
-
-  & .MuiDialog-paper {
-    background-color: var(--surface-primary);
-  }
-
-  & .MuiInputLabel-root {
-    color: var(--text-secondary);
-  }
-
-  & .MuiSelect-icon {
-    color: var(--text-secondary);
-  }
-
-  & .MuiMenuItem-root {
-    color: var(--text-primary);
-
-    &:hover {
-      background-color: var(--hover-bg);
-    }
-  }
-
-  & .MuiPickersDay-root {
-    color: var(--text-primary);
-
-    &:hover {
-      background-color: var(--hover-bg);
-    }
-
-    &.Mui-selected {
-      background-color: var(--status-info-text);
-      color: #fff;
-    }
-  }
-
-  & .MuiPickersCalendarHeader-label {
-    color: var(--text-primary);
-  }
-
-  & .MuiPickersArrowSwitcher-button {
-    color: var(--text-secondary);
-  }
-
-  & .MuiTableCell-head {
-    color: var(--text-secondary);
-    border-bottom-color: var(--border-color);
-  }
-
-  & .MuiTableCell-body {
-    color: var(--text-primary);
-    border-bottom-color: var(--border-color);
-  }
-
-  & .MuiLinearProgress-root {
-    background-color: var(--surface-secondary);
-  }
-
-  & .MuiTab-root {
-    color: var(--text-secondary);
-
-    &.Mui-selected {
-      color: var(--status-info-text);
-    }
-  }
-
-  & .MuiTabs-indicator {
-    background-color: var(--status-info-text);
-  }
 }

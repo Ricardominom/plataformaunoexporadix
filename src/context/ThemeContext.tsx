@@ -18,6 +18,55 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     localStorage.setItem('theme', theme);
     document.documentElement.setAttribute('data-theme', theme);
+
+    // Apply MUI theme overrides
+    const style = document.createElement('style');
+    style.textContent = `
+      .MuiTypography-root {
+        color: var(--text-primary) !important;
+      }
+      .MuiInputBase-input {
+        color: var(--text-primary) !important;
+      }
+      .MuiInputLabel-root {
+        color: var(--text-secondary) !important;
+      }
+      .MuiTableCell-root {
+        color: var(--text-primary) !important;
+      }
+      .MuiTableCell-head {
+        color: var(--text-secondary) !important;
+      }
+      .MuiMenuItem-root {
+        color: var(--text-primary) !important;
+      }
+      .MuiListItemText-primary {
+        color: var(--text-primary) !important;
+      }
+      .MuiListItemText-secondary {
+        color: var(--text-secondary) !important;
+      }
+      .MuiButton-text {
+        color: var(--text-primary) !important;
+      }
+      .MuiSelect-select {
+        color: var(--text-primary) !important;
+      }
+      .MuiSelect-icon {
+        color: var(--text-secondary) !important;
+      }
+      .MuiTab-root {
+        color: var(--text-secondary) !important;
+      }
+      .MuiTab-root.Mui-selected {
+        color: var(--status-info-text) !important;
+      }
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
   }, [theme]);
 
   const toggleTheme = () => {

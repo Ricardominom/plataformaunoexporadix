@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
   Box,
   Button,
@@ -22,8 +22,8 @@ import { EditAgreementDialog } from '../components/agreements/EditAgreementDialo
 import { NewListDialog } from '../components/todos/NewListDialog';
 import { Agreement, AgreementStatus } from '../types/agreement';
 import { Dayjs } from 'dayjs';
+import { useAuth } from '../context/AuthContext';
 
-// Mock data with two different lists
 const mockAgreements: Agreement[] = [
   {
     id: '1',
@@ -111,15 +111,26 @@ const initialLists: List[] = [
 ];
 
 export const AgreementsPage: React.FC = () => {
+  const { user, hasShownWelcome, setHasShownWelcome } = useAuth();
   const [agreements, setAgreements] = useState<Agreement[]>(mockAgreements);
   const [lists, setLists] = useState<List[]>(initialLists);
-  const [currentTab, setCurrentTab] = useState<number>(0);
+  const [currentTab, setCurrentTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [isNewAgreementOpen, setIsNewAgreementOpen] = useState(false);
   const [isNewListOpen, setIsNewListOpen] = useState(false);
   const [editingAgreement, setEditingAgreement] = useState<Agreement | null>(null);
   const [deletingAgreement, setDeletingAgreement] = useState<Agreement | null>(null);
   const [deletingList, setDeletingList] = useState<List | null>(null);
+
+  useEffect(() => {
+    if (!hasShownWelcome) {
+      const timer = setTimeout(() => {
+        setHasShownWelcome(true);
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [hasShownWelcome, setHasShownWelcome]);
 
   const filteredAgreements = useMemo(() => {
     if (!searchTerm) return agreements;
@@ -186,10 +197,8 @@ export const AgreementsPage: React.FC = () => {
     deliverable?: File | null;
     deliverableName?: string;
   }) => {
-    // Generate a new ID
     const newId = (Math.max(...agreements.map(a => parseInt(a.id))) + 1).toString();
 
-    // Create the new agreement
     const newAgreement: Agreement = {
       ...agreement,
       id: newId,
@@ -198,7 +207,6 @@ export const AgreementsPage: React.FC = () => {
       deliveryDate: agreement.deliveryDate.format('YYYY-MM-DD'),
     };
 
-    // Add the new agreement to the beginning of the agreements array
     setAgreements([newAgreement, ...agreements]);
     setIsNewAgreementOpen(false);
   };
@@ -210,7 +218,6 @@ export const AgreementsPage: React.FC = () => {
       color: list.color,
     };
     setLists([...lists, newList]);
-    // Switch to the new list
     setCurrentTab(lists.length);
   };
 
@@ -220,22 +227,15 @@ export const AgreementsPage: React.FC = () => {
 
   const confirmDeleteList = () => {
     if (deletingList) {
-      // Remove the list
       setLists(lists.filter(l => l.id !== deletingList.id));
-      
-      // Remove agreements for the deleted list
       setAgreements(agreements.filter(a => a.listId !== deletingList.id));
-
-      // Reset to first tab if necessary
       if (currentTab >= lists.length - 1) {
         setCurrentTab(0);
       }
-      
       setDeletingList(null);
     }
   };
 
-  // Get agreements for the current tab
   const currentTabAgreements = useMemo(() => {
     const currentList = lists[currentTab];
     if (!currentList) return [];
@@ -251,7 +251,56 @@ export const AgreementsPage: React.FC = () => {
       minHeight: '100vh',
       backgroundColor: 'var(--app-bg)',
     }}>
-      <Container maxWidth="xl" sx={{ mb: 4 }}>
+      <Container maxWidth="xl">
+        {!hasShownWelcome && (
+          <Paper
+            sx={{
+              p: 3,
+              mb: 4,
+              borderRadius: '12px',
+              backgroundColor: 'var(--status-info-bg)',
+              border: '1px solid var(--status-info-text)',
+              animation: 'fadeIn 0.5s ease-out',
+              position: 'relative',
+              overflow: 'hidden',
+            }}
+          >
+            <Box sx={{ position: 'relative', zIndex: 1 }}>
+              <Typography
+                variant="h5"
+                sx={{
+                  color: 'var(--status-info-text)',
+                  fontWeight: 600,
+                  mb: 1,
+                  animation: 'slideIn 0.5s ease-out',
+                }}
+              >
+                ¡Bienvenido, {user?.name}!
+              </Typography>
+              <Typography
+                sx={{
+                  color: 'var(--status-info-text)',
+                  opacity: 0.9,
+                  animation: 'fadeIn 0.5s ease-out 0.2s both',
+                }}
+              >
+                Nos alegra tenerte de vuelta. Aquí tienes un resumen de tus acuerdos y actividades pendientes.
+              </Typography>
+            </Box>
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                width: '30%',
+                height: '100%',
+                background: 'linear-gradient(45deg, transparent, var(--status-info-bg))',
+                animation: 'float 3s ease-in-out infinite',
+              }}
+            />
+          </Paper>
+        )}
+
         <Box sx={{
           display: 'flex',
           justifyContent: 'flex-end',
@@ -428,7 +477,6 @@ export const AgreementsPage: React.FC = () => {
           onSubmit={handleNewList}
         />
 
-        {/* Delete Agreement Confirmation Dialog */}
         <Dialog
           open={!!deletingAgreement}
           onClose={() => setDeletingAgreement(null)}
@@ -507,7 +555,6 @@ export const AgreementsPage: React.FC = () => {
           </DialogActions>
         </Dialog>
 
-        {/* Delete List Confirmation Dialog */}
         <Dialog
           open={!!deletingList}
           onClose={() => setDeletingList(null)}

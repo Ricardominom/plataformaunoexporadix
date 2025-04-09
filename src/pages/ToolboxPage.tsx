@@ -3,9 +3,14 @@ import { useAuth } from '../context/AuthContext';
 import { PMOToolbox } from '../components/toolbox/PMOToolbox';
 import { SSCToolbox } from '../components/toolbox/SSCToolbox';
 import { PresidentToolbox } from '../components/toolbox/PresidentToolbox';
-import { AssistantToolbox } from '../components/toolbox/AssistantToolbox';
-import { Box, Container, Paper, Typography } from '@mui/material';
+import { EsporaToolbox } from '../components/toolbox/EsporaToolbox';
+import { MapaToolbox } from '../components/toolbox/MapaToolbox';
 import { ComercialTool as ComercialToolbox } from '../components/toolbox/ComercialToolbox';
+import { AssistantToolbox } from '../components/toolbox/AssistantToolbox';
+import { InterlogisToolbox } from '../components/toolbox/InterlogisToolbox';
+import { AdminInterlogisToolbox } from '../components/toolbox/AdminInterlogisToolbox';
+import { ResearchDevToolbox } from '../components/toolbox/ResearchDevToolbox';
+import { Box, Container, Paper, Typography } from '@mui/material';
 
 export const ToolboxPage: React.FC = () => {
   const { user } = useAuth();
@@ -31,8 +36,28 @@ export const ToolboxPage: React.FC = () => {
     return <ComercialToolbox />;
   }
 
+  if (user.role === 'Director General de Espora') {
+    return <EsporaToolbox />;
+  }
+
+  if (user.role === 'Director de Mapa') {
+    return <MapaToolbox />;
+  }
+
   if (user.role === 'Asistente') {
     return <AssistantToolbox />;
+  }
+
+  if (user.role === 'Gerente de Interlogis') {
+    return <InterlogisToolbox />;
+  }
+
+  if (user.role === 'Administrador de Interlogis') {
+    return <AdminInterlogisToolbox />;
+  }
+
+  if (user.role === 'Research and Development') {
+    return <ResearchDevToolbox />;
   }
 
   // For other roles, show empty toolbox
