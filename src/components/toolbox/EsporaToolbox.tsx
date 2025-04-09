@@ -5,28 +5,23 @@ import {
     Paper,
     Typography,
     Grid,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Chip,
-    LinearProgress,
-    Tabs,
-    Tab,
-    Button,
     List,
     ListItem,
-    Input,
+    Button,
+    LinearProgress,
+    Chip,
+    Tabs,
+    Tab,
+    IconButton,
 } from '@mui/material';
 import {
     FileSpreadsheet,
-    TrendingUp,
     Upload,
+    BarChart2,
+    DollarSign,
+    Download,
 } from 'lucide-react';
 
-// Mock data for accounts
 const mockAccounts = [
     {
         name: "Cuenta 1",
@@ -52,41 +47,23 @@ const mockAccounts = [
     },
 ];
 
-// Mock data for progress reports
-const mockProgressReports = [
-    {
-        project: "Automatización de Procesos",
-        status: "completed",
-        progress: 100,
-        lastUpdate: "2024-02-20",
-        dueDate: "2024-02-25",
-        responsible: "Equipo DevOps"
+const mockFinancialData = {
+    revenue: {
+        total: 2500000,
+        breakdown: [
+            { label: 'Ventas Directas', value: 40 },
+            { label: 'Servicios', value: 35 },
+            { label: 'Licencias', value: 25 },
+        ]
     },
-    {
-        project: "Migración de Base de Datos",
-        status: "in_progress",
-        progress: 75,
-        lastUpdate: "2024-02-19",
-        dueDate: "2024-03-01",
-        responsible: "Equipo Backend"
-    },
-    {
-        project: "Implementación CRM",
-        status: "delayed",
-        progress: 45,
-        lastUpdate: "2024-02-18",
-        dueDate: "2024-02-15",
-        responsible: "Equipo Integración"
+    expenses: {
+        total: 1800000,
+        breakdown: [
+            { label: 'Operaciones', value: 45 },
+            { label: 'Marketing', value: 30 },
+            { label: 'Desarrollo', value: 25 },
+        ]
     }
-];
-
-const getStatusColor = (status: string) => {
-    const colors = {
-        completed: { bg: 'rgba(48, 209, 88, 0.1)', text: '#30d158' },
-        in_progress: { bg: 'rgba(0, 113, 227, 0.1)', text: '#0071e3' },
-        delayed: { bg: 'rgba(255, 45, 85, 0.1)', text: '#ff2d55' },
-    };
-    return colors[status as keyof typeof colors] || colors.in_progress;
 };
 
 export const EsporaToolbox: React.FC = () => {
@@ -105,7 +82,7 @@ export const EsporaToolbox: React.FC = () => {
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (file) {
-            if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
+            if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
                 file.type === 'application/vnd.ms-excel') {
                 setSelectedFile(file);
             } else {
@@ -125,7 +102,7 @@ export const EsporaToolbox: React.FC = () => {
 
         const file = event.dataTransfer.files[0];
         if (file) {
-            if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || 
+            if (file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
                 file.type === 'application/vnd.ms-excel') {
                 setSelectedFile(file);
             } else {
@@ -332,99 +309,125 @@ export const EsporaToolbox: React.FC = () => {
         </Grid>
     );
 
-    const renderProgressReports = () => (
-        <Paper
-            sx={{
-                borderRadius: '12px',
-                backgroundColor: 'var(--surface-primary)',
-                overflow: 'hidden',
-            }}
-            className="glass-effect"
-        >
-            <TableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Proyecto</TableCell>
-                            <TableCell>Estado</TableCell>
-                            <TableCell>Progreso</TableCell>
-                            <TableCell>Última Actualización</TableCell>
-                            <TableCell>Fecha Límite</TableCell>
-                            <TableCell>Responsable</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {mockProgressReports.map((report, index) => (
-                            <TableRow key={index}>
-                                <TableCell>
-                                    <Typography
-                                        sx={{
-                                            color: 'var(--text-primary)',
-                                            fontWeight: 500,
-                                        }}
-                                    >
-                                        {report.project}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Chip
-                                        label={report.status === 'completed' ? 'Completado' : 
-                                               report.status === 'in_progress' ? 'En Progreso' : 'Retrasado'}
-                                        sx={{
-                                            backgroundColor: getStatusColor(report.status).bg,
-                                            color: getStatusColor(report.status).text,
-                                            fontWeight: 500,
-                                        }}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <LinearProgress
-                                            variant="determinate"
-                                            value={report.progress}
-                                            sx={{
-                                                width: 100,
-                                                height: 6,
-                                                borderRadius: 3,
-                                                backgroundColor: 'var(--surface-secondary)',
-                                                '& .MuiLinearProgress-bar': {
-                                                    backgroundColor: report.status === 'delayed' ? '#ff3b30' :
-                                                        report.status === 'completed' ? '#30d158' : '#0071e3',
-                                                    borderRadius: 3,
-                                                },
-                                            }}
-                                        />
-                                        <Typography
-                                            sx={{
-                                                color: 'var(--text-primary)',
-                                                fontWeight: 500,
-                                            }}
-                                        >
-                                            {report.progress}%
-                                        </Typography>
-                                    </Box>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography sx={{ color: 'var(--text-secondary)' }}>
-                                        {new Date(report.lastUpdate).toLocaleDateString()}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography sx={{ color: 'var(--text-secondary)' }}>
-                                        {new Date(report.dueDate).toLocaleDateString()}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography sx={{ color: 'var(--text-secondary)' }}>
-                                        {report.responsible}
-                                    </Typography>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Paper>
+    const renderFinancialBalance = () => (
+        <Grid container spacing={3}>
+            {[
+                {
+                    category: 'Ingresos',
+                    current: mockFinancialData.revenue.total,
+                    previous: mockFinancialData.revenue.total * 0.8,
+                    change: 25,
+                },
+                {
+                    category: 'Gastos',
+                    current: mockFinancialData.expenses.total,
+                    previous: mockFinancialData.expenses.total * 0.85,
+                    change: 14.3,
+                },
+                {
+                    category: 'Beneficio',
+                    current: mockFinancialData.revenue.total - mockFinancialData.expenses.total,
+                    previous: (mockFinancialData.revenue.total - mockFinancialData.expenses.total) * 0.7,
+                    change: 40,
+                },
+            ].map((data, index) => (
+                <Grid item xs={12} md={4} key={index}>
+                    <Paper
+                        sx={{
+                            p: 3,
+                            borderRadius: '12px',
+                            backgroundColor: 'var(--surface-primary)',
+                        }}
+                        className="glass-effect"
+                    >
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    fontSize: '1.125rem',
+                                    fontWeight: 600,
+                                    color: 'var(--text-primary)',
+                                }}
+                            >
+                                {data.category}
+                            </Typography>
+                            <IconButton
+                                size="small"
+                                sx={{
+                                    color: 'var(--text-secondary)',
+                                    '&:hover': {
+                                        color: 'var(--text-primary)',
+                                    },
+                                }}
+                            >
+                                <Download size={16} />
+                            </IconButton>
+                        </Box>
+
+                        <Box sx={{ mb: 3 }}>
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    color: 'var(--text-secondary)',
+                                }}
+                            >
+                                Actual
+                            </Typography>
+                            <Typography
+                                variant="h4"
+                                sx={{
+                                    color: data.category === 'Gastos' ? '#ff2d55' : '#30d158',
+                                    fontWeight: 600,
+                                    fontSize: '1.5rem',
+                                }}
+                            >
+                                ${data.current.toLocaleString()}
+                            </Typography>
+                        </Box>
+
+                        <Box sx={{ mb: 3 }}>
+                            <Typography
+                                variant="caption"
+                                sx={{
+                                    color: 'var(--text-secondary)',
+                                }}
+                            >
+                                Anterior
+                            </Typography>
+                            <Typography
+                                variant="h4"
+                                sx={{
+                                    color: data.category === 'Gastos' ? '#ff2d55' : '#30d158',
+                                    fontWeight: 600,
+                                    fontSize: '1.5rem',
+                                    opacity: 0.7,
+                                }}
+                            >
+                                ${data.previous.toLocaleString()}
+                            </Typography>
+                        </Box>
+
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                                color: data.change >= 0 ? '#30d158' : '#ff2d55',
+                            }}
+                        >
+                            <BarChart2 size={16} />
+                            <Typography
+                                sx={{
+                                    fontWeight: 500,
+                                }}
+                            >
+                                {data.change}% vs mes anterior
+                            </Typography>
+                        </Box>
+                    </Paper>
+                </Grid>
+            ))}
+        </Grid>
     );
 
     return (
@@ -480,9 +483,9 @@ export const EsporaToolbox: React.FC = () => {
                             }}
                         />
                         <Tab
-                            icon={<TrendingUp size={16} />}
+                            icon={<DollarSign size={16} />}
                             iconPosition="start"
-                            label="Reporte de Avances"
+                            label="Balance Financiero"
                             sx={{
                                 textTransform: 'none',
                                 minHeight: 48,
@@ -497,7 +500,7 @@ export const EsporaToolbox: React.FC = () => {
 
                 <Box sx={{ mt: 3 }}>
                     {currentTab === 0 && renderAccountProgress()}
-                    {currentTab === 1 && renderProgressReports()}
+                    {currentTab === 1 && renderFinancialBalance()}
                 </Box>
             </Container>
         </Box>
