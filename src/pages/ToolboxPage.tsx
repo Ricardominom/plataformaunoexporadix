@@ -9,6 +9,7 @@ import { ComercialTool as ComercialToolbox } from '../components/toolbox/Comerci
 import { AssistantToolbox } from '../components/toolbox/AssistantToolbox';
 import { InterlogisToolbox } from '../components/toolbox/InterlogisToolbox';
 import { AdminInterlogisToolbox } from '../components/toolbox/AdminInterlogisToolbox';
+import { ResearchDevToolbox } from '../components/toolbox/ResearchDevToolbox';
 import { Box, Container, Paper, Typography } from '@mui/material';
 
 export const ToolboxPage: React.FC = () => {
@@ -53,6 +54,10 @@ export const ToolboxPage: React.FC = () => {
 
   if (user.role === 'Administrador de Interlogis') {
     return <AdminInterlogisToolbox />;
+  }
+
+  if (user.role === 'Research and Development') {
+    return <ResearchDevToolbox />;
   }
 
   // For other roles, show empty toolbox
