@@ -7,6 +7,7 @@ import { EsporaToolbox } from '../components/toolbox/EsporaToolbox';
 import { MapaToolbox } from '../components/toolbox/MapaToolbox';
 import { ComercialTool as ComercialToolbox } from '../components/toolbox/ComercialToolbox';
 import { AssistantToolbox } from '../components/toolbox/AssistantToolbox';
+import { InterlogisToolbox } from '../components/toolbox/InterlogisToolbox';
 import { Box, Container, Paper, Typography } from '@mui/material';
 
 export const ToolboxPage: React.FC = () => {
@@ -43,6 +44,10 @@ export const ToolboxPage: React.FC = () => {
 
   if (user.role === 'Asistente') {
     return <AssistantToolbox />;
+  }
+
+  if (user.role === 'Gerente de Interlogis') {
+    return <InterlogisToolbox />;
   }
 
   // For other roles, show empty toolbox
