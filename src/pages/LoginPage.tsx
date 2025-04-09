@@ -46,7 +46,11 @@ export function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8" style={{ backgroundColor: 'var(--app-bg)' }}>
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8" style={{
+      background: theme === 'dark'
+        ? 'linear-gradient(to bottom, #000000, #1c1c1e)'
+        : 'linear-gradient(to bottom, #f5f5f7, #ffffff)'
+    }}>
       <div className="max-w-md w-full space-y-8 relative">
         {/* Logo and Title */}
         <div className="text-center">
