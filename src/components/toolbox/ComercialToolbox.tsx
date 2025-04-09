@@ -27,9 +27,7 @@ interface ComercialLead {
     contacto: string;
     cita: string;
     presentacion: boolean;
-    propuestaRealizada: boolean;
-    propuestaRevision: boolean;
-    propuestaAceptada: boolean;
+    propuesta: 'Realizada' | 'En revisión' | 'Aceptada' | 'Pendiente';
     escenarioAprobado: boolean;
     monto: number;
     pagos: string;
@@ -48,9 +46,7 @@ const mockLeads: ComercialLead[] = [
         contacto: 'contacto@empresaa.com',
         cita: '2024-03-01',
         presentacion: true,
-        propuestaRealizada: true,
-        propuestaRevision: true,
-        propuestaAceptada: false,
+        propuesta: 'En revisión',
         escenarioAprobado: false,
         monto: 50000,
         pagos: 'Mensual',
@@ -67,15 +63,30 @@ const mockLeads: ComercialLead[] = [
         contacto: 'contacto@empresab.com',
         cita: '2024-02-28',
         presentacion: true,
-        propuestaRealizada: true,
-        propuestaRevision: false,
-        propuestaAceptada: false,
+        propuesta: 'Realizada',
         escenarioAprobado: false,
         monto: 75000,
         pagos: 'Trimestral',
         contrato: false,
         arranque: '2024-05-01',
         comentarios: 'Cliente solicita revisión de términos'
+    },
+    {
+        id: '3',
+        cuenta: 'Empresa C',
+        estatus: 'Activo',
+        comentariosVentas: 'Interesado en expansión de servicios actuales',
+        enlace: 'Roberto Sánchez',
+        contacto: 'contacto@empresac.com',
+        cita: '2024-03-15',
+        presentacion: true,
+        propuesta: 'Aceptada',
+        escenarioAprobado: true,
+        monto: 120000,
+        pagos: 'Anual',
+        contrato: true,
+        arranque: '2024-04-15',
+        comentarios: 'Cliente premium con alto potencial de crecimiento'
     }
 ];
 
@@ -87,6 +98,16 @@ const getStatusColor = (status: ComercialLead['estatus']) => {
         'Perdido': { bg: 'rgba(255, 45, 85, 0.1)', text: '#ff2d55' }
     };
     return colors[status];
+};
+
+const getPropuestaColor = (propuesta: ComercialLead['propuesta']) => {
+    const colors = {
+        'Realizada': { bg: 'rgba(255, 149, 0, 0.1)', text: '#ff9500' },
+        'En revisión': { bg: 'rgba(0, 113, 227, 0.1)', text: '#0071e3' },
+        'Aceptada': { bg: 'rgba(48, 209, 88, 0.1)', text: '#30d158' },
+        'Pendiente': { bg: 'rgba(255, 45, 85, 0.1)', text: '#ff2d55' }
+    };
+    return colors[propuesta];
 };
 
 export const ComercialTool: React.FC = () => {
@@ -116,7 +137,7 @@ export const ComercialTool: React.FC = () => {
                             color: 'var(--text-primary)',
                         }}
                     >
-                        Reporte del Estado de Ventas 
+                        Reporte del Estado de Ventas
                         Prospección
                     </Typography>
 
@@ -124,18 +145,17 @@ export const ComercialTool: React.FC = () => {
                         variant="contained"
                         startIcon={<Plus size={16} />}
                         sx={{
-                        color: '#ff2d55',
-                        borderColor: '#ff2d55',
-                        fontSize: '0.875rem',
-                        fontWeight: 500,
-                        textTransform: 'none',
-                        px: 2.5,
-                        borderRadius: '6px',
-                        '&:hover': {
-                            borderColor: '#ff2d55',
-                            backgroundColor: 'rgba(255, 45, 85, 0.1)',
-                        },
-                    }}
+                            backgroundColor: '#0071e3',
+                            color: '#ffffff',
+                            fontSize: '0.875rem',
+                            fontWeight: 500,
+                            textTransform: 'none',
+                            px: 2.5,
+                            borderRadius: '6px',
+                            '&:hover': {
+                                backgroundColor: '#0077ED',
+                            },
+                        }}
                     >
                         Agregar LEADs
                     </Button>
@@ -271,38 +291,16 @@ export const ComercialTool: React.FC = () => {
                                             />
                                         </TableCell>
                                         <TableCell>
-                                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                                                <Chip
-                                                    label="Realizada"
-                                                    size="small"
-                                                    sx={{
-                                                        backgroundColor: lead.propuestaRealizada ? 'rgba(48, 209, 88, 0.1)' : 'rgba(255, 149, 0, 0.1)',
-                                                        color: lead.propuestaRealizada ? '#30d158' : '#ff9500',
-                                                        fontSize: '0.75rem',
-                                                        height: '24px',
-                                                    }}
-                                                />
-                                                <Chip
-                                                    label="Revisión"
-                                                    size="small"
-                                                    sx={{
-                                                        backgroundColor: lead.propuestaRevision ? 'rgba(48, 209, 88, 0.1)' : 'rgba(255, 149, 0, 0.1)',
-                                                        color: lead.propuestaRevision ? '#30d158' : '#ff9500',
-                                                        fontSize: '0.75rem',
-                                                        height: '24px',
-                                                    }}
-                                                />
-                                                <Chip
-                                                    label="Aceptada"
-                                                    size="small"
-                                                    sx={{
-                                                        backgroundColor: lead.propuestaAceptada ? 'rgba(48, 209, 88, 0.1)' : 'rgba(255, 149, 0, 0.1)',
-                                                        color: lead.propuestaAceptada ? '#30d158' : '#ff9500',
-                                                        fontSize: '0.75rem',
-                                                        height: '24px',
-                                                    }}
-                                                />
-                                            </Box>
+                                            <Chip
+                                                label={lead.propuesta}
+                                                size="small"
+                                                sx={{
+                                                    backgroundColor: getPropuestaColor(lead.propuesta).bg,
+                                                    color: getPropuestaColor(lead.propuesta).text,
+                                                    fontSize: '0.75rem',
+                                                    height: '24px',
+                                                }}
+                                            />
                                         </TableCell>
                                         <TableCell>
                                             <Typography
