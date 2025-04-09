@@ -196,17 +196,20 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
             PaperProps={{
               sx: {
                 mt: 1,
-                backgroundColor: 'var(--surface-primary)',
+                backgroundColor: theme === 'dark' ? '#1c1c1e' : '#ffffff',
                 borderRadius: '12px',
                 border: '1px solid var(--border-color)',
                 boxShadow: 'var(--shadow-lg)',
                 minWidth: 200,
+                '& .MuiMenuItem-root': {
+                  color: 'var(--text-primary)',
+                },
               },
             }}
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
-            <Box sx={{ px: 2, py: 1.5 }}>
+            <Box sx={{ px: 2, py: 1.5, backgroundColor: theme === 'dark' ? '#1c1c1e' : '#ffffff' }}>
               <Typography sx={{ fontSize: '0.875rem', color: 'var(--text-primary)', fontWeight: 500 }}>
                 {user.name}
               </Typography>
@@ -220,6 +223,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
               sx={{
                 py: 1.5,
                 px: 2,
+                backgroundColor: theme === 'dark' ? '#1c1c1e' : '#ffffff',
                 '&:hover': { backgroundColor: 'var(--hover-bg)' },
               }}
             >
@@ -233,6 +237,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
               sx={{
                 py: 1.5,
                 px: 2,
+                backgroundColor: theme === 'dark' ? '#1c1c1e' : '#ffffff',
                 '&:hover': { backgroundColor: 'var(--hover-bg)' },
               }}
             >
@@ -248,6 +253,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
                 py: 1.5,
                 px: 2,
                 color: '#ff2d55',
+                backgroundColor: theme === 'dark' ? '#1c1c1e' : '#ffffff',
                 '&:hover': { backgroundColor: 'rgba(255, 45, 85, 0.1)' },
               }}
             >
