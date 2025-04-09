@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { PMOToolbox } from '../components/toolbox/PMOToolbox';
 import { SSCToolbox } from '../components/toolbox/SSCToolbox';
 import { PresidentToolbox } from '../components/toolbox/PresidentToolbox';
+import { AssistantToolbox } from '../components/toolbox/AssistantToolbox';
 import { Box, Container, Paper, Typography } from '@mui/material';
 import { ComercialTool as ComercialToolbox } from '../components/toolbox/ComercialToolbox';
 
@@ -28,6 +29,10 @@ export const ToolboxPage: React.FC = () => {
 
   if (user.role === 'Director comercial') {
     return <ComercialToolbox />;
+  }
+
+  if (user.role === 'Asistente') {
+    return <AssistantToolbox />;
   }
 
   // For other roles, show empty toolbox
