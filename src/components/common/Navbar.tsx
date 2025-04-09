@@ -25,9 +25,9 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
   const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
 
   const navLinks: NavLink[] = useMemo(() => [
-    { path: '/agreements', label: 'Acuerdos', icon: <FileText className="h-5 w-5 mr-2" /> },
-    { path: '/todos', label: 'To-dos', icon: <CheckSquare className="h-5 w-5 mr-2" /> },
-    { path: '/toolbox', label: 'Toolbox', icon: <Wrench className="h-5 w-5 mr-2" /> }
+    { path: '/agreements', label: 'Acuerdos', icon: <FileText className="h-5 w-5 transition-transform duration-300 group-hover:scale-110" /> },
+    { path: '/todos', label: 'To-dos', icon: <CheckSquare className="h-5 w-5 transition-transform duration-300 group-hover:rotate-12" /> },
+    { path: '/toolbox', label: 'Toolbox', icon: <Wrench className="h-5 w-5 transition-transform duration-300 group-hover:-rotate-45" /> }
   ], []);
 
   const handleMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -79,45 +79,54 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
         {/* Logo */}
         <Link
           to="/agreements"
-          className="flex items-center gap-3 hover:opacity-80 transition-opacity nav-logo"
+          className="nav-logo flex items-center gap-3 transition-all duration-300 hover:opacity-80"
         >
           <Building2
-            className="h-10 w-10"
-            style={{
-              color: theme === 'dark' ? '#ffffff' : '#1d1d1f'
-            }}
+            className="nav-icon-logo h-6 w-6 transition-transform duration-300 hover:scale-110"
+            style={{ color: theme === 'dark' ? '#ffffff' : '#1d1d1f' }}
           />
-          <span className="text-2xl font-semibold tracking-tight" style={{ color: theme === 'dark' ? '#ffffff' : '#1d1d1f' }}>
+          <span
+            className="text-lg font-semibold tracking-tight"
+            style={{ color: theme === 'dark' ? '#ffffff' : '#1d1d1f' }}
+          >
             Plataforma UNO
           </span>
         </Link>
 
         {/* Navigation Links */}
         <Box sx={{ display: 'flex', gap: 1 }}>
-          {navLinks.map((item) => (
+          {navLinks.map((item, index) => (
             <Button
               key={item.path}
               component={Link}
               to={item.path}
-              className="nav-item"
+              className={`nav-item group transition-all duration-300`}
               sx={{
                 color: location.pathname === item.path ? 'var(--text-primary)' : 'var(--text-secondary)',
-                fontSize: '1rem',
+                fontSize: '0.875rem',
                 fontWeight: 500,
                 textTransform: 'none',
-                px: 3,
-                py: 2,
-                borderRadius: '10px',
+                px: 2,
+                py: 1,
+                borderRadius: '8px',
+                transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                animation: `slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) ${index * 0.1}s both`,
                 '&:hover': {
                   backgroundColor: 'var(--hover-bg)',
+                  color: 'var(--text-primary)',
+                  transform: 'translateY(-2px)',
+                  '& .MuiButton-startIcon': {
+                    transform: 'scale(1.1)',
+                  },
                 },
-                transition: 'all 0.2s ease',
-                height: 48,
-                '& svg': {
+                '&:active': {
+                  transform: 'translateY(0)',
+                },
+                '& .MuiButton-startIcon': {
                   transition: 'transform 0.3s ease',
-                },
-                '&:hover svg': {
-                  transform: 'scale(1.1)',
+                  marginRight: '8px',
+                  display: 'flex',
+                  alignItems: 'center',
                 },
               }}
             >
@@ -131,28 +140,37 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           <IconButton
             onClick={toggleTheme}
-            size="large"
+            size="small"
             className="nav-icon-theme"
             sx={{
               color: 'var(--text-secondary)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              animation: 'scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
               '&:hover': {
                 backgroundColor: 'var(--hover-bg)',
+                color: 'var(--text-primary)',
+                transform: 'rotate(180deg)',
               },
-              padding: 2,
             }}
           >
-            {theme === 'dark' ? <Sun size={24} /> : <Moon size={24} />}
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
           </IconButton>
 
           <IconButton
-            size="large"
+            size="small"
             className="nav-icon-bell"
             sx={{
               color: 'var(--text-secondary)',
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              animation: 'scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s',
               '&:hover': {
                 backgroundColor: 'var(--hover-bg)',
+                color: 'var(--text-primary)',
+                transform: 'scale(1.1)',
               },
-              padding: 2,
+              '&:active': {
+                transform: 'scale(0.95)',
+              },
             }}
           >
             <Badge
@@ -161,13 +179,17 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
               sx={{
                 '& .MuiBadge-badge': {
                   backgroundColor: '#ff2d55',
-                  minWidth: '20px',
-                  height: '20px',
+                  minWidth: '16px',
+                  height: '16px',
                   fontSize: '0.75rem',
+                  transition: 'all 0.3s ease',
+                },
+                '&:hover .MuiBadge-badge': {
+                  transform: 'scale(1.1)',
                 },
               }}
             >
-              <Bell size={24} />
+              <Bell size={18} />
             </Badge>
           </IconButton>
 
@@ -179,22 +201,29 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
             className="nav-icon-avatar"
             sx={{
               padding: 0.5,
+              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+              animation: 'scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.2s',
               '&:hover': {
                 backgroundColor: 'var(--hover-bg)',
+                transform: 'scale(1.1)',
+              },
+              '&:active': {
+                transform: 'scale(0.95)',
               },
             }}
           >
             <Avatar
               sx={{
-                width: 44,
-                height: 44,
+                width: 32,
+                height: 32,
                 backgroundColor: 'var(--status-info-bg)',
                 color: 'var(--status-info-text)',
-                fontSize: '1.125rem',
+                fontSize: '0.875rem',
                 fontWeight: 500,
+                transition: 'all 0.3s ease',
               }}
             >
-              {user.name.charAt(0)}
+              {user?.name.charAt(0)}
             </Avatar>
           </IconButton>
 
@@ -206,20 +235,20 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
             PaperProps={{
               sx: {
                 mt: 1,
-                backgroundColor: theme === 'dark' ? '#1c1c1e' : '#ffffff',
+                backgroundColor: 'var(--surface-primary)',
                 borderRadius: '12px',
                 border: '1px solid var(--border-color)',
                 boxShadow: 'var(--shadow-lg)',
                 minWidth: 200,
                 '& .MuiMenuItem-root': {
-                  color: 'var(--text-primary)',
+                  transition: 'all 0.2s ease',
                 },
               },
             }}
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}
             anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
           >
-            <Box sx={{ px: 2, py: 1.5, backgroundColor: theme === 'dark' ? '#1c1c1e' : '#ffffff' }}>
+            <Box sx={{ px: 2, py: 1.5 }}>
               <Typography sx={{ fontSize: '0.875rem', color: 'var(--text-primary)', fontWeight: 500 }}>
                 {user.name}
               </Typography>
@@ -233,8 +262,11 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
               sx={{
                 py: 1.5,
                 px: 2,
-                backgroundColor: theme === 'dark' ? '#1c1c1e' : '#ffffff',
-                '&:hover': { backgroundColor: 'var(--hover-bg)' },
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  backgroundColor: 'var(--hover-bg)',
+                  transform: 'translateX(4px)',
+                },
               }}
             >
               <ListItemIcon>
@@ -247,8 +279,11 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
               sx={{
                 py: 1.5,
                 px: 2,
-                backgroundColor: theme === 'dark' ? '#1c1c1e' : '#ffffff',
-                '&:hover': { backgroundColor: 'var(--hover-bg)' },
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  backgroundColor: 'var(--hover-bg)',
+                  transform: 'translateX(4px)',
+                },
               }}
             >
               <ListItemIcon>
@@ -263,8 +298,11 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
                 py: 1.5,
                 px: 2,
                 color: '#ff2d55',
-                backgroundColor: theme === 'dark' ? '#1c1c1e' : '#ffffff',
-                '&:hover': { backgroundColor: 'rgba(255, 45, 85, 0.1)' },
+                transition: 'all 0.2s ease',
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 45, 85, 0.1)',
+                  transform: 'translateX(4px)',
+                },
               }}
             >
               <ListItemIcon>
