@@ -19,6 +19,31 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   return <>{children}</>;
 };
 
+const AppRoutes: React.FC = () => {
+  const { user } = useAuth();
+
+  return (
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route
+        path="/*"
+        element={
+          <ProtectedRoute>
+            <>
+              <Navbar user={user} />
+              <Routes>
+                <Route path="/agreements" element={<AgreementsPage />} />
+                <Route path="/todos" element={<TodosPage />} />
+                <Route path="/toolbox" element={<ToolboxPage />} />
+              </Routes>
+            </>
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
+  );
+};
+
 function App() {
   return (
     <AuthProvider>
@@ -27,24 +52,7 @@ function App() {
           <LocalizationProvider dateAdapter={AdapterDayjs}>
             <CssBaseline />
             <div className="min-h-screen">
-              <Routes>
-                <Route path="/" element={<Login />} />
-                <Route
-                  path="/*"
-                  element={
-                    <ProtectedRoute>
-                      <>
-                        <Navbar />
-                        <Routes>
-                          <Route path="/agreements" element={<AgreementsPage />} />
-                          <Route path="/todos" element={<TodosPage />} />
-                          <Route path="/toolbox" element={<ToolboxPage />} />
-                        </Routes>
-                      </>
-                    </ProtectedRoute>
-                  }
-                />
-              </Routes>
+              <AppRoutes />
             </div>
           </LocalizationProvider>
         </BrowserRouter>

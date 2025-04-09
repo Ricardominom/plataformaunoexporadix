@@ -1,6 +1,6 @@
 import React, { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Building2 } from 'lucide-react';
+import { Building2, Mail, Lock, Loader2 } from 'lucide-react';
 import { useTheme } from '../hooks/useTheme';
 import { useAuth } from '../context/AuthContext';
 
@@ -15,20 +15,10 @@ export function Login() {
     password: ''
   });
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { theme } = useTheme();
   const { login } = useAuth();
-
-  const styles = {
-    container: theme === 'dark' ? 'bg-gray-900' : 'bg-background',
-    text: theme === 'dark' ? 'text-gray-200' : 'text-gray-800',
-    secondaryText: theme === 'dark' ? 'text-gray-400' : 'text-gray-500',
-    inputBg: 'bg-secondary',
-    inputBorder: theme === 'dark' ? 'border-gray-600' : 'border-gray-300',
-    formBg: theme === 'dark' ? 'bg-gray-800' : 'bg-gray-100',
-    placeholder: theme === 'dark' ? 'placeholder-gray-500' : 'placeholder-gray-400',
-    inputText: 'text-black',
-  };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -45,42 +35,53 @@ export function Login() {
       return;
     }
 
+    setIsLoading(true);
     const success = await login(email, password);
     if (success) {
       navigate('/agreements');
     } else {
       setError('Credenciales incorrectas. Por favor, intenta de nuevo.');
     }
+    setIsLoading(false);
   };
 
   return (
-    <div className={`min-h-screen flex flex-col justify-center py-6 px-4 sm:px-6 lg:px-8 ${styles.container}`}>
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center">
-          <Building2 className={`h-10 w-10 sm:h-12 sm:w-12 ${styles.text}`} aria-hidden="true" />
+    <div className="min-h-screen flex items-center justify-center px-4 sm:px-6 lg:px-8" style={{ backgroundColor: 'var(--app-bg)' }}>
+      <div className="max-w-md w-full space-y-8 relative">
+        {/* Logo and Title */}
+        <div className="text-center">
+          <div className="flex justify-center mb-6">
+            <div className="p-3 bg-blue-600 rounded-2xl shadow-lg">
+              <Building2 className="h-8 w-8 text-white" />
+            </div>
+          </div>
+          <h2 className="text-3xl font-bold tracking-tight" style={{ color: 'var(--text-primary)' }}>
+            Plataforma UNO
+          </h2>
+          <p className="mt-2 text-sm" style={{ color: 'var(--text-secondary)' }}>
+            Gestión de Oficina Presidencial
+          </p>
         </div>
-        <h2 className={`mt-4 sm:mt-6 text-center text-2xl sm:text-3xl font-extrabold ${styles.text}`}>
-          Plataforma UNO
-        </h2>
-        <p className={`mt-1 sm:mt-2 text-center text-sm ${styles.secondaryText}`}>
-          Gestión de Oficina Presidencial
-        </p>
-      </div>
 
-      <div className="mt-6 sm:mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className={`py-6 px-4 sm:py-8 sm:px-6 shadow sm:rounded-lg ${styles.formBg}`}>
-          <form className="space-y-4 sm:space-y-6" onSubmit={handleSubmit} noValidate>
+        {/* Login Form */}
+        <div className="mt-8 p-8 rounded-xl shadow-xl" style={{ backgroundColor: 'var(--surface-primary)', border: '1px solid var(--border-color)' }}>
+          <form className="space-y-6" onSubmit={handleSubmit}>
             {error && (
-              <div className="text-red-500 text-sm text-center" role="alert">
-                {error}
+              <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--status-error-bg)', border: '1px solid var(--status-error-text)' }}>
+                <p className="text-sm" style={{ color: 'var(--status-error-text)' }}>
+                  {error}
+                </p>
               </div>
             )}
 
             <div>
-              <label htmlFor="email" className={`block text-sm font-medium ${styles.text}`}>
+              <label htmlFor="email" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
                 Correo electrónico
               </label>
-              <div className="mt-1">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5" style={{ color: 'var(--text-secondary)' }} />
+                </div>
                 <input
                   id="email"
                   name="email"
@@ -89,16 +90,25 @@ export function Login() {
                   required
                   value={formData.email}
                   onChange={handleInputChange}
-                  className={`appearance-none block w-full px-3 py-2 ${styles.inputBg} ${styles.inputBorder} border rounded-md shadow-sm ${styles.placeholder} focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${styles.inputText}`}
+                  className="block w-full pl-10 pr-3 py-2 rounded-lg text-sm"
+                  style={{
+                    backgroundColor: 'var(--surface-secondary)',
+                    color: 'var(--text-primary)',
+                    border: '1px solid var(--border-color)',
+                  }}
+                  placeholder="user"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className={`block text-sm font-medium ${styles.text}`}>
+              <label htmlFor="password" className="block text-sm font-medium mb-1" style={{ color: 'var(--text-primary)' }}>
                 Contraseña
               </label>
-              <div className="mt-1">
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Lock className="h-5 w-5" style={{ color: 'var(--text-secondary)' }} />
+                </div>
                 <input
                   id="password"
                   name="password"
@@ -107,19 +117,32 @@ export function Login() {
                   required
                   value={formData.password}
                   onChange={handleInputChange}
-                  className={`appearance-none block w-full px-3 py-2 ${styles.inputBg} ${styles.inputBorder} border rounded-md shadow-sm ${styles.placeholder} focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${styles.inputText}`}
+                  className="block w-full pl-10 pr-3 py-2 rounded-lg text-sm"
+                  style={{
+                    backgroundColor: 'var(--surface-secondary)',
+                    color: 'var(--text-primary)',
+                    border: '1px solid var(--border-color)',
+                  }}
+                  placeholder="password"
                 />
               </div>
             </div>
 
-            <div>
-              <button
-                type="submit"
-                className="w-full flex justify-center py-2 px-4 sm:py-3 sm:px-6 border border-transparent rounded-md shadow-sm text-sm sm:text-base font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Iniciar sesión
-              </button>
-            </div>
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full flex justify-center items-center py-2.5 px-4 rounded-lg text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{
+                backgroundColor: '#0071e3',
+                color: '#ffffff',
+              }}
+            >
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                'Iniciar sesión'
+              )}
+            </button>
           </form>
         </div>
       </div>
