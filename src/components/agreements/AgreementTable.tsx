@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import {
     Table,
     TableBody,
@@ -18,6 +18,7 @@ import {
 } from '@mui/material';
 import { FileDown, ChevronRight, Edit2, Trash2 } from 'lucide-react';
 import { Agreement, AgreementStatus } from '../../types/agreement';
+import { statusOptions, getStatusColor } from '../../utils/statusUtils';
 
 interface AgreementTableProps {
     agreements: Agreement[];
@@ -27,26 +28,7 @@ interface AgreementTableProps {
     onResponsibleChange: (id: string, responsible: string) => void;
 }
 
-export const statusOptions: { value: AgreementStatus; label: string }[] = [
-    { value: 'not_started', label: 'Sin comenzar' },
-    { value: 'in_progress', label: 'En proceso' },
-    { value: 'stuck', label: 'Estancado' },
-    { value: 'sj_review', label: 'Para revisión de SJ' },
-    { value: 'completed', label: 'Terminado' },
-];
-
-const getStatusColor = (status: AgreementStatus): { bg: string; text: string } => {
-    const colors = {
-        not_started: { bg: 'rgba(0, 0, 0, 0.04)', text: 'var(--text-primary)' },
-        in_progress: { bg: 'rgba(0, 113, 227, 0.1)', text: '#0071e3' },
-        stuck: { bg: 'rgba(255, 45, 85, 0.1)', text: '#ff2d55' },
-        sj_review: { bg: 'rgba(255, 149, 0, 0.1)', text: '#ff9500' },
-        completed: { bg: 'rgba(48, 209, 88, 0.1)', text: '#30d158' },
-    };
-    return colors[status];
-};
-
-const TableHeader: React.FC = () => {
+const TableHeader = memo(() => {
     const headers = [
         'Elemento',
         'Responsable',
@@ -82,12 +64,14 @@ const TableHeader: React.FC = () => {
             </TableRow>
         </TableHead>
     );
-};
+});
 
-const StatusSelect: React.FC<{
+TableHeader.displayName = 'TableHeader';
+
+const StatusSelect = memo<{
     value: AgreementStatus;
     onChange: (status: AgreementStatus) => void;
-}> = ({ value, onChange }) => (
+}>(({ value, onChange }) => (
     <FormControl
         size="small"
         sx={{
@@ -120,17 +104,18 @@ const StatusSelect: React.FC<{
             ))}
         </Select>
     </FormControl>
-);
+));
 
-const AgreementRow: React.FC<{
+StatusSelect.displayName = 'StatusSelect';
+
+const AgreementRow = memo<{
     agreement: Agreement;
     onStatusChange: (id: string, status: AgreementStatus) => void;
     onEdit: (agreement: Agreement) => void;
     onDelete: (agreement: Agreement) => void;
     onDownload: (agreement: Agreement) => void;
-}> = ({ agreement, onStatusChange, onEdit, onDelete, onDownload }) => (
+}>(({ agreement, onStatusChange, onEdit, onDelete, onDownload }) => (
     <TableRow
-        key={agreement.id}
         sx={{
             '&:hover': {
                 backgroundColor: 'var(--hover-bg)',
@@ -202,6 +187,24 @@ const AgreementRow: React.FC<{
             </Typography>
         </TableCell>
         <TableCell>
+            <Typography
+                variant="body2"
+                sx={{
+                    maxWidth: 200,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                    color: 'var(--text-primary)',
+                    fontSize: '0.875rem',
+                }}
+            >
+                {agreement.sjRequest}
+            </Typography>
+        </TableCell>
+        <TableCell>
+            <StatusSelect value={agreement.sjStatus} onChange={(status) => onStatusChange(agreement.id, status, true)} />
+        </TableCell>
+        <TableCell>
             <Tooltip title="Descargar documento" arrow>
                 <IconButton
                     size="small"
@@ -241,9 +244,11 @@ const AgreementRow: React.FC<{
             </Box>
         </TableCell>
     </TableRow>
-);
+));
 
-export const AgreementTable: React.FC<AgreementTableProps> = ({
+AgreementRow.displayName = 'AgreementRow';
+
+export const AgreementTable = memo<AgreementTableProps>(({
     agreements,
     onStatusChange,
     onEdit,
@@ -282,4 +287,6 @@ export const AgreementTable: React.FC<AgreementTableProps> = ({
             </Table>
         </TableContainer>
     );
-};
+});
+
+AgreementTable.displayName = 'AgreementTable';

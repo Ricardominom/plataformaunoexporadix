@@ -1,0 +1,40 @@
+{
+  "todos": [
+    {
+      "id": "1",
+      "listId": "1",
+      "title": "Preparar presentación trimestral",
+      "completed": false,
+      "createdAt": "2024-02-25T00:00:00.000Z",
+      "dueDate": "2024-02-25T00:00:00.000Z",
+      "userId": "1",
+      "priority": "high",
+      "notes": "Incluir KPIs y proyecciones"
+    },
+    {
+      "id": "2",
+      "listId": "1",
+      "title": "Reunión con equipo de desarrollo",
+      "completed": false,
+      "createdAt": "2024-02-25T00:00:00.000Z",
+      "dueDate": "2024-02-26T00:00:00.000Z",
+      "userId": "1",
+      "priority": "medium",
+      "notes": "Revisar sprint actual"
+    }
+  ],
+  "lists": [
+    {
+      "id": "1",
+      "name": "Trabajo",
+      "color": "#ff9500",
+      "userId": "1"
+    },
+    {
+      "id": "2",
+      "name": "Personal",
+      "color": "#30d158",
+      "userId": "1"
+    }
+  ]
+}

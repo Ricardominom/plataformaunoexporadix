@@ -26,135 +26,18 @@ import {
 import { TodoList, Todo, TodoPriority } from '../types/todo';
 import { NewListDialog } from '../components/todos/NewListDialog';
 import { NewReminderDialog } from '../components/todos/NewReminderDialog';
+import { useNotification } from '../context/NotificationContext';
+import { useTodos } from '../hooks/useTodos';
 import dayjs from 'dayjs';
-
-// Mock data
-const mockLists: TodoList[] = [
-  { id: '1', name: 'Trabajo', color: '#ff9500', userId: '1' },
-  { id: '2', name: 'Personal', color: '#30d158', userId: '1' },
-];
-
-const initialTodos: Todo[] = [
-  // Trabajo tasks
-  {
-    id: '1',
-    listId: '1',
-    title: 'Preparar presentación trimestral',
-    completed: false,
-    createdAt: new Date().toISOString(),
-    dueDate: new Date().toISOString(),
-    userId: '1',
-    priority: 'high',
-    notes: 'Incluir KPIs y proyecciones',
-  },
-  {
-    id: '2',
-    listId: '1',
-    title: 'Reunión con equipo de desarrollo',
-    completed: false,
-    createdAt: new Date().toISOString(),
-    dueDate: dayjs().add(1, 'day').toISOString(),
-    userId: '1',
-    priority: 'medium',
-    notes: 'Revisar sprint actual',
-  },
-  {
-    id: '3',
-    listId: '1',
-    title: 'Revisar propuesta de marketing',
-    completed: true,
-    createdAt: new Date().toISOString(),
-    dueDate: dayjs().subtract(1, 'day').toISOString(),
-    userId: '1',
-    priority: 'low',
-  },
-  {
-    id: '4',
-    listId: '1',
-    title: 'Actualizar documentación del proyecto',
-    completed: false,
-    createdAt: new Date().toISOString(),
-    dueDate: new Date().toISOString(),
-    userId: '1',
-    priority: 'medium',
-  },
-
-  // Personal tasks
-  {
-    id: '5',
-    listId: '2',
-    title: 'Ir al gimnasio',
-    completed: false,
-    createdAt: new Date().toISOString(),
-    dueDate: new Date().toISOString(),
-    userId: '1',
-    priority: 'high',
-    notes: 'Rutina de cardio',
-  },
-  {
-    id: '6',
-    listId: '2',
-    title: 'Comprar víveres',
-    completed: false,
-    createdAt: new Date().toISOString(),
-    dueDate: new Date().toISOString(),
-    userId: '1',
-    priority: 'medium',
-    notes: 'Frutas, verduras y proteínas',
-  },
-  {
-    id: '7',
-    listId: '2',
-    title: 'Llamar al dentista',
-    completed: false,
-    createdAt: new Date().toISOString(),
-    dueDate: dayjs().add(2, 'day').toISOString(),
-    userId: '1',
-    priority: 'low',
-  },
-  {
-    id: '8',
-    listId: '2',
-    title: 'Pagar servicios',
-    completed: true,
-    createdAt: new Date().toISOString(),
-    dueDate: dayjs().subtract(1, 'day').toISOString(),
-    userId: '1',
-    priority: 'high',
-  },
-];
 
 export const TodosPage: React.FC = () => {
   const [selectedFilter, setSelectedFilter] = useState('today');
-  const [selectedList, setSelectedList] = useState('1'); // Default to Trabajo list
+  const [selectedList, setSelectedList] = useState('1');
   const [isNewListOpen, setIsNewListOpen] = useState(false);
   const [isNewReminderOpen, setIsNewReminderOpen] = useState(false);
-  const [todos, setTodos] = useState<Todo[]>(initialTodos);
-  const [lists, setLists] = useState<TodoList[]>(mockLists);
-
-  const getTodosCount = (filter: string): number => {
-    const today = dayjs().startOf('day');
-
-    switch (filter) {
-      case 'today':
-        return todos.filter(todo =>
-          !todo.completed &&
-          dayjs(todo.dueDate).startOf('day').isSame(today)
-        ).length;
-      case 'scheduled':
-        return todos.filter(todo => !todo.completed && todo.dueDate).length;
-      case 'all':
-        return todos.filter(todo => !todo.completed).length;
-      case 'completed':
-        return todos.filter(todo => todo.completed).length;
-      default:
-        return 0;
-    }
-  };
-
-  const getListTodos = (listId: string) => {
-    return todos.filter(todo => todo.listId === listId);
-  };
+  
+  const { todos, lists, loading, getTodosCount, toggleTodo, setTodos, setLists } = useTodos();
+  const { addNotification } = useNotification();
 
   const handleNewList = (list: { name: string; color: string }) => {
     const newList: TodoList = {
@@ -163,9 +46,20 @@ export const TodosPage: React.FC = () => {
       color: list.color,
       userId: '1',
     };
+    
     setLists([...lists, newList]);
     setSelectedList(newList.id);
     setSelectedFilter('all');
+    
+    // Add notification for new list creation
+    addNotification('list', 'created', {
+      id: newList.id,
+      title: newList.name,
+      listId: newList.id,
+      completed: false,
+      createdAt: new Date().toISOString(),
+    });
+    
     setIsNewListOpen(false);
   };
 
@@ -186,22 +80,28 @@ export const TodosPage: React.FC = () => {
       createdAt: new Date().toISOString(),
       userId: '1',
     };
+    
     setTodos([...todos, newTodo]);
+    addNotification('todo', 'created', newTodo);
+    setIsNewReminderOpen(false);
   };
 
   const handleToggleTodo = (todoId: string) => {
-    setTodos(todos.map(todo =>
-      todo.id === todoId
-        ? { ...todo, completed: !todo.completed }
-        : todo
-    ));
+    const todo = todos.find(t => t.id === todoId);
+    if (todo) {
+      const updatedTodo = { ...todo, completed: !todo.completed };
+      setTodos(todos.map(t => t.id === todoId ? updatedTodo : t));
+      
+      if (updatedTodo.completed) {
+        addNotification('todo', 'updated', updatedTodo);
+      }
+    }
   };
 
   const filteredTodos = useMemo(() => {
     let filtered = [...todos];
     const today = dayjs().startOf('day');
 
-    // Apply filter
     switch (selectedFilter) {
       case 'today':
         filtered = filtered.filter(todo =>
@@ -215,48 +115,29 @@ export const TodosPage: React.FC = () => {
         filtered = filtered.filter(todo => todo.completed);
         break;
       case 'all':
-        // No additional filtering needed
+        if (selectedList) {
+          filtered = filtered.filter(todo => todo.listId === selectedList);
+        }
         break;
     }
 
-    // If a specific list is selected and we're not in a special filter
-    if (selectedList && selectedFilter === 'all') {
-      filtered = filtered.filter(todo => todo.listId === selectedList);
-    }
-
-    // Sort todos
     return filtered.sort((a, b) => {
-      // First by completion status
-      if (a.completed !== b.completed) {
-        return a.completed ? 1 : -1;
-      }
-
-      // Then by priority
+      if (a.completed !== b.completed) return a.completed ? 1 : -1;
       const priorityOrder = { high: 0, medium: 1, low: 2, none: 3 };
       if (a.priority !== b.priority) {
         return priorityOrder[a.priority] - priorityOrder[b.priority];
       }
-
-      // Finally by due date
       return dayjs(a.dueDate).isBefore(dayjs(b.dueDate)) ? -1 : 1;
     });
   }, [todos, selectedFilter, selectedList]);
 
-  const getSelectedListName = () => {
-    if (selectedFilter === 'today') return 'Hoy';
-    if (selectedFilter === 'all') return 'Todos';
-    if (selectedFilter === 'scheduled') return 'Programados';
-    if (selectedFilter === 'completed') return 'Terminados';
-    return lists.find(list => list.id === selectedList)?.name || '';
-  };
-
-  const getSelectedListColor = () => {
-    if (selectedFilter === 'today') return '#0071e3';
-    if (selectedFilter === 'all') return '#ff9500';
-    if (selectedFilter === 'scheduled') return '#ff2d55';
-    if (selectedFilter === 'completed') return '#30d158';
-    return lists.find(list => list.id === selectedList)?.color || '#0071e3';
-  };
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Typography>Loading...</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{
@@ -422,7 +303,7 @@ export const TodosPage: React.FC = () => {
                   ml: 1,
                 }}
               >
-                {getListTodos(list.id).length}
+                {todos.filter(todo => todo.listId === list.id).length}
               </Typography>
             </ListItemButton>
           ))}
@@ -483,8 +364,24 @@ export const TodosPage: React.FC = () => {
                 gap: 1,
               }}
             >
-              <Circle size={12} fill={getSelectedListColor()} color={getSelectedListColor()} />
-              {getSelectedListName().toUpperCase()}
+              <Circle
+                size={12}
+                fill={selectedFilter === 'today' ? '#0071e3' :
+                  selectedFilter === 'all' ? '#ff9500' :
+                    selectedFilter === 'scheduled' ? '#ff2d55' :
+                      selectedFilter === 'completed' ? '#30d158' :
+                        lists.find(l => l.id === selectedList)?.color || '#0071e3'}
+                color={selectedFilter === 'today' ? '#0071e3' :
+                  selectedFilter === 'all' ? '#ff9500' :
+                    selectedFilter === 'scheduled' ? '#ff2d55' :
+                      selectedFilter === 'completed' ? '#30d158' :
+                        lists.find(l => l.id === selectedList)?.color || '#0071e3'}
+              />
+              {selectedFilter === 'today' ? 'HOY' :
+                selectedFilter === 'all' ? 'TODOS' :
+                  selectedFilter === 'scheduled' ? 'PROGRAMADOS' :
+                    selectedFilter === 'completed' ? 'TERMINADOS' :
+                      lists.find(l => l.id === selectedList)?.name.toUpperCase() || ''}
             </Typography>
             <Typography
               sx={{

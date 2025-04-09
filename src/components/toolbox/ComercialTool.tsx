@@ -4,6 +4,7 @@ import {
     Container,
     Paper,
     Typography,
+    Grid,
     Table,
     TableBody,
     TableCell,
@@ -16,7 +17,14 @@ import {
     TextField,
     InputAdornment,
 } from '@mui/material';
-import { Plus, Search, Download, MoreVertical } from 'lucide-react';
+import {
+    Plus,
+    Search,
+    Download,
+    MoreVertical,
+} from 'lucide-react';
+import { NewLeadDialog } from './Forms/NewLeadDialog';
+import { useNotification } from '../../context/NotificationContext';
 
 interface ComercialLead {
     id: string;
@@ -113,6 +121,37 @@ const getPropuestaColor = (propuesta: ComercialLead['propuesta']) => {
 export const ComercialTool: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [leads, setLeads] = useState<ComercialLead[]>(mockLeads);
+    const [isNewLeadDialogOpen, setIsNewLeadDialogOpen] = useState(false);
+    const { addNotification } = useNotification();
+
+    const handleNewLead = (lead: Omit<ComercialLead, 'id'>) => {
+        const newLead: ComercialLead = {
+            ...lead,
+            id: (leads.length + 1).toString(),
+            presentacion: false,
+            escenarioAprobado: false,
+            contrato: false,
+        };
+
+        setLeads([newLead, ...leads]);
+        addNotification('list', 'created', {
+            id: newLead.id,
+            title: `Nuevo LEAD: ${newLead.cuenta}`,
+            listId: newLead.id,
+            completed: false,
+            createdAt: new Date().toISOString(),
+        });
+    };
+
+    const filteredLeads = leads.filter(lead => {
+        if (!searchTerm) return true;
+        const searchLower = searchTerm.toLowerCase();
+        return (
+            lead.cuenta.toLowerCase().includes(searchLower) ||
+            lead.enlace.toLowerCase().includes(searchLower) ||
+            lead.comentariosVentas.toLowerCase().includes(searchLower)
+        );
+    });
 
     return (
         <Box sx={{
@@ -144,6 +183,7 @@ export const ComercialTool: React.FC = () => {
                     <Button
                         variant="contained"
                         startIcon={<Plus size={16} />}
+                        onClick={() => setIsNewLeadDialogOpen(true)}
                         sx={{
                             backgroundColor: '#0071e3',
                             color: '#ffffff',
@@ -192,15 +232,9 @@ export const ComercialTool: React.FC = () => {
                             maxWidth: '600px',
                             '& .MuiOutlinedInput-root': {
                                 borderRadius: '8px',
-                                '& fieldset': {
-                                    border: 'none',
-                                },
-                                '&:hover fieldset': {
-                                    border: 'none',
-                                },
-                                '&.Mui-focused fieldset': {
-                                    border: 'none',
-                                },
+                                '& fieldset': { border: 'none' },
+                                '&:hover fieldset': { border: 'none' },
+                                '&.Mui-focused fieldset': { border: 'none' },
                             },
                         }}
                     />
@@ -235,7 +269,7 @@ export const ComercialTool: React.FC = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {leads.map((lead) => (
+                                {filteredLeads.map((lead) => (
                                     <TableRow key={lead.id}>
                                         <TableCell>
                                             <Typography
@@ -376,6 +410,12 @@ export const ComercialTool: React.FC = () => {
                         </Table>
                     </TableContainer>
                 </Paper>
+
+                <NewLeadDialog
+                    open={isNewLeadDialogOpen}
+                    onClose={() => setIsNewLeadDialogOpen(false)}
+                    onSubmit={handleNewLead}
+                />
             </Container>
         </Box>
     );

@@ -23,118 +23,33 @@ import { NewListDialog } from '../components/todos/NewListDialog';
 import { Agreement, AgreementStatus } from '../types/agreement';
 import { Dayjs } from 'dayjs';
 import { useAuth } from '../context/AuthContext';
-
-const mockAgreements: Agreement[] = [
-  {
-    id: '1',
-    listId: '1',
-    element: 'Contrato de Servicios Cloud',
-    responsible: 'Director comercial',
-    status: 'in_progress',
-    requestDate: '2024-02-15',
-    deliveryDate: '2024-02-28',
-    description: 'Revisión y actualización del contrato de servicios cloud con el proveedor principal',
-    sjRequest: 'Revisar cláusulas de seguridad y privacidad',
-    sjStatus: 'sj_review',
-  },
-  {
-    id: '2',
-    listId: '1',
-    element: 'Acuerdo de Confidencialidad',
-    responsible: 'PMO',
-    status: 'completed',
-    requestDate: '2024-02-10',
-    deliveryDate: '2024-02-20',
-    description: 'Preparación de NDA para nuevo proyecto de innovación',
-    sjRequest: 'Verificar alcance y duración',
-    sjStatus: 'completed',
-  },
-  {
-    id: '3',
-    listId: '1',
-    element: 'Términos y Condiciones App',
-    responsible: 'Directora SSC',
-    status: 'stuck',
-    requestDate: '2024-02-18',
-    deliveryDate: '2024-03-01',
-    description: 'Actualización de T&C para la nueva versión de la aplicación móvil',
-    sjRequest: 'Incluir nuevas funcionalidades',
-    sjStatus: 'not_started',
-  },
-  {
-    id: '4',
-    listId: '2',
-    element: 'Auditoría GDPR',
-    responsible: 'Director General de Espora',
-    status: 'in_progress',
-    requestDate: '2024-02-12',
-    deliveryDate: '2024-03-15',
-    description: 'Revisión de cumplimiento con regulaciones GDPR',
-    sjRequest: 'Evaluar procesos de datos personales',
-    sjStatus: 'in_progress',
-  },
-  {
-    id: '5',
-    listId: '2',
-    element: 'Política de Seguridad',
-    responsible: 'Research and Development',
-    status: 'sj_review',
-    requestDate: '2024-02-14',
-    deliveryDate: '2024-02-25',
-    description: 'Actualización de políticas de seguridad corporativa',
-    sjRequest: 'Revisar medidas de ciberseguridad',
-    sjStatus: 'in_progress',
-  },
-  {
-    id: '6',
-    listId: '2',
-    element: 'Certificación ISO 27001',
-    responsible: 'Presidente',
-    status: 'not_started',
-    requestDate: '2024-02-20',
-    deliveryDate: '2024-04-01',
-    description: 'Preparación para certificación de seguridad ISO',
-    sjRequest: 'Documentar procesos de seguridad',
-    sjStatus: 'not_started',
-  },
-];
-
-interface List {
-  id: string;
-  name: string;
-  color: string;
-}
-
-const initialLists: List[] = [
-  { id: '1', name: 'Contratos', color: '#ff9500' },
-  { id: '2', name: 'Compliance', color: '#5856d6' },
-];
+import { useNotification } from '../context/NotificationContext';
+import { useAgreements } from '../hooks/useAgreements';
 
 export const AgreementsPage: React.FC = () => {
   const { user, hasShownWelcome, setHasShownWelcome } = useAuth();
-  const [agreements, setAgreements] = useState<Agreement[]>(mockAgreements);
-  const [lists, setLists] = useState<List[]>(initialLists);
+  const { addNotification } = useNotification();
+  const { agreements, lists, loading, updateAgreementStatus, setAgreements, setLists } = useAgreements();
+  
   const [currentTab, setCurrentTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [isNewAgreementOpen, setIsNewAgreementOpen] = useState(false);
   const [isNewListOpen, setIsNewListOpen] = useState(false);
   const [editingAgreement, setEditingAgreement] = useState<Agreement | null>(null);
   const [deletingAgreement, setDeletingAgreement] = useState<Agreement | null>(null);
-  const [deletingList, setDeletingList] = useState<List | null>(null);
+  const [deletingList, setDeletingList] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     if (!hasShownWelcome) {
       const timer = setTimeout(() => {
         setHasShownWelcome(true);
       }, 5000);
-
       return () => clearTimeout(timer);
     }
   }, [hasShownWelcome, setHasShownWelcome]);
 
   const filteredAgreements = useMemo(() => {
     if (!searchTerm) return agreements;
-
     const searchLower = searchTerm.toLowerCase();
     return agreements.filter((agreement) => {
       return (
@@ -147,20 +62,11 @@ export const AgreementsPage: React.FC = () => {
   }, [searchTerm, agreements]);
 
   const handleStatusChange = (id: string, status: AgreementStatus, isSJStatus = false) => {
-    setAgreements(agreements.map(agreement =>
-      agreement.id === id 
-        ? { 
-            ...agreement, 
-            [isSJStatus ? 'sjStatus' : 'status']: status 
-          } 
-        : agreement
-    ));
-  };
-
-  const handleResponsibleChange = (id: string, responsible: string) => {
-    setAgreements(agreements.map(agreement =>
-      agreement.id === id ? { ...agreement, responsible } : agreement
-    ));
+    updateAgreementStatus(id, status, isSJStatus);
+    const agreement = agreements.find(a => a.id === id);
+    if (agreement) {
+      addNotification('agreement', 'updated', agreement);
+    }
   };
 
   const handleEdit = (agreement: Agreement) => {
@@ -171,6 +77,7 @@ export const AgreementsPage: React.FC = () => {
     setAgreements(agreements.map(agreement =>
       agreement.id === updatedAgreement.id ? updatedAgreement : agreement
     ));
+    addNotification('agreement', 'updated', updatedAgreement);
     setEditingAgreement(null);
   };
 
@@ -180,6 +87,7 @@ export const AgreementsPage: React.FC = () => {
 
   const confirmDelete = () => {
     if (deletingAgreement) {
+      addNotification('agreement', 'deleted', deletingAgreement);
       setAgreements(agreements.filter(a => a.id !== deletingAgreement.id));
       setDeletingAgreement(null);
     }
@@ -198,7 +106,6 @@ export const AgreementsPage: React.FC = () => {
     deliverableName?: string;
   }) => {
     const newId = (Math.max(...agreements.map(a => parseInt(a.id))) + 1).toString();
-
     const newAgreement: Agreement = {
       ...agreement,
       id: newId,
@@ -208,20 +115,33 @@ export const AgreementsPage: React.FC = () => {
     };
 
     setAgreements([newAgreement, ...agreements]);
+    addNotification('agreement', 'created', newAgreement);
     setIsNewAgreementOpen(false);
   };
 
   const handleNewList = (list: { name: string; color: string }) => {
-    const newList: List = {
+    const newList = {
       id: (lists.length + 1).toString(),
       name: list.name,
       color: list.color,
     };
+    
     setLists([...lists, newList]);
     setCurrentTab(lists.length);
+    
+    // Add notification for new list creation
+    addNotification('list', 'created', {
+      id: newList.id,
+      title: newList.name,
+      listId: newList.id,
+      completed: false,
+      createdAt: new Date().toISOString(),
+    });
+    
+    setIsNewListOpen(false);
   };
 
-  const handleDeleteList = (list: List) => {
+  const handleDeleteList = (list: { id: string; name: string }) => {
     setDeletingList(list);
   };
 
@@ -239,9 +159,16 @@ export const AgreementsPage: React.FC = () => {
   const currentTabAgreements = useMemo(() => {
     const currentList = lists[currentTab];
     if (!currentList) return [];
-    
     return filteredAgreements.filter(agreement => agreement.listId === currentList.id);
   }, [currentTab, filteredAgreements, lists]);
+
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Typography>Loading...</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{
@@ -261,43 +188,26 @@ export const AgreementsPage: React.FC = () => {
               backgroundColor: 'var(--status-info-bg)',
               border: '1px solid var(--status-info-text)',
               animation: 'fadeIn 0.5s ease-out',
-              position: 'relative',
-              overflow: 'hidden',
             }}
           >
-            <Box sx={{ position: 'relative', zIndex: 1 }}>
-              <Typography
-                variant="h5"
-                sx={{
-                  color: 'var(--status-info-text)',
-                  fontWeight: 600,
-                  mb: 1,
-                  animation: 'slideIn 0.5s ease-out',
-                }}
-              >
-                ¡Bienvenido, {user?.name}!
-              </Typography>
-              <Typography
-                sx={{
-                  color: 'var(--status-info-text)',
-                  opacity: 0.9,
-                  animation: 'fadeIn 0.5s ease-out 0.2s both',
-                }}
-              >
-                Nos alegra tenerte de vuelta. Aquí tienes un resumen de tus acuerdos y actividades pendientes.
-              </Typography>
-            </Box>
-            <Box
+            <Typography
+              variant="h5"
               sx={{
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                width: '30%',
-                height: '100%',
-                background: 'linear-gradient(45deg, transparent, var(--status-info-bg))',
-                animation: 'float 3s ease-in-out infinite',
+                color: 'var(--status-info-text)',
+                fontWeight: 600,
+                mb: 1,
               }}
-            />
+            >
+              ¡Bienvenido, {user?.name}!
+            </Typography>
+            <Typography
+              sx={{
+                color: 'var(--status-info-text)',
+                opacity: 0.9,
+              }}
+            >
+              Aquí tienes un resumen de tus acuerdos y actividades pendientes.
+            </Typography>
           </Paper>
         )}
 
@@ -455,7 +365,7 @@ export const AgreementsPage: React.FC = () => {
           onStatusChange={handleStatusChange}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          onResponsibleChange={handleResponsibleChange}
+          onResponsibleChange={() => {}}
         />
 
         <NewAgreementDialog
@@ -502,13 +412,6 @@ export const AgreementsPage: React.FC = () => {
           <DialogContent sx={{ p: 2, mt: 1 }}>
             <Typography sx={{ color: 'var(--text-primary)' }}>
               ¿Estás seguro de que deseas eliminar este acuerdo?
-            </Typography>
-            <Typography sx={{
-              color: 'var(--text-secondary)',
-              fontSize: '0.875rem',
-              mt: 1,
-            }}>
-              Esta acción no se puede deshacer.
             </Typography>
           </DialogContent>
           <DialogActions sx={{
@@ -586,7 +489,7 @@ export const AgreementsPage: React.FC = () => {
               fontSize: '0.875rem',
               mt: 1,
             }}>
-              Se eliminarán todos los acuerdos asociados a esta lista. Esta acción no se puede deshacer.
+              Se eliminarán todos los acuerdos asociados a esta lista.
             </Typography>
           </DialogContent>
           <DialogActions sx={{

@@ -5,8 +5,8 @@ import { SSCToolbox } from '../components/toolbox/SSCToolbox';
 import { PresidentToolbox } from '../components/toolbox/PresidentToolbox';
 import { EsporaToolbox } from '../components/toolbox/EsporaToolbox';
 import { MapaToolbox } from '../components/toolbox/MapaToolbox';
-import { ComercialTool as ComercialToolbox } from '../components/toolbox/ComercialToolbox';
-import { AssistantToolbox } from '../components/toolbox/AssistantToolbox';
+import { ComercialTool } from '../components/toolbox/ComercialTool';
+import { AssistantToolbox } from '../components/toolbox/AssitantToolbox';
 import { InterlogisToolbox } from '../components/toolbox/InterlogisToolbox';
 import { AdminInterlogisToolbox } from '../components/toolbox/AdminInterlogisToolbox';
 import { ResearchDevToolbox } from '../components/toolbox/ResearchDevToolbox';
@@ -33,7 +33,7 @@ export const ToolboxPage: React.FC = () => {
   }
 
   if (user.role === 'Director comercial') {
-    return <ComercialToolbox />;
+    return <ComercialTool />;
   }
 
   if (user.role === 'Director General de Espora') {

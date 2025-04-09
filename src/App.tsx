@@ -8,6 +8,7 @@ import { TodosPage } from './pages/TodosPage';
 import { ToolboxPage } from './pages/ToolboxPage';
 import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
+import { NotificationProvider } from './context/NotificationContext';
 import { Login } from './pages/LoginPage';
 import { useAuth } from './context/AuthContext';
 
@@ -48,14 +49,16 @@ function App() {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <BrowserRouter>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <CssBaseline />
-            <div className="min-h-screen">
-              <AppRoutes />
-            </div>
-          </LocalizationProvider>
-        </BrowserRouter>
+        <NotificationProvider>
+          <BrowserRouter>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+              <CssBaseline />
+              <div className="min-h-screen">
+                <AppRoutes />
+              </div>
+            </LocalizationProvider>
+          </BrowserRouter>
+        </NotificationProvider>
       </ThemeProvider>
     </AuthProvider>
   );

@@ -1,0 +1,23 @@
+{
+  "todos": [
+    {
+      "id": "1",
+      "listId": "1",
+      "title": "Preparar presentación trimestral",
+      "completed": false,
+      "createdAt": "2024-02-25T00:00:00.000Z",
+      "dueDate": "2024-02-25T00:00:00.000Z",
+      "userId": "1",
+      "priority": "high",
+      "notes": "Incluir KPIs y proyecciones"
+    }
+  ],
+  "lists": [
+    {
+      "id": "1",
+      "name": "Trabajo",
+      "color": "#ff9500",
+      "userId": "1"
+    }
+  ]
+}

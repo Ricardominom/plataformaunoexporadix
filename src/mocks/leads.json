@@ -1,0 +1,38 @@
+{
+  "leads": [
+    {
+      "id": "1",
+      "cuenta": "Empresa A",
+      "estatus": "Activo",
+      "comentariosVentas": "Cliente potencial interesado en servicios completos",
+      "enlace": "Juan Pérez",
+      "contacto": "contacto@empresaa.com",
+      "cita": "2024-03-01",
+      "presentacion": true,
+      "propuesta": "En revisión",
+      "escenarioAprobado": false,
+      "monto": 50000,
+      "pagos": "Mensual",
+      "contrato": false,
+      "arranque": "2024-04-01",
+      "comentarios": "En proceso de negociación final"
+    },
+    {
+      "id": "2",
+      "cuenta": "Empresa B",
+      "estatus": "En pausa",
+      "comentariosVentas": "Esperando aprobación de presupuesto",
+      "enlace": "María González",
+      "contacto": "contacto@empresab.com",
+      "cita": "2024-02-28",
+      "presentacion": true,
+      "propuesta": "Realizada",
+      "escenarioAprobado": false,
+      "monto": 75000,
+      "pagos": "Trimestral",
+      "contrato": false,
+      "arranque": "2024-05-01",
+      "comentarios": "Cliente solicita revisión de términos"
+    }
+  ]
+}

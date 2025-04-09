@@ -1,0 +1,23 @@
+{
+  "agreements": [
+    {
+      "id": "1",
+      "listId": "1",
+      "element": "Contrato de Servicios Cloud",
+      "responsible": "Director comercial",
+      "status": "in_progress",
+      "requestDate": "2024-02-15",
+      "deliveryDate": "2024-02-28",
+      "description": "Revisión y actualización del contrato de servicios cloud con el proveedor principal",
+      "sjRequest": "Revisar cláusulas de seguridad y privacidad",
+      "sjStatus": "sj_review"
+    }
+  ],
+  "lists": [
+    {
+      "id": "1",
+      "name": "Contratos",
+      "color": "#ff9500"
+    }
+  ]
+}

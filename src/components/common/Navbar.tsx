@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { LogoutDialog } from './LogoutDialog';
-
+import { NotificationButton } from './NotificationButton';
 
 interface NavbarProps {
   user?: { name: string; role: string };
@@ -163,42 +163,7 @@ export const Navbar: React.FC<NavbarProps> = ({ user }) => {
             {theme === 'dark' ? <Sun size={22} /> : <Moon size={22} />}
           </IconButton>
 
-          <IconButton
-            size="medium"
-            className="nav-icon-bell"
-            sx={{
-              color: 'var(--text-secondary)',
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              animation: 'scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s',
-              '&:hover': {
-                backgroundColor: 'var(--hover-bg)',
-                color: 'var(--text-primary)',
-                transform: 'scale(1.1)',
-              },
-              '&:active': {
-                transform: 'scale(0.95)',
-              },
-            }}
-          >
-            <Badge
-              badgeContent={4}
-              color="error"
-              sx={{
-                '& .MuiBadge-badge': {
-                  backgroundColor: '#ff2d55',
-                  minWidth: '18px',
-                  height: '18px',
-                  fontSize: '0.75rem',
-                  transition: 'all 0.3s ease',
-                },
-                '&:hover .MuiBadge-badge': {
-                  transform: 'scale(1.1)',
-                },
-              }}
-            >
-              <Bell size={22} />
-            </Badge>
-          </IconButton>
+          <NotificationButton />
 
           <Divider orientation="vertical" flexItem sx={{ borderColor: 'var(--border-color)', height: 32 }} />
 

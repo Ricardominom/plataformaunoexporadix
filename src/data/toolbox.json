@@ -1,0 +1,26 @@
+{
+  "financialMetrics": {
+    "revenue": {
+      "total": 2500000,
+      "previousTotal": 2000000,
+      "growth": 25,
+      "breakdown": [
+        {
+          "label": "Ventas Directas",
+          "value": 40,
+          "growth": 15
+        }
+      ]
+    }
+  },
+  "actionPlans": [
+    {
+      "id": "1",
+      "name": "Análisis de madurez",
+      "progress": 100,
+      "status": "completed",
+      "dueDate": "2024-03-01",
+      "owner": "Ana Martínez"
+    }
+  ]
+}
