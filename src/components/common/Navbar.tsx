@@ -6,6 +6,7 @@ import { useTheme } from '../../context/ThemeContext';
 import { useAuth } from '../../context/AuthContext';
 import { LogoutDialog } from './LogoutDialog';
 
+
 interface NavbarProps {
   user?: { name: string; role: string };
 }

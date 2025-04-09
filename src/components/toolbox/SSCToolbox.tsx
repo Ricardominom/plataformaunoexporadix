@@ -456,13 +456,31 @@ export const SSCToolbox: React.FC = () => {
     const [actionPlans, setActionPlans] = useState(mockActionPlans);
     const [legalCases, setLegalCases] = useState<LegalCase[]>(mockLegalCases);
     const [balanceItems, setBalanceItems] = useState<BalanceItem[]>(mockBalanceItems);
+    const [moneyApprovals, setMoneyApprovals] = useState<MoneyApproval[]>(mockMoneyApprovals);
 
     const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
         setCurrentTab(newValue);
     };
 
-    const handleNewApproval = (approval: any) => {
-        console.log('New approval:', approval);
+    const handleNewApproval = (approval: {
+        urgent: boolean;
+        paymentDate: string;
+        category: string;
+        subcategory: string;
+        concept: string;
+        sscComments: string;
+        amount: number;
+        transferToEspora: number;
+        toDispatchForTransfer: number;
+        transferToInterlogis: number;
+        transferToDemotactica: number;
+        transferToDotcom: number;
+    }) => {
+        const newApproval: MoneyApproval = {
+            id: (moneyApprovals.length + 1).toString(),
+            ...approval,
+        };
+        setMoneyApprovals([...moneyApprovals, newApproval]);
         setIsNewApprovalOpen(false);
     };
 
@@ -561,83 +579,56 @@ export const SSCToolbox: React.FC = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {mockMoneyApprovals.map((approval) => (
-                            <TableRow key={approval.id}>
-                                <TableCell>
-                                    <Chip
-                                        label={approval.urgent ? 'Urgente' : 'Normal'}
-                                        size="small"
-                                        sx={{
-                                            backgroundColor: approval.urgent ? 'rgba(255, 45, 85, 0.1)' : 'rgba(0, 113, 227, 0.1)',
-                                            color: approval.urgent ? '#ff2d55' : '#0071e3',
-                                        }}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    {new Date(approval.paymentDate).toLocaleDateString()}
-                                </TableCell>
-                                <TableCell>{approval.category}</TableCell>
-                                <TableCell>{approval.subcategory}</TableCell>
-                                <TableCell>{approval.concept}</TableCell>
-                                <TableCell>{approval.sscComments}</TableCell>
-                                <TableCell>
-                                    <Typography
-                                        sx={{
-                                            color: 'var(--text-primary)',
-                                            fontWeight: 500,
-                                        }}
-                                    >
-                                        ${approval.amount.toLocaleString()}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography
-                                        sx={{
-                                            color: 'var(--text-primary)',
-                                        }}
-                                    >
-                                        ${approval.transferToEspora.toLocaleString()}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                   <Typography
-                                        sx={{
-                                            color: 'var(--text-primary)',
-                                        }}
-                                    >
-                                        ${approval.toDispatchForTransfer.toLocaleString()}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography
-                                        sx={{
-                                            color: 'var(--text-primary)',
-                                        }}
-                                    >
-                                        ${approval.transferToInterlogis.toLocaleString()}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography
-                                        sx={{
-                                            color: 'var(--text-primary)',
-                                        }}
-                                    >
-                                        ${approval.transferToDemotactica.toLocaleString()}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography
-                                        sx={{
-                                            color: 'var(--text-primary)',
-                                        }}
-                                    >
-                                        ${approval.transferToDotcom.toLocaleString()}
-                                    </Typography>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
+    {moneyApprovals.map((approval) => (
+        <TableRow key={approval.id}>
+            <TableCell>
+                <Chip
+                    label={approval.urgent ? 'Urgente' : 'Normal'}
+                    size="small"
+                    sx={{
+                        backgroundColor: approval.urgent ? 'rgba(255, 45, 85, 0.1)' : 'rgba(0, 113, 227, 0.1)',
+                        color: approval.urgent ? '#ff2d55' : '#0071e3',
+                    }}
+                />
+            </TableCell>
+            <TableCell>{new Date(approval.paymentDate).toLocaleDateString()}</TableCell>
+            <TableCell>{approval.category}</TableCell>
+            <TableCell>{approval.subcategory}</TableCell>
+            <TableCell>{approval.concept}</TableCell>
+            <TableCell>{approval.sscComments}</TableCell>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)', fontWeight: 500 }}>
+                    ${approval.amount.toLocaleString()}
+                </Typography>
+            </TableCell>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)' }}>
+                    ${approval.transferToEspora.toLocaleString()}
+                </Typography>
+            </TableCell>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)' }}>
+                    ${approval.toDispatchForTransfer.toLocaleString()}
+                </Typography>
+            </TableCell>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)' }}>
+                    ${approval.transferToInterlogis.toLocaleString()}
+                </Typography>
+            </TableCell>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)' }}>
+                    ${approval.transferToDemotactica.toLocaleString()}
+                </Typography>
+            </TableCell>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)' }}>
+                    ${approval.transferToDotcom.toLocaleString()}
+                </Typography>
+            </TableCell>
+        </TableRow>
+    ))}
+</TableBody>        
                 </Table>
             </TableContainer>
         </>
@@ -682,61 +673,61 @@ export const SSCToolbox: React.FC = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {legalCases.map((caso) => (
-                            <TableRow key={caso.id}>
-                                <TableCell>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <Box
-                                            sx={{
-                                                width: 8,
-                                                height: 8,
-                                                borderRadius: '50%',
-                                                backgroundColor: getApartadoColor(caso.apartado),
-                                            }}
-                                        />
-                                        <Typography sx={{ color: 'var(--text-primary)' }}>
-                                            {caso.apartado}
-                                        </Typography>
-                                    </Box>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography sx={{ color: 'var(--text-primary)' }}>
-                                        {caso.tema || '-'}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Chip
-                                        label={caso.proyecto}
-                                        size="small"
-                                        sx={{
-                                            backgroundColor: getStatusColor(caso.proyecto).bg,
-                                            color: getStatusColor(caso.proyecto).text,
-                                        }}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <Chip
-                                        label={caso.instancias}
-                                        size="small"
-                                        sx={{
-                                            backgroundColor: getStatusColor(caso.instancias).bg,
-                                            color: getStatusColor(caso.instancias).text,
-                                        }}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <Chip
-                                        label={caso.concluido}
-                                        size="small"
-                                        sx={{
-                                            backgroundColor: getStatusColor(caso.concluido).bg,
-                                            color: getStatusColor(caso.concluido).text,
-                                        }}
-                                    />
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
+    {legalCases.map((caso) => (
+        <TableRow key={caso.id}>
+            <TableCell>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box
+                        sx={{
+                            width: 8,
+                            height: 8,
+                            borderRadius: '50%',
+                            backgroundColor: getApartadoColor(caso.apartado),
+                        }}
+                    />
+                    <Typography sx={{ color: 'var(--text-primary)' }}>
+                        {caso.apartado}
+                    </Typography>
+                </Box>
+            </TableCell>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)' }}>
+                    {caso.tema || '-'}
+                </Typography>
+            </TableCell>
+            <TableCell>
+                <Chip
+                    label={caso.proyecto}
+                    size="small"
+                    sx={{
+                        backgroundColor: getStatusColor(caso.proyecto).bg,
+                        color: getStatusColor(caso.proyecto).text,
+                    }}
+                />
+            </TableCell>
+            <TableCell>
+                <Chip
+                    label={caso.instancias}
+                    size="small"
+                    sx={{
+                        backgroundColor: getStatusColor(caso.instancias).bg,
+                        color: getStatusColor(caso.instancias).text,
+                    }}
+                />
+            </TableCell>
+            <TableCell>
+                <Chip
+                    label={caso.concluido}
+                    size="small"
+                    sx={{
+                        backgroundColor: getStatusColor(caso.concluido).bg,
+                        color: getStatusColor(caso.concluido).text,
+                    }}
+                />
+            </TableCell>
+        </TableRow>
+    ))}
+</TableBody>
                 </Table>
             </TableContainer>
         </>
@@ -780,43 +771,31 @@ export const SSCToolbox: React.FC = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {mockActionPlans.map((plan) => (
-                            <TableRow key={plan.id}>
-                                <TableCell>{plan.indicator}</TableCell>
-                                <TableCell align="right">{plan.goal}</TableCell>
-                                <TableCell align="right">{plan.achieved}</TableCell>
-                                <TableCell>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, justifyContent: 'flex-end' }}>
-                                        <LinearProgress
-                                            variant="determinate"
-                                            value={plan.progress}
-                                            sx={{
-                                                width: 100,
-                                                height: 6,
-                                                borderRadius: 3,
-                                                backgroundColor: 'var(--surface-secondary)',
-                                                '& .MuiLinearProgress-bar': {
-                                                    backgroundColor: plan.progress === 0 ? '#ff2d55' :
-                                                                   plan.progress === 100 ? '#30d158' :
-                                                                   '#0071e3',
-                                                    borderRadius: 3,
-                                                },
-                                            }}
-                                        />
-                                        <Typography
-                                            sx={{
-                                                color: 'var(--text-primary)',
-                                                fontSize: '0.875rem',
-                                                minWidth: '40px',
-                                            }}
-                                        >
-                                            {plan.progress}%
-                                        </Typography>
-                                    </Box>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
+    {actionPlans.map((plan) => (
+        <TableRow key={plan.id}>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)' }}>
+                    {plan.indicator}
+                </Typography>
+            </TableCell>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)' }}>
+                    {plan.goal}
+                </Typography>
+            </TableCell>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)' }}>
+                    {plan.achieved}
+                </Typography>
+            </TableCell>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)' }}>
+                    {plan.progress}%
+                </Typography>
+            </TableCell>
+        </TableRow>
+    ))}
+</TableBody>
                 </Table>
             </TableContainer>
         </>
@@ -864,45 +843,46 @@ export const SSCToolbox: React.FC = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {mockBalanceItems.map((item) => (
-                            <TableRow 
-                                key={item.id}
-                                sx={{
-                                    backgroundColor: ['Sub Total Grupo Espora', 'Sub Total Disponible Espora', 'Gran Total'].includes(item.item) 
-                                        ? 'var(--surface-secondary)'
-                                        : 'inherit'
-                                }}
-                            >
-                                <TableCell>{item.item}</TableCell>
-                                <TableCell align="right">
-                                    <Typography sx={{ color: 'var(--text-primary)' }}>
-                                        ${item.montoBancarizado.toLocaleString()}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell align="right">
-                                    <Typography sx={{ color: 'var(--text-primary)' }}>
-                                        ${item.montoDespacho.toLocaleString()}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell align="right">
-                                    <Typography sx={{ color: 'var(--text-primary)' }}>
-                                        ${item.efectivo.toLocaleString()}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell align="right">
-                                    <Typography sx={{ color: 'var(--text-primary)' }}>
-                                        ${item.credito.toLocaleString()}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell align="right">
-                                    <Typography sx={{ color: 'var(--text-primary)' }}>
-                                        ${item.deuda.toLocaleString()}
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>{item.observaciones}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
+    {balanceItems.map((account) => (
+        <TableRow key={account.id}>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)' }}>
+                    {account.item}
+                </Typography>
+            </TableCell>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)' }}>
+                    ${account.montoBancarizado.toLocaleString()}
+                </Typography>
+            </TableCell>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)' }}>
+                    ${account.montoDespacho.toLocaleString()}
+                </Typography>
+            </TableCell>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)' }}>
+                    ${account.efectivo.toLocaleString()}
+                </Typography>
+            </TableCell>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)' }}>
+                    ${account.credito.toLocaleString()}
+                </Typography>
+            </TableCell>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)' }}>
+                    ${account.deuda.toLocaleString()}
+                </Typography>
+            </TableCell>
+            <TableCell>
+                <Typography sx={{ color: 'var(--text-primary)' }}>
+                    {account.observaciones || '-'}
+                </Typography>
+            </TableCell>
+        </TableRow>
+    ))}
+</TableBody>
                 </Table>
             </TableContainer>
         </>

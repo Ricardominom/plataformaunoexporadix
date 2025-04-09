@@ -6,46 +6,20 @@ import {
     DialogActions,
     Button,
     TextField,
-    Box,
+    FormControlLabel,
+    Switch,
+    Grid,
     Typography,
     IconButton,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    Switch,
-    FormControlLabel,
-    Divider,
+    Box,
 } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers';
-import { X, AlertCircle } from 'lucide-react';
-import dayjs from 'dayjs';
+import { X } from 'lucide-react';
 
 interface NewMoneyApprovalDialogProps {
     open: boolean;
     onClose: () => void;
-    onSubmit: (approval: any) => void;
+    onSubmit: (data: any) => void;
 }
-
-const categories = [
-    'Operaciones',
-    'Recursos Humanos',
-    'Marketing',
-    'Tecnología',
-    'Finanzas',
-    'Legal',
-    'Administración',
-];
-
-const subcategories = {
-    'Operaciones': ['Equipamiento', 'Mantenimiento', 'Suministros', 'Logística'],
-    'Recursos Humanos': ['Capacitación', 'Reclutamiento', 'Beneficios', 'Eventos'],
-    'Marketing': ['Publicidad', 'Eventos', 'Material promocional', 'Investigación'],
-    'Tecnología': ['Software', 'Hardware', 'Servicios Cloud', 'Soporte'],
-    'Finanzas': ['Impuestos', 'Seguros', 'Auditoría', 'Consultoría'],
-    'Legal': ['Contratos', 'Licencias', 'Consultoría', 'Trámites'],
-    'Administración': ['Oficina', 'Servicios', 'Viáticos', 'Otros'],
-};
 
 export const NewMoneyApprovalDialog: React.FC<NewMoneyApprovalDialogProps> = ({
     open,
@@ -54,7 +28,7 @@ export const NewMoneyApprovalDialog: React.FC<NewMoneyApprovalDialogProps> = ({
 }) => {
     const [formData, setFormData] = useState({
         urgent: false,
-        paymentDate: dayjs(),
+        paymentDate: '',
         category: '',
         subcategory: '',
         concept: '',
@@ -69,23 +43,10 @@ export const NewMoneyApprovalDialog: React.FC<NewMoneyApprovalDialogProps> = ({
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit({
-            ...formData,
-            paymentDate: formData.paymentDate.format('YYYY-MM-DD'),
-            amount: parseFloat(formData.amount) || 0,
-            transferToEspora: parseFloat(formData.transferToEspora) || 0,
-            toDispatchForTransfer: parseFloat(formData.toDispatchForTransfer) || 0,
-            transferToInterlogis: parseFloat(formData.transferToInterlogis) || 0,
-            transferToDemotactica: parseFloat(formData.transferToDemotactica) || 0,
-            transferToDotcom: parseFloat(formData.transferToDotcom) || 0,
-        });
-        onClose();
-    };
-
-    const handleClose = () => {
+        onSubmit(formData);
         setFormData({
             urgent: false,
-            paymentDate: dayjs(),
+            paymentDate: '',
             category: '',
             subcategory: '',
             concept: '',
@@ -100,10 +61,18 @@ export const NewMoneyApprovalDialog: React.FC<NewMoneyApprovalDialogProps> = ({
         onClose();
     };
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value,
+        }));
+    };
+
     return (
         <Dialog
             open={open}
-            onClose={handleClose}
+            onClose={onClose}
             maxWidth="md"
             fullWidth
             PaperProps={{
@@ -115,12 +84,10 @@ export const NewMoneyApprovalDialog: React.FC<NewMoneyApprovalDialogProps> = ({
                     border: '1px solid var(--border-color)',
                     overflow: 'hidden',
                     maxHeight: '90vh',
-                    display: 'flex',
-                    flexDirection: 'column',
                 },
             }}
         >
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <form onSubmit={handleSubmit}>
                 <DialogTitle
                     sx={{
                         display: 'flex',
@@ -129,7 +96,6 @@ export const NewMoneyApprovalDialog: React.FC<NewMoneyApprovalDialogProps> = ({
                         p: 2,
                         borderBottom: '1px solid var(--border-color)',
                         backgroundColor: 'var(--surface-secondary)',
-                        flexShrink: 0,
                     }}
                 >
                     <Typography
@@ -144,7 +110,7 @@ export const NewMoneyApprovalDialog: React.FC<NewMoneyApprovalDialogProps> = ({
                         Nueva Aprobación de Dinero
                     </Typography>
                     <IconButton
-                        onClick={handleClose}
+                        onClick={onClose}
                         size="small"
                         sx={{
                             color: 'var(--text-secondary)',
@@ -158,271 +124,84 @@ export const NewMoneyApprovalDialog: React.FC<NewMoneyApprovalDialogProps> = ({
                     </IconButton>
                 </DialogTitle>
 
-                <DialogContent 
-                    sx={{ 
-                        p: 3, 
-                        backgroundColor: 'var(--surface-primary)',
-                        overflowY: 'auto',
-                        flexGrow: 1,
-                        '&::-webkit-scrollbar': {
-                            width: '8px',
-                        },
-                        '&::-webkit-scrollbar-track': {
-                            background: 'transparent',
-                        },
-                        '&::-webkit-scrollbar-thumb': {
-                            background: 'var(--text-tertiary)',
-                            borderRadius: '4px',
-                            '&:hover': {
-                                background: 'var(--text-secondary)',
-                            },
-                        },
-                    }}
-                >
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                        {/* Sección de Información General */}
-                        <Box>
-                            <Typography
-                                variant="subtitle2"
-                                sx={{
-                                    color: 'var(--text-secondary)',
-                                    mb: 2,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 1,
-                                }}
-                            >
-                                INFORMACIÓN GENERAL
-                            </Typography>
-
-                            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
+                <DialogContent sx={{ p: 2, backgroundColor: 'var(--surface-primary)' }}>
+                    <Box sx={{ pt: 2 }}>
+                        <Grid container spacing={2}>
+                            <Grid item xs={12}>
                                 <FormControlLabel
                                     control={
                                         <Switch
                                             checked={formData.urgent}
-                                            onChange={(e) => setFormData({ ...formData, urgent: e.target.checked })}
-                                            color="error"
+                                            onChange={handleChange}
+                                            name="urgent"
+                                            sx={{
+                                                '& .MuiSwitch-switchBase.Mui-checked': {
+                                                    color: '#0071e3',
+                                                },
+                                                '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                                                    backgroundColor: '#0071e3',
+                                                },
+                                            }}
                                         />
                                     }
                                     label="Urgente"
-                                />
-
-                                <DatePicker
-                                    label="Fecha de pago"
-                                    value={formData.paymentDate}
-                                    onChange={(date) => setFormData({ ...formData, paymentDate: date || dayjs() })}
                                     sx={{
-                                        flex: 1,
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '8px',
-                                            backgroundColor: 'var(--surface-secondary)',
-                                        },
+                                        color: 'var(--text-primary)',
                                     }}
                                 />
-                            </Box>
+                            </Grid>
 
-                            <Box sx={{ display: 'flex', gap: 2, mb: 2 }}>
-                                <FormControl 
-                                    fullWidth
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '8px',
-                                            backgroundColor: 'var(--surface-secondary)',
-                                        },
-                                    }}
-                                >
-                                    <InputLabel>Categoría</InputLabel>
-                                    <Select
-                                        value={formData.category}
-                                        label="Categoría"
-                                        onChange={(e) => setFormData({ ...formData, category: e.target.value, subcategory: '' })}
-                                    >
-                                        {categories.map((category) => (
-                                            <MenuItem key={category} value={category}>
-                                                {category}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-
-                                <FormControl 
-                                    fullWidth
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '8px',
-                                            backgroundColor: 'var(--surface-secondary)',
-                                        },
-                                    }}
-                                >
-                                    <InputLabel>Subcategoría</InputLabel>
-                                    <Select
-                                        value={formData.subcategory}
-                                        label="Subcategoría"
-                                        onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
-                                        disabled={!formData.category}
-                                    >
-                                        {formData.category && subcategories[formData.category as keyof typeof subcategories].map((subcategory) => (
-                                            <MenuItem key={subcategory} value={subcategory}>
-                                                {subcategory}
-                                            </MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Box>
-
-                            <TextField
-                                fullWidth
-                                label="Concepto"
-                                value={formData.concept}
-                                onChange={(e) => setFormData({ ...formData, concept: e.target.value })}
-                                multiline
-                                rows={2}
-                                sx={{
-                                    mb: 2,
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: '8px',
-                                        backgroundColor: 'var(--surface-secondary)',
-                                    },
-                                }}
-                            />
-
-                            <TextField
-                                fullWidth
-                                label="Comentarios SSC"
-                                value={formData.sscComments}
-                                onChange={(e) => setFormData({ ...formData, sscComments: e.target.value })}
-                                multiline
-                                rows={2}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: '8px',
-                                        backgroundColor: 'var(--surface-secondary)',
-                                    },
-                                }}
-                            />
-                        </Box>
-
-                        <Divider />
-
-                        {/* Sección de Montos */}
-                        <Box>
-                            <Typography
-                                variant="subtitle2"
-                                sx={{
-                                    color: 'var(--text-secondary)',
-                                    mb: 2,
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 1,
-                                }}
-                            >
-                                MONTOS Y TRANSFERENCIAS
-                            </Typography>
-
-                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                <TextField
-                                    fullWidth
-                                    label="Suma"
-                                    type="number"
-                                    value={formData.amount}
-                                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                                    InputProps={{
-                                        startAdornment: <Typography sx={{ color: 'var(--text-secondary)', mr: 1 }}>$</Typography>,
-                                    }}
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '8px',
-                                            backgroundColor: 'var(--surface-secondary)',
-                                        },
-                                    }}
-                                />
-
-                                <TextField
-                                    fullWidth
-                                    label="Transferencia a Espora"
-                                    type="number"
-                                    value={formData.transferToEspora}
-                                    onChange={(e) => setFormData({ ...formData, transferToEspora: e.target.value })}
-                                    InputProps={{
-                                        startAdornment: <Typography sx={{ color: 'var(--text-secondary)', mr: 1 }}>$</Typography>,
-                                    }}
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '8px',
-                                            backgroundColor: 'var(--surface-secondary)',
-                                        },
-                                    }}
-                                />
-
-                                <TextField
-                                    fullWidth
-                                    label="A despacho para transferir"
-                                    type="number"
-                                    value={formData.toDispatchForTransfer}
-                                    onChange={(e) => setFormData({ ...formData, toDispatchForTransfer: e.target.value })}
-                                    InputProps={{
-                                        startAdornment: <Typography sx={{ color: 'var(--text-secondary)', mr: 1 }}>$</Typography>,
-                                    }}
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '8px',
-                                            backgroundColor: 'var(--surface-secondary)',
-                                        },
-                                    }}
-                                />
-
-                                <TextField
-                                    fullWidth
-                                    label="Transferencia a Interlogis"
-                                    type="number"
-                                    value={formData.transferToInterlogis}
-                                    onChange={(e) => setFormData({ ...formData, transferToInterlogis: e.target.value })}
-                                    InputProps={{
-                                        startAdornment: <Typography sx={{ color: 'var(--text-secondary)', mr: 1 }}>$</Typography>,
-                                    }}
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '8px',
-                                            backgroundColor: 'var(--surface-secondary)',
-                                        },
-                                    }}
-                                />
-
-                                <TextField
-                                    fullWidth
-                                    label="Transferencia a Demotáctica"
-                                    type="number"
-                                    value={formData.transferToDemotactica}
-                                    onChange={(e) => setFormData({ ...formData, transferToDemotactica: e.target.value })}
-                                    InputProps={{
-                                        startAdornment: <Typography sx={{ color: 'var(--text-secondary)', mr: 1 }}>$</Typography>,
-                                    }}
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '8px',
-                                            backgroundColor: 'var(--surface-secondary)',
-                                        },
-                                    }}
-                                />
-
-                                <TextField
-                                    fullWidth
-                                    label="Transferencia a Dotcom"
-                                    type="number"
-                                    value={formData.transferToDotcom}
-                                    onChange={(e) => setFormData({ ...formData, transferToDotcom: e.target.value })}
-                                    InputProps={{
-                                        startAdornment: <Typography sx={{ color: 'var(--text-secondary)', mr: 1 }}>$</Typography>,
-                                    }}
-                                    sx={{
-                                        '& .MuiOutlinedInput-root': {
-                                            borderRadius: '8px',
-                                            backgroundColor: 'var(--surface-secondary)',
-                                        },
-                                    }}
-                                />
-                            </Box>
-                        </Box>
+                            {[
+                                { name: 'paymentDate', label: 'Fecha de Pago', type: 'date', half: true },
+                                { name: 'category', label: 'Categoría', half: true },
+                                { name: 'subcategory', label: 'Subcategoría', half: true },
+                                { name: 'concept', label: 'Concepto', multiline: true, rows: 2 },
+                                { name: 'sscComments', label: 'Comentarios SSC', multiline: true, rows: 2 },
+                                { name: 'amount', label: 'Monto Total', type: 'number', half: true },
+                                { name: 'transferToEspora', label: 'Transferencia a Espora', type: 'number', half: true },
+                                { name: 'toDispatchForTransfer', label: 'A despacho para transferir', type: 'number', half: true },
+                                { name: 'transferToInterlogis', label: 'Transferencia a Interlogis', type: 'number', half: true },
+                                { name: 'transferToDemotactica', label: 'Transferencia a Demotáctica', type: 'number', half: true },
+                                { name: 'transferToDotcom', label: 'Transferencia a Dotcom', type: 'number', half: true },
+                            ].map((field, index) => (
+                                <Grid item xs={12} sm={field.half ? 6 : 12} key={index}>
+                                    <TextField
+                                        fullWidth
+                                        label={field.label}
+                                        name={field.name}
+                                        type={field.type || 'text'}
+                                        value={formData[field.name as keyof typeof formData]}
+                                        onChange={handleChange}
+                                        multiline={field.multiline}
+                                        rows={field.rows}
+                                        InputLabelProps={field.type === 'date' ? { shrink: true } : undefined}
+                                        size="small"
+                                        sx={{
+                                            '& .MuiOutlinedInput-root': {
+                                                borderRadius: '8px',
+                                                backgroundColor: 'var(--surface-secondary)',
+                                                '&:hover': {
+                                                    backgroundColor: 'var(--surface-secondary)',
+                                                },
+                                                '&.Mui-focused': {
+                                                    backgroundColor: 'var(--surface-secondary)',
+                                                    boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
+                                                },
+                                            },
+                                            '& .MuiInputLabel-root': {
+                                                color: 'var(--text-secondary)',
+                                            },
+                                            '& .MuiOutlinedInput-notchedOutline': {
+                                                borderColor: 'var(--border-color)',
+                                            },
+                                            '& .MuiInputBase-input': {
+                                                color: 'var(--text-primary)',
+                                            },
+                                        }}
+                                    />
+                                </Grid>
+                            ))}
+                        </Grid>
                     </Box>
                 </DialogContent>
 
@@ -435,7 +214,7 @@ export const NewMoneyApprovalDialog: React.FC<NewMoneyApprovalDialogProps> = ({
                     }}
                 >
                     <Button
-                        onClick={handleClose}
+                        onClick={onClose}
                         sx={{
                             color: 'var(--text-secondary)',
                             fontSize: '0.875rem',
