@@ -4,8 +4,6 @@ import {
     Container,
     Grid,
 } from '@mui/material';
-import { FinancialOverview } from './dashboardComponents/FinancialOverview';
-import { ActionPlans } from './dashboardComponents/ActionPlans';
 import { LegalStatus } from './dashboardComponents/LegalStatus';
 import { RecentAgreements } from './dashboardComponents/RecentAgreements';
 import { TodosOverview } from './dashboardComponents/TodosOverview';
@@ -55,38 +53,6 @@ const mockActionPlansProgress = [
         achieved: 0,
         progress: 0
     }
-];
-
-// Mock data for financial metrics
-const mockFinancialData = {
-    revenue: {
-        total: 2500000,
-        previousTotal: 2000000,
-        growth: 25,
-        breakdown: [
-            { label: 'Ventas Directas', value: 40, growth: 15 },
-            { label: 'Servicios', value: 35, growth: 8 },
-            { label: 'Licencias', value: 25, growth: -5 },
-        ]
-    },
-    expenses: {
-        total: 1800000,
-        previousTotal: 1500000,
-        growth: 20,
-        breakdown: [
-            { label: 'Operaciones', value: 45, growth: 12 },
-            { label: 'Marketing', value: 30, growth: -8 },
-            { label: 'Desarrollo', value: 25, growth: 5 },
-        ]
-    }
-};
-
-// Mock data for action plans
-const mockActionPlans = [
-    { name: 'Análisis de madurez', progress: 100, status: 'completed', dueDate: '2024-03-01', owner: 'Ana Martínez' },
-    { name: 'Definición de objetivos', progress: 85, status: 'in_progress', dueDate: '2024-03-15', owner: 'Roberto Sánchez' },
-    { name: 'Análisis de competencia', progress: 60, status: 'in_progress', dueDate: '2024-03-30', owner: 'Patricia López' },
-    { name: 'Implementación de mejoras', progress: 30, status: 'delayed', dueDate: '2024-04-15', owner: 'Carlos Rodríguez' },
 ];
 
 // Mock data for legal status
@@ -176,27 +142,6 @@ export const PresidentToolbox: React.FC = () => {
             <Container maxWidth="xl">
                 <Grid container spacing={3}>
                     <PendingApprovals count={15} />
-
-                    <FinancialOverview metrics={[
-                        {
-                            title: 'Ingresos',
-                            current: mockFinancialData.revenue.total,
-                            previous: mockFinancialData.revenue.previousTotal,
-                            change: mockFinancialData.revenue.growth,
-                            breakdown: mockFinancialData.revenue.breakdown,
-                            color: '#30d158'
-                        },
-                        {
-                            title: 'Gastos',
-                            current: mockFinancialData.expenses.total,
-                            previous: mockFinancialData.expenses.previousTotal,
-                            change: mockFinancialData.expenses.growth,
-                            breakdown: mockFinancialData.expenses.breakdown,
-                            color: '#ff2d55'
-                        }
-                    ]} />
-
-                    <ActionPlans plans={mockActionPlans} />
 
                     <LegalStatus items={mockLegalStatus} />
 
