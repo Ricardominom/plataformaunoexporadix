@@ -1,12 +1,14 @@
 import React from 'react';
-import { Grid, Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip } from '@mui/material';
+import { Grid, Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 
 interface AccountItem {
-    account: string;
-    balance: number;
-    pending: number;
-    status: 'active' | 'inactive';
-    lastUpdate: string;
+    item: string;
+    montoBancarizado: number;
+    montoDespacho: number;
+    efectivo: number;
+    credito: number;
+    deuda: number;
+    observaciones: string;
 }
 
 interface AccountStatusProps {
@@ -31,20 +33,31 @@ export const AccountStatus: React.FC<AccountStatusProps> = ({ accounts }) => {
                         fontSize: '1.125rem',
                         fontWeight: 600,
                         color: 'var(--text-primary)',
-                        mb: 3,
+                        mb: 2,
                     }}
                 >
                     ESTADO DE CUENTAS
                 </Typography>
-                <TableContainer>
-                    <Table>
+                <TableContainer sx={{ maxHeight: 500, overflowY: 'auto' }}>
+                    <Table sx={{
+                        '& .MuiTableCell-root': {
+                            py: 1.5,
+                            px: 2,
+                            whiteSpace: 'nowrap',
+                            '&:last-child': {
+                                pr: 2,
+                            },
+                        },
+                    }}>
                         <TableHead>
                             <TableRow>
-                                <TableCell>Cuenta</TableCell>
-                                <TableCell align="right">Balance</TableCell>
-                                <TableCell align="right">Pendiente</TableCell>
-                                <TableCell>Estado</TableCell>
-                                <TableCell>Última Actualización</TableCell>
+                                <TableCell>Item</TableCell>
+                                <TableCell align="right">Monto Bancarizado</TableCell>
+                                <TableCell align="right">Monto Despacho</TableCell>
+                                <TableCell align="right">Efectivo</TableCell>
+                                <TableCell align="right">Crédito</TableCell>
+                                <TableCell align="right">Deuda</TableCell>
+                                <TableCell>Observaciones</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -54,41 +67,67 @@ export const AccountStatus: React.FC<AccountStatusProps> = ({ accounts }) => {
                                         <Typography
                                             sx={{
                                                 color: 'var(--text-primary)',
-                                                fontWeight: 500,
+                                                fontWeight: account.item?.includes('Total') ? 600 : 400,
+                                                fontSize: '0.9375rem',
                                             }}
                                         >
-                                            {account.account}
+                                            {account.item}
                                         </Typography>
                                     </TableCell>
                                     <TableCell align="right">
                                         <Typography
                                             sx={{
-                                                color: '#30d158',
-                                                fontWeight: 600,
+                                                color: (account.montoBancarizado || 0) > 0 ? '#30d158' : 'var(--text-primary)',
+                                                fontWeight: account.item?.includes('Total') ? 600 : 400,
+                                                fontSize: '0.9375rem',
                                             }}
                                         >
-                                            ${account.balance.toLocaleString()}
+                                            ${(account.montoBancarizado || 0).toLocaleString()}
                                         </Typography>
                                     </TableCell>
                                     <TableCell align="right">
                                         <Typography
                                             sx={{
-                                                color: account.pending > 0 ? '#ff9500' : 'var(--text-secondary)',
-                                                fontWeight: account.pending > 0 ? 600 : 400,
+                                                color: (account.montoDespacho || 0) > 0 ? '#30d158' : 'var(--text-primary)',
+                                                fontWeight: account.item?.includes('Total') ? 600 : 400,
+                                                fontSize: '0.9375rem',
                                             }}
                                         >
-                                            ${account.pending.toLocaleString()}
+                                            ${(account.montoDespacho || 0).toLocaleString()}
                                         </Typography>
                                     </TableCell>
-                                    <TableCell>
-                                        <Chip
-                                            label={account.status === 'active' ? 'Activa' : 'Inactiva'}
-                                            size="small"
+                                    <TableCell align="right">
+                                        <Typography
                                             sx={{
-                                                backgroundColor: account.status === 'active' ? 'rgba(48, 209, 88, 0.1)' : 'rgba(255, 45, 85, 0.1)',
-                                                color: account.status === 'active' ? '#30d158' : '#ff2d55',
+                                                color: (account.efectivo || 0) > 0 ? '#30d158' : 'var(--text-primary)',
+                                                fontWeight: account.item?.includes('Total') ? 600 : 400,
+                                                fontSize: '0.9375rem',
                                             }}
-                                        />
+                                        >
+                                            ${(account.efectivo || 0).toLocaleString()}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <Typography
+                                            sx={{
+                                                color: (account.credito || 0) > 0 ? '#ff9500' : 'var(--text-primary)',
+                                                fontWeight: account.item?.includes('Total') ? 600 : 400,
+                                                fontSize: '0.9375rem',
+                                            }}
+                                        >
+                                            ${(account.credito || 0).toLocaleString()}
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <Typography
+                                            sx={{
+                                                color: (account.deuda || 0) > 0 ? '#ff2d55' : 'var(--text-primary)',
+                                                fontWeight: account.item?.includes('Total') ? 600 : 400,
+                                                fontSize: '0.9375rem',
+                                            }}
+                                        >
+                                            ${(account.deuda || 0).toLocaleString()}
+                                        </Typography>
                                     </TableCell>
                                     <TableCell>
                                         <Typography
@@ -97,7 +136,7 @@ export const AccountStatus: React.FC<AccountStatusProps> = ({ accounts }) => {
                                                 fontSize: '0.875rem',
                                             }}
                                         >
-                                            {new Date(account.lastUpdate).toLocaleDateString()}
+                                            {account.observaciones}
                                         </Typography>
                                     </TableCell>
                                 </TableRow>
