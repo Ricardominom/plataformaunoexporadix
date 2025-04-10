@@ -10,6 +10,7 @@ import { LegalStatus } from './dashboardComponents/LegalStatus';
 import { RecentAgreements } from './dashboardComponents/RecentAgreements';
 import { TodosOverview } from './dashboardComponents/TodosOverview';
 import { AccountStatus } from './dashboardComponents/AccountStatus';
+import { PendingApprovals } from './dashboardComponents/PendingApprovals';
 
 // Mock data for financial metrics
 const mockFinancialData = {
@@ -134,6 +135,8 @@ export const PresidentToolbox: React.FC = () => {
         }}>
             <Container maxWidth="xl">
                 <Grid container spacing={3}>
+                    <PendingApprovals count={15} />
+
                     <FinancialOverview metrics={[
                         {
                             title: 'Ingresos',
