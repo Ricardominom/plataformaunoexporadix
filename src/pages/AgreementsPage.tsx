@@ -14,8 +14,12 @@ import {
   DialogContent,
   DialogActions,
   IconButton,
+  Chip,
+  Tooltip,
+  Badge,
+  Fade,
 } from '@mui/material';
-import { Plus, Search, Trash2 } from 'lucide-react';
+import { Plus, Search, Trash2, FileText, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 import { AgreementTable } from '../components/agreements/AgreementTable';
 import { NewAgreementDialog } from '../components/agreements/NewAgreementDialog';
 import { EditAgreementDialog } from '../components/agreements/EditAgreementDialog';
@@ -30,7 +34,7 @@ export const AgreementsPage: React.FC = () => {
   const { user, hasShownWelcome, setHasShownWelcome } = useAuth();
   const { addNotification } = useNotification();
   const { agreements, lists, loading, updateAgreementStatus, setAgreements, setLists } = useAgreements();
-  
+
   const [currentTab, setCurrentTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [isNewAgreementOpen, setIsNewAgreementOpen] = useState(false);
@@ -47,6 +51,20 @@ export const AgreementsPage: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [hasShownWelcome, setHasShownWelcome]);
+
+  const getStatusCounts = useMemo(() => {
+    const counts = {
+      not_started: 0,
+      in_progress: 0,
+      stuck: 0,
+      sj_review: 0,
+      completed: 0,
+    };
+    agreements.forEach(agreement => {
+      counts[agreement.status]++;
+    });
+    return counts;
+  }, [agreements]);
 
   const filteredAgreements = useMemo(() => {
     if (!searchTerm) return agreements;
@@ -125,11 +143,9 @@ export const AgreementsPage: React.FC = () => {
       name: list.name,
       color: list.color,
     };
-    
+
     setLists([...lists, newList]);
     setCurrentTab(lists.length);
-    
-    // Add notification for new list creation
     addNotification('list', 'created', {
       id: newList.id,
       title: newList.name,
@@ -137,7 +153,6 @@ export const AgreementsPage: React.FC = () => {
       completed: false,
       createdAt: new Date().toISOString(),
     });
-    
     setIsNewListOpen(false);
   };
 
@@ -180,130 +195,236 @@ export const AgreementsPage: React.FC = () => {
     }}>
       <Container maxWidth="xl">
         {!hasShownWelcome && (
-          <Paper
-            sx={{
-              p: 3,
-              mb: 4,
-              borderRadius: '12px',
-              backgroundColor: 'var(--status-info-bg)',
-              border: '1px solid var(--status-info-text)',
-              animation: 'fadeIn 0.5s ease-out',
-            }}
-          >
-            <Typography
-              variant="h5"
+          <Fade in={!hasShownWelcome}>
+            <Paper
               sx={{
-                color: 'var(--status-info-text)',
-                fontWeight: 600,
-                mb: 1,
+                p: 3,
+                mb: 4,
+                borderRadius: '12px',
+                backgroundColor: 'rgba(0, 113, 227, 0.1)',
+                border: '1px solid #0071e3',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 2,
               }}
             >
-              ¡Bienvenido, {user?.name}!
-            </Typography>
-            <Typography
-              sx={{
-                color: 'var(--status-info-text)',
-                opacity: 0.9,
-              }}
-            >
-              Aquí tienes un resumen de tus acuerdos y actividades pendientes.
-            </Typography>
-          </Paper>
+              <Box
+                sx={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: '50%',
+                  backgroundColor: '#0071e3',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#fff',
+                }}
+              >
+                <FileText size={20} />
+              </Box>
+              <Box>
+                <Typography
+                  variant="h5"
+                  sx={{
+                    color: '#0071e3',
+                    fontWeight: 600,
+                    mb: 0.5,
+                  }}
+                >
+                  ¡Bienvenido, {user?.name}!
+                </Typography>
+                <Typography
+                  sx={{
+                    color: '#0071e3',
+                    opacity: 0.9,
+                  }}
+                >
+                  Aquí tienes un resumen de tus acuerdos y actividades pendientes.
+                </Typography>
+              </Box>
+            </Paper>
+          </Fade>
         )}
 
-        <Box sx={{
-          display: 'flex',
-          justifyContent: 'flex-end',
-          gap: 2,
-          mb: 6,
-        }}>
-          <Button
-            variant="contained"
-            startIcon={<Plus size={16} />}
-            onClick={() => setIsNewAgreementOpen(true)}
-            sx={{
-              backgroundColor: '#0071e3',
-              fontSize: '0.875rem',
-              fontWeight: 400,
-              textTransform: 'none',
-              borderRadius: '980px',
-              px: 3,
-              height: '32px',
-              boxShadow: 'none',
-              '&:hover': {
-                backgroundColor: '#0077ED',
-                boxShadow: 'none',
-              }
-            }}
-          >
-            Nuevo Acuerdo
-          </Button>
-          <Button
-            variant="outlined"
-            startIcon={<Plus size={16} />}
-            onClick={() => setIsNewListOpen(true)}
-            sx={{
-              borderColor: 'var(--border-color)',
-              color: 'var(--text-primary)',
-              fontSize: '0.875rem',
-              fontWeight: 400,
-              textTransform: 'none',
-              borderRadius: '980px',
-              px: 3,
-              height: '32px',
-              '&:hover': {
-                borderColor: 'var(--text-secondary)',
-                backgroundColor: 'transparent',
-              }
-            }}
-          >
-            Nueva Lista
-          </Button>
-        </Box>
-
-        <Box sx={{ mb: 4 }}>
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="Buscar acuerdos..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <Search size={16} color="var(--text-secondary)" />
-                </InputAdornment>
-              ),
-              sx: {
-                fontSize: '0.875rem',
-                height: '36px',
-                backgroundColor: 'var(--surface-secondary)',
-                color: 'var(--text-primary)',
-                '&:hover': {
-                  backgroundColor: 'var(--hover-bg)',
-                },
-                '& .MuiInputBase-input::placeholder': {
+        <Box sx={{ mb: 6 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
+            <Box>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontSize: '2rem',
+                  fontWeight: 600,
+                  color: 'var(--text-primary)',
+                  mb: 1,
+                }}
+              >
+                Acuerdos
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: '1rem',
                   color: 'var(--text-secondary)',
-                  opacity: 1,
+                }}
+              >
+                Gestión y seguimiento de acuerdos
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <Button
+                variant="outlined"
+                startIcon={<Plus size={16} />}
+                onClick={() => setIsNewListOpen(true)}
+                sx={{
+                  borderColor: 'var(--border-color)',
+                  color: 'var(--text-primary)',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  textTransform: 'none',
+                  px: 2.5,
+                  height: '40px',
+                  borderRadius: '8px',
+                  '&:hover': {
+                    borderColor: 'var(--text-secondary)',
+                    backgroundColor: 'transparent',
+                  }
+                }}
+              >
+                Nueva Lista
+              </Button>
+
+              <Button
+                variant="contained"
+                startIcon={<Plus size={16} />}
+                onClick={() => setIsNewAgreementOpen(true)}
+                sx={{
+                  backgroundColor: '#0071e3',
+                  color: '#ffffff',
+                  fontSize: '0.875rem',
+                  fontWeight: 500,
+                  textTransform: 'none',
+                  px: 2.5,
+                  height: '40px',
+                  borderRadius: '8px',
+                  boxShadow: 'none',
+                  '&:hover': {
+                    backgroundColor: '#0077ED',
+                    boxShadow: 'none',
+                  }
+                }}
+              >
+                Nuevo Acuerdo
+              </Button>
+            </Box>
+          </Box>
+
+          <Box sx={{ display: 'flex', gap: 2, mb: 4 }}>
+            {[
+              { status: 'not_started', label: 'Sin comenzar', icon: <Clock size={16} /> },
+              { status: 'in_progress', label: 'En proceso', icon: <Clock size={16} /> },
+              { status: 'stuck', label: 'Estancado', icon: <AlertCircle size={16} /> },
+              { status: 'sj_review', label: 'Para revisión', icon: <Clock size={16} /> },
+              { status: 'completed', label: 'Completado', icon: <CheckCircle2 size={16} /> },
+            ].map((item) => (
+              <Paper
+                key={item.status}
+                sx={{
+                  p: 2,
+                  borderRadius: '12px',
+                  backgroundColor: 'var(--surface-primary)',
+                  flex: 1,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 1,
+                  transition: 'transform 0.2s ease',
+                  '&:hover': {
+                    transform: 'translateY(-2px)',
+                  },
+                }}
+                className="glass-effect"
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box
+                    sx={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: '8px',
+                      backgroundColor: item.status === 'not_started' ? 'rgba(0, 0, 0, 0.04)' :
+                        item.status === 'in_progress' ? 'rgba(0, 113, 227, 0.1)' :
+                          item.status === 'stuck' ? 'rgba(255, 45, 85, 0.1)' :
+                            item.status === 'sj_review' ? 'rgba(255, 149, 0, 0.1)' :
+                              'rgba(48, 209, 88, 0.1)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: item.status === 'not_started' ? 'var(--text-primary)' :
+                        item.status === 'in_progress' ? '#0071e3' :
+                          item.status === 'stuck' ? '#ff2d55' :
+                            item.status === 'sj_review' ? '#ff9500' :
+                              '#30d158',
+                    }}
+                  >
+                    {item.icon}
+                  </Box>
+                  <Typography
+                    sx={{
+                      fontSize: '0.875rem',
+                      color: 'var(--text-secondary)',
+                    }}
+                  >
+                    {item.label}
+                  </Typography>
+                </Box>
+                <Typography
+                  variant="h4"
+                  sx={{
+                    fontSize: '1.5rem',
+                    fontWeight: 600,
+                    color: 'var(--text-primary)',
+                  }}
+                >
+                  {getStatusCounts[item.status as keyof typeof getStatusCounts]}
+                </Typography>
+              </Paper>
+            ))}
+          </Box>
+
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, mt: 4 }}>
+            <TextField
+              placeholder="Buscar acuerdos..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search size={16} color="var(--text-secondary)" />
+                  </InputAdornment>
+                ),
+                sx: {
+                  fontSize: '0.875rem',
+                  height: '40px',
+                  backgroundColor: 'var(--surface-secondary)',
+                  color: 'var(--text-primary)',
+                  '&:hover': {
+                    backgroundColor: 'var(--hover-bg)',
+                  },
+                  '& .MuiInputBase-input::placeholder': {
+                    color: 'var(--text-secondary)',
+                    opacity: 1,
+                  },
+                }
+              }}
+              sx={{
+                width: '300px',
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '8px',
+                  '& fieldset': { border: 'none' },
+                  '&:hover fieldset': { border: 'none' },
+                  '&.Mui-focused fieldset': { border: 'none' },
                 },
-              }
-            }}
-            sx={{
-              maxWidth: '600px',
-              '& .MuiOutlinedInput-root': {
-                borderRadius: '8px',
-                '& fieldset': {
-                  border: 'none',
-                },
-                '&:hover fieldset': {
-                  border: 'none',
-                },
-                '&.Mui-focused fieldset': {
-                  border: 'none',
-                },
-              },
-            }}
-          />
+              }}
+            />
+          </Box>
         </Box>
 
         <Paper
@@ -330,12 +451,38 @@ export const AgreementsPage: React.FC = () => {
               {lists.map((list, index) => (
                 <Tab
                   key={list.id}
-                  label={list.name}
+                  label={
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Box
+                        sx={{
+                          width: 8,
+                          height: 8,
+                          borderRadius: '50%',
+                          backgroundColor: list.color,
+                        }}
+                      />
+                      {list.name}
+                      <Badge
+                        badgeContent={agreements.filter(a => a.listId === list.id).length}
+                        color="primary"
+                        sx={{
+                          '& .MuiBadge-badge': {
+                            backgroundColor: list.color,
+                            color: '#fff',
+                            fontSize: '0.75rem',
+                            minWidth: '20px',
+                            height: '20px',
+                          },
+                        }}
+                      />
+                    </Box>
+                  }
                   value={index}
                   sx={{
                     textTransform: 'none',
                     fontSize: '0.875rem',
-                    fontWeight: 400,
+                    fontWeight: 500,
+                    minHeight: '48px',
                     color: 'var(--text-secondary)',
                     '&.Mui-selected': {
                       color: list.color,
@@ -344,19 +491,21 @@ export const AgreementsPage: React.FC = () => {
                 />
               ))}
             </Tabs>
-            <IconButton
-              onClick={() => handleDeleteList(lists[currentTab])}
-              size="small"
-              sx={{
-                color: 'var(--text-secondary)',
-                '&:hover': {
-                  color: '#ff2d55',
-                  backgroundColor: 'rgba(255, 45, 85, 0.1)',
-                },
-              }}
-            >
-              <Trash2 size={16} />
-            </IconButton>
+            <Tooltip title="Eliminar lista" placement="left">
+              <IconButton
+                onClick={() => handleDeleteList(lists[currentTab])}
+                size="small"
+                sx={{
+                  color: 'var(--text-secondary)',
+                  '&:hover': {
+                    color: '#ff2d55',
+                    backgroundColor: 'rgba(255, 45, 85, 0.1)',
+                  },
+                }}
+              >
+                <Trash2 size={16} />
+              </IconButton>
+            </Tooltip>
           </Box>
         </Paper>
 
@@ -365,7 +514,7 @@ export const AgreementsPage: React.FC = () => {
           onStatusChange={handleStatusChange}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          onResponsibleChange={() => {}}
+          onResponsibleChange={() => { }}
         />
 
         <NewAgreementDialog
