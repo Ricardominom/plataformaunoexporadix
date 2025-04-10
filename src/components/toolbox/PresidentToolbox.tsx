@@ -10,7 +10,34 @@ import { LegalStatus } from './dashboardComponents/LegalStatus';
 import { RecentAgreements } from './dashboardComponents/RecentAgreements';
 import { TodosOverview } from './dashboardComponents/TodosOverview';
 import { AccountStatus } from './dashboardComponents/AccountStatus';
+import { AccountProgress } from './dashboardComponents/AccountProgress';
 import { PendingApprovals } from './dashboardComponents/PendingApprovals';
+
+// Mock data for account progress
+const mockAccountProgress = [
+    {
+        name: "Cuenta 1",
+        progress: {
+            estrategia: 50,
+            setup: 93.5,
+            acompanamiento: 70,
+            gerencia: 14,
+            produccion: 20,
+            difusion: 30,
+        }
+    },
+    {
+        name: "Cuenta 2",
+        progress: {
+            estrategia: 80,
+            setup: 65,
+            acompanamiento: 45,
+            gerencia: 30,
+            produccion: 55,
+            difusion: 40,
+        }
+    },
+];
 
 // Mock data for financial metrics
 const mockFinancialData = {
@@ -163,6 +190,8 @@ export const PresidentToolbox: React.FC = () => {
                     <RecentAgreements agreements={mockAgreements} />
 
                     <TodosOverview todos={mockTodos} />
+
+                    <AccountProgress accounts={mockAccountProgress} />
 
                     <AccountStatus accounts={mockAccountStatus} />
                 </Grid>
