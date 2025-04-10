@@ -1,0 +1,54 @@
+{
+    "items": [
+        {
+            "id": "1",
+            "item": "Tarjetas Espora",
+            "montoBancarizado": 0,
+            "montoDespacho": 0,
+            "efectivo": 0,
+            "credito": 0,
+            "deuda": 0,
+            "observaciones": "Texto"
+        },
+        {
+            "id": "2",
+            "item": "Demotáctica",
+            "montoBancarizado": 0,
+            "montoDespacho": 0,
+            "efectivo": 0,
+            "credito": 0,
+            "deuda": 0,
+            "observaciones": "Texto"
+        },
+        {
+            "id": "3",
+            "item": "Dotcom",
+            "montoBancarizado": 0,
+            "montoDespacho": 0,
+            "efectivo": 0,
+            "credito": 0,
+            "deuda": 0,
+            "observaciones": "Texto"
+        },
+        {
+            "id": "4",
+            "item": "Otras empresas, Datafi, Data...",
+            "montoBancarizado": 0,
+            "montoDespacho": 0,
+            "efectivo": 0,
+            "credito": 0,
+            "deuda": 0,
+            "observaciones": "Texto"
+        },
+        {
+            "id": "5",
+            "item": "Sub Total Grupo Espora",
+            "montoBancarizado": 0,
+            "montoDespacho": 0,
+            "efectivo": 0,
+            "credito": 0,
+            "deuda": 0,
+            "observaciones": "Texto"
+        }
+    ]
+}

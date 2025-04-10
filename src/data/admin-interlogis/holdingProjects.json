@@ -1,0 +1,34 @@
+{
+    "projects": [
+        {
+            "name": "Expansión Regional",
+            "progress": 75,
+            "status": "in_progress",
+            "startDate": "2024-01-15",
+            "endDate": "2024-06-30",
+            "responsible": "Juan Pérez",
+            "budget": 1500000,
+            "spent": 1000000
+        },
+        {
+            "name": "Optimización de Operaciones",
+            "progress": 90,
+            "status": "completed",
+            "startDate": "2023-11-01",
+            "endDate": "2024-02-28",
+            "responsible": "María González",
+            "budget": 800000,
+            "spent": 750000
+        },
+        {
+            "name": "Implementación ERP",
+            "progress": 30,
+            "status": "delayed",
+            "startDate": "2024-02-01",
+            "endDate": "2024-07-31",
+            "responsible": "Carlos Rodríguez",
+            "budget": 2000000,
+            "spent": 800000
+        }
+    ]
+}

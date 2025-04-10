@@ -13,9 +13,11 @@ import {
     InputLabel,
     Select,
     MenuItem,
+    Grid,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
-import { X } from 'lucide-react';
+import { X, AlertCircle, Clock, CheckCircle2, Circle } from 'lucide-react';
+import { motion } from 'framer-motion';
 import dayjs from 'dayjs';
 import { TodoPriority } from '../../types/todo';
 
@@ -30,11 +32,11 @@ interface NewReminderDialogProps {
     }) => void;
 }
 
-const priorityOptions: { value: TodoPriority; label: string }[] = [
-    { value: 'none', label: 'Ninguna' },
-    { value: 'low', label: 'Baja' },
-    { value: 'medium', label: 'Media' },
-    { value: 'high', label: 'Alta' },
+const priorityOptions: { value: TodoPriority; label: string; icon: React.ReactNode; color: string }[] = [
+    { value: 'none', label: 'Ninguna', icon: <Circle size={16} />, color: 'var(--text-secondary)' },
+    { value: 'low', label: 'Baja', icon: <CheckCircle2 size={16} />, color: '#30d158' },
+    { value: 'medium', label: 'Media', icon: <Clock size={16} />, color: '#ff9500' },
+    { value: 'high', label: 'Alta', icon: <AlertCircle size={16} />, color: '#ff2d55' },
 ];
 
 export const NewReminderDialog: React.FC<NewReminderDialogProps> = ({
@@ -72,8 +74,13 @@ export const NewReminderDialog: React.FC<NewReminderDialogProps> = ({
             fullWidth
             PaperProps={{
                 elevation: 0,
+                component: motion.div,
+                initial: { opacity: 0, y: 20, scale: 0.95 },
+                animate: { opacity: 1, y: 0, scale: 1 },
+                exit: { opacity: 0, y: 20, scale: 0.95 },
+                transition: { duration: 0.2 },
                 sx: {
-                    borderRadius: '12px',
+                    borderRadius: '16px',
                     backgroundColor: 'var(--surface-primary)',
                     backdropFilter: 'blur(20px)',
                     border: '1px solid var(--border-color)',
@@ -87,7 +94,7 @@ export const NewReminderDialog: React.FC<NewReminderDialogProps> = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        p: 2,
+                        p: 3,
                         borderBottom: '1px solid var(--border-color)',
                         backgroundColor: 'var(--surface-secondary)',
                     }}
@@ -95,7 +102,7 @@ export const NewReminderDialog: React.FC<NewReminderDialogProps> = ({
                     <Typography
                         variant="h6"
                         sx={{
-                            fontSize: '1.125rem',
+                            fontSize: '1.25rem',
                             fontWeight: 600,
                             color: 'var(--text-primary)',
                             letterSpacing: '-0.025em',
@@ -111,55 +118,27 @@ export const NewReminderDialog: React.FC<NewReminderDialogProps> = ({
                             '&:hover': {
                                 backgroundColor: 'var(--hover-bg)',
                                 color: 'var(--text-primary)',
+                                transform: 'rotate(90deg)',
                             },
+                            transition: 'all 0.3s ease',
                         }}
                     >
-                        <X size={18} />
+                        <X size={20} />
                     </IconButton>
                 </DialogTitle>
 
-                <DialogContent sx={{ p: 2, pt: 3, backgroundColor: 'var(--surface-primary)' }}>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                        <TextField
-                            label="Título"
-                            fullWidth
-                            value={formData.title}
-                            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                            required
-                            size="small"
-                            sx={{
-                                '& .MuiOutlinedInput-root': {
-                                    borderRadius: '8px',
-                                    backgroundColor: 'var(--surface-secondary)',
-                                    '&:hover': {
-                                        backgroundColor: 'var(--surface-secondary)',
-                                    },
-                                    '&.Mui-focused': {
-                                        backgroundColor: 'var(--surface-secondary)',
-                                        boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
-                                    },
-                                },
-                                '& .MuiInputLabel-root': {
-                                    color: 'var(--text-secondary)',
-                                },
-                                '& .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: 'var(--border-color)',
-                                },
-                                '& .MuiInputBase-input': {
-                                    color: 'var(--text-primary)',
-                                },
-                            }}
-                        />
-
-                        <Box sx={{ display: 'flex', gap: 2 }}>
-                            <DatePicker
-                                label="Fecha de vencimiento"
-                                value={formData.dueDate}
-                                onChange={(date) => setFormData({ ...formData, dueDate: date || dayjs() })}
+                <DialogContent sx={{ p: 3, backgroundColor: 'var(--surface-primary)' }}>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Título"
+                                fullWidth
+                                value={formData.title}
+                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                                required
                                 sx={{
-                                    flex: 1,
                                     '& .MuiOutlinedInput-root': {
-                                        borderRadius: '8px',
+                                        borderRadius: '10px',
                                         backgroundColor: 'var(--surface-secondary)',
                                         '&:hover': {
                                             backgroundColor: 'var(--surface-secondary)',
@@ -180,15 +159,48 @@ export const NewReminderDialog: React.FC<NewReminderDialogProps> = ({
                                     },
                                 }}
                             />
+                        </Grid>
 
-                            <FormControl size="small" sx={{ flex: 1 }}>
+                        <Grid item xs={12} md={6}>
+                            <DatePicker
+                                label="Fecha de vencimiento"
+                                value={formData.dueDate}
+                                onChange={(date) => setFormData({ ...formData, dueDate: date || dayjs() })}
+                                sx={{
+                                    width: '100%',
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '10px',
+                                        backgroundColor: 'var(--surface-secondary)',
+                                        '&:hover': {
+                                            backgroundColor: 'var(--surface-secondary)',
+                                        },
+                                        '&.Mui-focused': {
+                                            backgroundColor: 'var(--surface-secondary)',
+                                            boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
+                                        },
+                                    },
+                                    '& .MuiInputLabel-root': {
+                                        color: 'var(--text-secondary)',
+                                    },
+                                    '& .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: 'var(--border-color)',
+                                    },
+                                    '& .MuiInputBase-input': {
+                                        color: 'var(--text-primary)',
+                                    },
+                                }}
+                            />
+                        </Grid>
+
+                        <Grid item xs={12} md={6}>
+                            <FormControl fullWidth>
                                 <InputLabel sx={{ color: 'var(--text-secondary)' }}>Prioridad</InputLabel>
                                 <Select
                                     value={formData.priority}
                                     label="Prioridad"
                                     onChange={(e) => setFormData({ ...formData, priority: e.target.value as TodoPriority })}
                                     sx={{
-                                        borderRadius: '8px',
+                                        borderRadius: '10px',
                                         backgroundColor: 'var(--surface-secondary)',
                                         '&:hover': {
                                             backgroundColor: 'var(--surface-secondary)',
@@ -202,55 +214,91 @@ export const NewReminderDialog: React.FC<NewReminderDialogProps> = ({
                                         },
                                         '& .MuiSelect-select': {
                                             color: 'var(--text-primary)',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: 1,
                                         },
+                                    }}
+                                    MenuProps={{
+                                        PaperProps: {
+                                            sx: {
+                                                backgroundColor: 'var(--surface-primary)',
+                                                backgroundImage: 'none',
+                                                borderRadius: '12px',
+                                                boxShadow: 'var(--shadow-lg)',
+                                                border: '1px solid var(--border-color)',
+                                                mt: 1,
+                                                '& .MuiMenuItem-root': {
+                                                    fontSize: '0.875rem',
+                                                    py: 1,
+                                                    px: 2,
+                                                    '&:hover': {
+                                                        backgroundColor: 'var(--hover-bg)',
+                                                    },
+                                                },
+                                            },
+                                        },
+                                    }}
+                                    renderValue={(selected) => {
+                                        const option = priorityOptions.find(opt => opt.value === selected);
+                                        return (
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                <Box sx={{ color: option?.color }}>{option?.icon}</Box>
+                                                {option?.label}
+                                            </Box>
+                                        );
                                     }}
                                 >
                                     {priorityOptions.map((option) => (
                                         <MenuItem key={option.value} value={option.value}>
-                                            {option.label}
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                <Box sx={{ color: option.color }}>{option.icon}</Box>
+                                                {option.label}
+                                            </Box>
                                         </MenuItem>
                                     ))}
                                 </Select>
                             </FormControl>
-                        </Box>
+                        </Grid>
 
-                        <TextField
-                            label="Notas"
-                            fullWidth
-                            multiline
-                            rows={3}
-                            value={formData.notes}
-                            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                            size="small"
-                            sx={{
-                                '& .MuiOutlinedInput-root': {
-                                    borderRadius: '8px',
-                                    backgroundColor: 'var(--surface-secondary)',
-                                    '&:hover': {
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Notas"
+                                fullWidth
+                                multiline
+                                rows={4}
+                                value={formData.notes}
+                                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                                sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '10px',
                                         backgroundColor: 'var(--surface-secondary)',
+                                        '&:hover': {
+                                            backgroundColor: 'var(--surface-secondary)',
+                                        },
+                                        '&.Mui-focused': {
+                                            backgroundColor: 'var(--surface-secondary)',
+                                            boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
+                                        },
                                     },
-                                    '&.Mui-focused': {
-                                        backgroundColor: 'var(--surface-secondary)',
-                                        boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
+                                    '& .MuiInputLabel-root': {
+                                        color: 'var(--text-secondary)',
                                     },
-                                },
-                                '& .MuiInputLabel-root': {
-                                    color: 'var(--text-secondary)',
-                                },
-                                '& .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: 'var(--border-color)',
-                                },
-                                '& .MuiInputBase-input': {
-                                    color: 'var(--text-primary)',
-                                },
-                            }}
-                        />
-                    </Box>
+                                    '& .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: 'var(--border-color)',
+                                    },
+                                    '& .MuiInputBase-input': {
+                                        color: 'var(--text-primary)',
+                                    },
+                                }}
+                            />
+                        </Grid>
+                    </Grid>
                 </DialogContent>
 
                 <DialogActions
                     sx={{
-                        p: 2,
+                        p: 3,
                         borderTop: '1px solid var(--border-color)',
                         backgroundColor: 'var(--surface-secondary)',
                         gap: 1,
@@ -260,11 +308,12 @@ export const NewReminderDialog: React.FC<NewReminderDialogProps> = ({
                         onClick={onClose}
                         sx={{
                             color: 'var(--text-secondary)',
-                            fontSize: '0.875rem',
+                            fontSize: '0.9375rem',
                             fontWeight: 500,
                             textTransform: 'none',
-                            px: 2.5,
-                            borderRadius: '6px',
+                            px: 3,
+                            py: 1,
+                            borderRadius: '8px',
                             '&:hover': {
                                 backgroundColor: 'var(--hover-bg)',
                                 color: 'var(--text-primary)',
@@ -279,15 +328,20 @@ export const NewReminderDialog: React.FC<NewReminderDialogProps> = ({
                         sx={{
                             backgroundColor: '#0071e3',
                             color: '#fff',
-                            fontSize: '0.875rem',
+                            fontSize: '0.9375rem',
                             fontWeight: 500,
                             textTransform: 'none',
-                            px: 2.5,
-                            borderRadius: '6px',
+                            px: 3,
+                            py: 1,
+                            borderRadius: '8px',
                             boxShadow: 'none',
                             '&:hover': {
                                 backgroundColor: '#0077ED',
-                                boxShadow: 'none',
+                                boxShadow: '0 2px 8px rgba(0, 113, 227, 0.3)',
+                                transform: 'translateY(-2px)',
+                            },
+                            '&:active': {
+                                transform: 'translateY(0)',
                             },
                         }}
                     >

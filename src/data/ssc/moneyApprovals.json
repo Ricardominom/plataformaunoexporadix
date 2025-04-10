@@ -1,0 +1,34 @@
+{
+    "approvals": [
+        {
+            "id": "1",
+            "urgent": true,
+            "paymentDate": "2024-02-25",
+            "category": "Operaciones",
+            "subcategory": "Equipamiento",
+            "concept": "Compra de equipos de oficina",
+            "sscComments": "Pendiente de revisión de inventario",
+            "amount": 25000,
+            "transferToEspora": 10000,
+            "toDispatchForTransfer": 4000,
+            "transferToInterlogis": 5000,
+            "transferToDemotactica": 5000,
+            "transferToDotcom": 5000
+        },
+        {
+            "id": "2",
+            "urgent": false,
+            "paymentDate": "2024-02-28",
+            "category": "Recursos Humanos",
+            "subcategory": "Capacitación",
+            "concept": "Programa de desarrollo profesional",
+            "sscComments": "Aprobado por dirección",
+            "amount": 15000,
+            "transferToEspora": 5000,
+            "toDispatchForTransfer": 4000,
+            "transferToInterlogis": 3000,
+            "transferToDemotactica": 4000,
+            "transferToDotcom": 3000
+        }
+    ]
+}

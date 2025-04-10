@@ -1,6 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { IconButton, Badge, Popper, Grow, Paper, ClickAwayListener } from '@mui/material';
+import { 
+  IconButton, 
+  Badge, 
+  Popper, 
+  Grow, 
+  Paper, 
+  ClickAwayListener,
+  Box
+} from '@mui/material';
 import { Bell } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useNotification } from '../../context/NotificationContext';
 import { NotificationPanel } from '../notifications/NotificationPanel';
 
@@ -40,44 +49,42 @@ export const NotificationButton = () => {
 
   return (
     <>
-      <IconButton
-        ref={anchorRef}
-        onClick={handleToggle}
-        size="medium"
-        className="nav-icon-bell"
-        sx={{
-          color: 'var(--text-secondary)',
-          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-          animation: 'scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s',
-          '&:hover': {
-            backgroundColor: 'var(--hover-bg)',
-            color: 'var(--text-primary)',
-            transform: 'scale(1.1)',
-          },
-          '&:active': {
-            transform: 'scale(0.95)',
-          },
-        }}
+      <motion.div
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
       >
-        <Badge
-          badgeContent={unreadCount}
-          color="error"
+        <IconButton
+          ref={anchorRef}
+          onClick={handleToggle}
+          size="medium"
+          className="nav-icon-bell"
           sx={{
-            '& .MuiBadge-badge': {
-              backgroundColor: '#ff2d55',
-              minWidth: '18px',
-              height: '18px',
-              fontSize: '0.75rem',
-              transition: 'all 0.3s ease',
-            },
-            '&:hover .MuiBadge-badge': {
-              transform: 'scale(1.1)',
-            },
+            color: 'var(--text-secondary)',
+            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+            animation: 'scaleIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) 0.1s',
           }}
         >
-          <Bell size={22} />
-        </Badge>
-      </IconButton>
+          <Badge
+            badgeContent={unreadCount}
+            color="error"
+            sx={{
+              '& .MuiBadge-badge': {
+                backgroundColor: '#ff2d55',
+                minWidth: '18px',
+                height: '18px',
+                fontSize: '0.75rem',
+                transition: 'all 0.3s ease',
+                fontFamily: 'SF Pro Text, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif',
+              },
+              '&:hover .MuiBadge-badge': {
+                transform: 'scale(1.1)',
+              },
+            }}
+          >
+            <Bell size={20} />
+          </Badge>
+        </IconButton>
+      </motion.div>
 
       <Popper
         open={open}
@@ -86,23 +93,45 @@ export const NotificationButton = () => {
         transition
         disablePortal
         style={{ zIndex: 1300 }}
+        modifiers={[
+          {
+            name: 'offset',
+            options: {
+              offset: [0, 10],
+            },
+          },
+        ]}
       >
         {({ TransitionProps }) => (
-          <Grow {...TransitionProps}>
-            <div>
-              <ClickAwayListener onClickAway={handleClose}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    mt: 1,
-                    transformOrigin: 'top right',
-                  }}
+          <AnimatePresence>
+            {open && (
+              <Grow {...TransitionProps}>
+                <Box
+                  component={motion.div}
+                  initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                  transition={{ duration: 0.2 }}
                 >
-                  <NotificationPanel onClose={() => setOpen(false)} />
-                </Paper>
-              </ClickAwayListener>
-            </div>
-          </Grow>
+                  <ClickAwayListener onClickAway={handleClose}>
+                    <Paper
+                      elevation={0}
+                      sx={{
+                        mt: 1,
+                        transformOrigin: 'top right',
+                        boxShadow: 'var(--shadow-lg)',
+                        border: '1px solid var(--border-color)',
+                        borderRadius: '12px',
+                        overflow: 'hidden',
+                      }}
+                    >
+                      <NotificationPanel onClose={() => setOpen(false)} />
+                    </Paper>
+                  </ClickAwayListener>
+                </Box>
+              </Grow>
+            )}
+          </AnimatePresence>
         )}
       </Popper>
     </>

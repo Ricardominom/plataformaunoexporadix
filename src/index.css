@@ -2,22 +2,86 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'SF Pro Text';
+  src: url('https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sfprotext-regular-webfont.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SF Pro Text';
+  src: url('https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sfprotext-medium-webfont.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SF Pro Text';
+  src: url('https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sfprotext-semibold-webfont.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sfprodisplay-regular-webfont.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sfprodisplay-medium-webfont.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sfprodisplay-semibold-webfont.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SF Pro Display';
+  src: url('https://applesocial.s3.amazonaws.com/assets/styles/fonts/sanfrancisco/sfprodisplay-bold-webfont.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+}
+
 :root {
   --nav-height: 72px;
 }
 
-/* Theme Variables */
+/* Theme transition */
+.theme-transition {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Theme Variables - Light Mode */
 :root[data-theme="light"] {
+  /* Background Colors */
   --app-bg: #f5f5f7;
-  --text-primary: #1d1d1f;
-  --text-secondary: #86868b;
-  --text-tertiary: #98989d;
   --surface-primary: rgba(255, 255, 255, 0.8);
   --surface-secondary: rgba(255, 255, 255, 0.6);
   --hover-bg: rgba(0, 0, 0, 0.04);
-  --border-color: rgba(0, 0, 0, 0.1);
   --glass-bg: rgba(255, 255, 255, 0.72);
-
+  
+  /* Text Colors */
+  --text-primary: #1d1d1f;
+  --text-secondary: #86868b;
+  --text-tertiary: #98989d;
+  
+  /* Border Colors */
+  --border-color: rgba(0, 0, 0, 0.1);
+  
+  /* Shadow Colors */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+  
   /* Status Colors */
   --status-success-bg: rgba(48, 209, 88, 0.1);
   --status-success-text: #30d158;
@@ -27,19 +91,85 @@
   --status-error-text: #ff2d55;
   --status-info-bg: rgba(0, 113, 227, 0.1);
   --status-info-text: #0071e3;
+  
+  /* Brand Colors */
+  --brand-primary: #0071e3;
+  --brand-primary-hover: #0077ED;
+  --brand-secondary: #f5f5f7;
+  
+  /* Component Colors */
+  --button-primary-bg: #0071e3;
+  --button-primary-text: #ffffff;
+  --button-secondary-bg: rgba(0, 0, 0, 0.04);
+  --button-secondary-text: #1d1d1f;
+  --input-bg: rgba(255, 255, 255, 0.6);
+  --input-border: rgba(0, 0, 0, 0.1);
+  --input-text: #1d1d1f;
+  --input-placeholder: #86868b;
+  --card-bg: rgba(255, 255, 255, 0.8);
+  --card-border: rgba(0, 0, 0, 0.1);
+  
+  /* Transition */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  /* Status Theme Colors for Agreement Table */
+  --theme-not-started-bg: #F5F5F7;
+  --theme-not-started-text: #1D1D1F;
+  --theme-not-started-border: #E5E5EA;
+  
+  --theme-in-progress-bg: #FFF9EC;
+  --theme-in-progress-text: #FF9500;
+  --theme-in-progress-border: #FFE2B8;
+  
+  --theme-stuck-bg: #FFF1F2;
+  --theme-stuck-text: #FF2D55;
+  --theme-stuck-border: #FFBAC4;
+  
+  --theme-sj-review-bg: #EBF5FF;
+  --theme-sj-review-text: #0071E3;
+  --theme-sj-review-border: #B8DDFF;
+  
+  --theme-completed-bg: #F2FBF6;
+  --theme-completed-text: #30D158;
+  --theme-completed-border: #B8EECA;
+  
+  /* Dark Dashboard Colors */
+  --dark-bg: #121212;
+  --dark-surface: #1E1E1E;
+  --dark-surface-secondary: #2C2C2C;
+  --dark-border: #333333;
+  --dark-text-primary: #FFFFFF;
+  --dark-text-secondary: #BBBBBB;
+  --dark-accent: #00E676;
+  --dark-accent-secondary: #03DAC6;
+  --dark-error: #FF5252;
+  --dark-warning: #FFAB00;
 }
 
+/* Theme Variables - Dark Mode */
 :root[data-theme="dark"] {
+  /* Background Colors */
   --app-bg: #000000;
-  --text-primary: #ffffff;
-  --text-secondary: #a1a1a6;
-  --text-tertiary: #86868b;
   --surface-primary: rgba(28, 28, 30, 0.8);
   --surface-secondary: rgba(44, 44, 46, 0.6);
   --hover-bg: rgba(255, 255, 255, 0.1);
-  --border-color: rgba(255, 255, 255, 0.1);
   --glass-bg: rgba(28, 28, 30, 0.72);
-
+  
+  /* Text Colors */
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1a6;
+  --text-tertiary: #86868b;
+  
+  /* Border Colors */
+  --border-color: rgba(255, 255, 255, 0.1);
+  
+  /* Shadow Colors */
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+  --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+  
   /* Status Colors */
   --status-success-bg: rgba(48, 209, 88, 0.2);
   --status-success-text: #30d158;
@@ -49,18 +179,78 @@
   --status-error-text: #ff2d55;
   --status-info-bg: rgba(0, 113, 227, 0.2);
   --status-info-text: #0071e3;
+  
+  /* Brand Colors */
+  --brand-primary: #0071e3;
+  --brand-primary-hover: #0077ED;
+  --brand-secondary: #1c1c1e;
+  
+  /* Component Colors */
+  --button-primary-bg: #0071e3;
+  --button-primary-text: #ffffff;
+  --button-secondary-bg: rgba(255, 255, 255, 0.1);
+  --button-secondary-text: #ffffff;
+  --input-bg: rgba(44, 44, 46, 0.6);
+  --input-border: rgba(255, 255, 255, 0.1);
+  --input-text: #ffffff;
+  --input-placeholder: #a1a1a6;
+  --card-bg: rgba(28, 28, 30, 0.8);
+  --card-border: rgba(255, 255, 255, 0.1);
+  
+  /* Transition */
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+  --transition-slow: 0.5s ease;
+
+  /* Status Theme Colors for Agreement Table */
+  --theme-not-started-bg: rgba(44, 44, 46, 0.6);
+  --theme-not-started-text: #ffffff;
+  --theme-not-started-border: rgba(255, 255, 255, 0.1);
+  
+  --theme-in-progress-bg: rgba(255, 149, 0, 0.2);
+  --theme-in-progress-text: #ff9500;
+  --theme-in-progress-border: rgba(255, 149, 0, 0.3);
+  
+  --theme-stuck-bg: rgba(255, 45, 85, 0.2);
+  --theme-stuck-text: #ff2d55;
+  --theme-stuck-border: rgba(255, 45, 85, 0.3);
+  
+  --theme-sj-review-bg: rgba(0, 113, 227, 0.2);
+  --theme-sj-review-text: #0071e3;
+  --theme-sj-review-border: rgba(0, 113, 227, 0.3);
+  
+  --theme-completed-bg: rgba(48, 209, 88, 0.2);
+  --theme-completed-text: #30d158;
+  --theme-completed-border: rgba(48, 209, 88, 0.3);
+  
+  /* Dark Dashboard Colors */
+  --dark-bg: #121212;
+  --dark-surface: #1E1E1E;
+  --dark-surface-secondary: #2C2C2C;
+  --dark-border: #333333;
+  --dark-text-primary: #FFFFFF;
+  --dark-text-secondary: #BBBBBB;
+  --dark-accent: #00E676;
+  --dark-accent-secondary: #03DAC6;
+  --dark-error: #FF5252;
+  --dark-warning: #FFAB00;
 }
 
 /* Typography */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, sans-serif;
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   letter-spacing: -0.01em;
   margin: 0;
-  transition: background-color 0.3s ease;
+  transition: background-color var(--transition-normal);
   background-color: var(--app-bg);
   color: var(--text-primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: -0.025em;
 }
 
 /* Animations */
@@ -69,7 +259,6 @@ body {
     opacity: 0;
     transform: translateY(-20px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
@@ -81,7 +270,6 @@ body {
     opacity: 0;
     transform: translateX(-20px);
   }
-
   to {
     opacity: 1;
     transform: translateX(0);
@@ -93,7 +281,6 @@ body {
     opacity: 0;
     transform: scale(0.95);
   }
-
   to {
     opacity: 1;
     transform: scale(1);
@@ -101,16 +288,12 @@ body {
 }
 
 @keyframes shake {
-
-  0%,
-  100% {
+  0%, 100% {
     transform: translateX(0);
   }
-
   25% {
     transform: translateX(-8px);
   }
-
   75% {
     transform: translateX(8px);
   }
@@ -121,12 +304,10 @@ body {
     transform: scale(1);
     opacity: 0.2;
   }
-
   50% {
     transform: scale(1.2);
     opacity: 0.1;
   }
-
   100% {
     transform: scale(1);
     opacity: 0.2;
@@ -138,11 +319,9 @@ body {
     transform: scale(0.5);
     opacity: 0;
   }
-
   50% {
     transform: scale(1.2);
   }
-
   100% {
     transform: scale(1);
     opacity: 1;
@@ -153,19 +332,15 @@ body {
   0% {
     transform: translateY(0);
   }
-
   100% {
     transform: translateY(-20px);
   }
 }
 
 @keyframes float {
-
-  0%,
-  100% {
+  0%, 100% {
     transform: translateY(0);
   }
-
   50% {
     transform: translateY(-5px);
   }
@@ -175,11 +350,9 @@ body {
   0% {
     box-shadow: 0 0 0 0 rgba(0, 113, 227, 0.4);
   }
-
   70% {
     box-shadow: 0 0 0 10px rgba(0, 113, 227, 0);
   }
-
   100% {
     box-shadow: 0 0 0 0 rgba(0, 113, 227, 0);
   }
@@ -203,7 +376,7 @@ body {
   width: 0;
   height: 2px;
   background-color: var(--status-info-text);
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
   transform: translateX(-50%);
 }
 
@@ -214,7 +387,7 @@ body {
 .nav-icon-theme,
 .nav-icon-bell,
 .nav-icon-avatar {
-  transition: transform 0.3s ease;
+  transition: transform var(--transition-normal);
 }
 
 .nav-icon-theme:hover,
@@ -265,7 +438,7 @@ body {
   backdrop-filter: saturate(180%) blur(20px);
   background-color: var(--glass-bg);
   border: 1px solid var(--border-color);
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
 /* Custom Scrollbar */
@@ -296,48 +469,222 @@ body {
 }
 
 .shadow-soft {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-md);
 }
 
 .transition-all {
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
 }
 
-/* Dark Mode Overrides */
-[data-theme="dark"] .glass-effect {
-  backdrop-filter: saturate(180%) blur(20px);
-  background-color: rgba(28, 28, 30, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+/* Dark Dashboard Styles */
+.dark-dashboard {
+  background-color: var(--dark-bg);
+  color: var(--dark-text-primary);
 }
 
-[data-theme="dark"] .shadow-soft {
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+.dark-card {
+  background-color: var(--dark-surface);
+  border: 1px solid var(--dark-border);
+  border-radius: 8px;
+}
+
+.dark-card-secondary {
+  background-color: var(--dark-surface-secondary);
+  border: 1px solid var(--dark-border);
+  border-radius: 8px;
+}
+
+.dark-text-primary {
+  color: var(--dark-text-primary);
+}
+
+.dark-text-secondary {
+  color: var(--dark-text-secondary);
+}
+
+.dark-accent {
+  color: var(--dark-accent);
+}
+
+.dark-accent-bg {
+  background-color: var(--dark-accent);
+  color: #000000;
+}
+
+.dark-accent-bg-transparent {
+  background-color: rgba(0, 230, 118, 0.1);
+  color: var(--dark-accent);
+}
+
+.dark-border {
+  border-color: var(--dark-border);
 }
 
 /* MUI Component Overrides */
 .MuiButton-root {
   text-transform: none;
   font-weight: 500;
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: -0.01em;
+  transition: all var(--transition-fast);
+}
+
+.MuiButton-contained {
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-text);
+  box-shadow: none;
+  border-radius: 8px;
+}
+
+.MuiButton-contained:hover {
+  background-color: var(--brand-primary-hover);
+  box-shadow: var(--shadow-sm);
+  transform: translateY(-1px);
+}
+
+.MuiButton-outlined {
+  border-color: var(--border-color);
+  color: var(--text-primary);
+  border-radius: 8px;
+}
+
+.MuiButton-outlined:hover {
+  border-color: var(--text-secondary);
+  background-color: transparent;
+  transform: translateY(-1px);
 }
 
 .MuiChip-root {
   font-weight: 500;
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .MuiTableCell-root {
   border-bottom: 1px solid var(--border-color);
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text-primary);
 }
 
 .MuiPaper-root {
-  transition: all 0.3s ease;
+  transition: all var(--transition-normal);
+  box-shadow: none;
 }
 
 .MuiIconButton-root {
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
 }
 
 .MuiLinearProgress-root {
   border-radius: 8px;
+  height: 6px;
+  background-color: var(--surface-secondary);
+}
+
+.MuiLinearProgress-bar {
+  border-radius: 8px;
+}
+
+.MuiInputBase-root {
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.MuiOutlinedInput-root {
+  border-radius: 8px;
+}
+
+.MuiOutlinedInput-notchedOutline {
+  border-color: var(--border-color);
+  transition: border-color var(--transition-fast);
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: var(--text-secondary);
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: var(--brand-primary);
+  border-width: 1px;
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+}
+
+.MuiInputLabel-root {
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text-secondary);
+}
+
+.MuiTypography-root {
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.MuiTypography-h1, 
+.MuiTypography-h2, 
+.MuiTypography-h3, 
+.MuiTypography-h4, 
+.MuiTypography-h5, 
+.MuiTypography-h6 {
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  letter-spacing: -0.025em;
+}
+
+.MuiTabs-root {
+  min-height: 48px;
+}
+
+.MuiTab-root {
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: -0.01em;
+  min-height: 48px;
+}
+
+.MuiTab-root.Mui-selected {
+  font-weight: 600;
+}
+
+.MuiTabs-indicator {
+  height: 2px;
+}
+
+.MuiDialog-paper {
+  border-radius: 12px;
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.MuiDialogTitle-root {
+  font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+}
+
+.MuiDialogContent-root {
+  padding: 16px 24px;
+}
+
+.MuiDialogActions-root {
+  padding: 16px 24px;
+}
+
+.MuiSelect-select {
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.MuiMenuItem-root {
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 40px;
+}
+
+.MuiCheckbox-root {
+  padding: 8px;
+}
+
+.MuiListItemText-primary {
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.MuiListItemText-secondary {
+  font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Status Indicators */
@@ -359,4 +706,98 @@ body {
 .status-info {
   background-color: var(--status-info-bg);
   color: var(--status-info-text);
+}
+
+/* Custom Components */
+.apple-card {
+  background-color: var(--surface-primary);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  transition: all var(--transition-normal);
+}
+
+.apple-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+}
+
+.apple-button {
+  background-color: var(--button-primary-bg);
+  color: var(--button-primary-text);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  border: none;
+  cursor: pointer;
+}
+
+.apple-button:hover {
+  background-color: var(--brand-primary-hover);
+  transform: translateY(-1px);
+}
+
+.apple-button-secondary {
+  background-color: var(--button-secondary-bg);
+  color: var(--button-secondary-text);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 500;
+  transition: all var(--transition-fast);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+}
+
+.apple-button-secondary:hover {
+  background-color: var(--hover-bg);
+  transform: translateY(-1px);
+}
+
+.apple-input {
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--input-text);
+  transition: all var(--transition-fast);
+}
+
+.apple-input:focus {
+  border-color: var(--brand-primary);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.1);
+  outline: none;
+}
+
+.apple-input::placeholder {
+  color: var(--input-placeholder);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  :root {
+    --nav-height: 64px;
+  }
+  
+  .apple-card {
+    border-radius: 10px;
+  }
+  
+  .MuiButton-root {
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --nav-height: 56px;
+  }
+  
+  .apple-card {
+    border-radius: 8px;
+  }
+  
+  .MuiButton-root {
+    font-size: 0.8125rem;
+  }
 }

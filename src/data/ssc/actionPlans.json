@@ -1,0 +1,39 @@
+{
+    "plans": [
+        {
+            "id": "1",
+            "indicator": "Análisis de arquitectura de la información",
+            "goal": 100,
+            "achieved": 100,
+            "progress": 100
+        },
+        {
+            "id": "2",
+            "indicator": "Definición de objetivos y alcance del proyecto",
+            "goal": 100,
+            "achieved": 100,
+            "progress": 100
+        },
+        {
+            "id": "3",
+            "indicator": "Análisis de competencia y BM",
+            "goal": 100,
+            "achieved": 100,
+            "progress": 100
+        },
+        {
+            "id": "4",
+            "indicator": "Accesibilidad y Usabilidad",
+            "goal": 100,
+            "achieved": 100,
+            "progress": 100
+        },
+        {
+            "id": "5",
+            "indicator": "Prototipado y Diseño de la interfaz",
+            "goal": 100,
+            "achieved": 90,
+            "progress": 90
+        }
+    ]
+}

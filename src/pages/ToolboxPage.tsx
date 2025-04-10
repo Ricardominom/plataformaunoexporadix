@@ -1,4 +1,5 @@
 import React from 'react';
+import { Box, Container, Typography } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import { PMOToolbox } from '../components/toolbox/PMOToolbox';
 import { SSCToolbox } from '../components/toolbox/SSCToolbox';
@@ -10,7 +11,6 @@ import { AssistantToolbox } from '../components/toolbox/AssitantToolbox';
 import { InterlogisToolbox } from '../components/toolbox/InterlogisToolbox';
 import { AdminInterlogisToolbox } from '../components/toolbox/AdminInterlogisToolbox';
 import { ResearchDevToolbox } from '../components/toolbox/ResearchDevToolbox';
-import { Box, Container, Paper, Typography } from '@mui/material';
 
 export const ToolboxPage: React.FC = () => {
   const { user } = useAuth();
@@ -81,12 +81,13 @@ export const ToolboxPage: React.FC = () => {
         >
           Toolbox
         </Typography>
-        <Paper
+        <Box
           sx={{
             p: 4,
             borderRadius: '12px',
             backgroundColor: 'var(--surface-primary)',
             textAlign: 'center',
+            border: '1px solid var(--border-color)',
           }}
           className="glass-effect"
         >
@@ -96,9 +97,9 @@ export const ToolboxPage: React.FC = () => {
               fontSize: '1rem',
             }}
           >
-            No hay herramientas disponibles en este momento.
+            No hay herramientas disponibles para tu rol en este momento.
           </Typography>
-        </Paper>
+        </Box>
       </Container>
     </Box>
   );

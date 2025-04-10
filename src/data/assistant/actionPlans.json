@@ -1,0 +1,16 @@
+{
+    "plans": [
+        {
+            "indicator": "Optimización del SEO y rendimiento",
+            "goal": 100,
+            "achieved": 0,
+            "progress": 0
+        },
+        {
+            "indicator": "Lanzamiento y Monitoreo",
+            "goal": 100,
+            "achieved": 0,
+            "progress": 0
+        }
+    ]
+}

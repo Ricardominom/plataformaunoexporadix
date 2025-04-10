@@ -19,73 +19,8 @@ import {
 } from '@mui/material';
 import { Download, TrendingUp, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 
-// Mock data for Interlogis Holding
-const mockHoldingProjects = [
-    {
-        name: 'Expansión Regional',
-        progress: 75,
-        status: 'in_progress',
-        startDate: '2024-01-15',
-        endDate: '2024-06-30',
-        responsible: 'Juan Pérez',
-        budget: 1500000,
-        spent: 1000000,
-    },
-    {
-        name: 'Optimización de Operaciones',
-        progress: 90,
-        status: 'completed',
-        startDate: '2023-11-01',
-        endDate: '2024-02-28',
-        responsible: 'María González',
-        budget: 800000,
-        spent: 750000,
-    },
-    {
-        name: 'Implementación ERP',
-        progress: 30,
-        status: 'delayed',
-        startDate: '2024-02-01',
-        endDate: '2024-07-31',
-        responsible: 'Carlos Rodríguez',
-        budget: 2000000,
-        spent: 800000,
-    },
-];
-
-// Mock data for Interlogis Inmobiliaria
-const mockInmobiliariaProjects = [
-    {
-        name: 'Desarrollo Centro Logístico Norte',
-        progress: 60,
-        status: 'in_progress',
-        startDate: '2024-01-01',
-        endDate: '2024-12-31',
-        responsible: 'Ana Martínez',
-        budget: 5000000,
-        spent: 2800000,
-    },
-    {
-        name: 'Renovación Almacenes Sur',
-        progress: 100,
-        status: 'completed',
-        startDate: '2023-09-15',
-        endDate: '2024-02-15',
-        responsible: 'Roberto Sánchez',
-        budget: 1200000,
-        spent: 1150000,
-    },
-    {
-        name: 'Adquisición Terrenos Este',
-        progress: 45,
-        status: 'delayed',
-        startDate: '2024-02-01',
-        endDate: '2024-05-31',
-        responsible: 'Patricia López',
-        budget: 3000000,
-        spent: 1500000,
-    },
-];
+// Import mock data from centralized data module
+import { holdingProjects, inmobiliariaProjects } from '../../data/interlogis';
 
 const getStatusColor = (status: string) => {
     const colors = {
@@ -125,7 +60,7 @@ export const InterlogisToolbox: React.FC = () => {
         setCurrentTab(newValue);
     };
 
-    const renderProjectTable = (projects: typeof mockHoldingProjects) => (
+    const renderProjectTable = (projects: typeof holdingProjects.projects | typeof inmobiliariaProjects.projects) => (
         <TableContainer>
             <Table>
                 <TableHead>
@@ -319,8 +254,8 @@ export const InterlogisToolbox: React.FC = () => {
                             }}
                             className="glass-effect"
                         >
-                            {currentTab === 0 && renderProjectTable(mockHoldingProjects)}
-                            {currentTab === 1 && renderProjectTable(mockInmobiliariaProjects)}
+                            {currentTab === 0 && renderProjectTable(holdingProjects.projects)}
+                            {currentTab === 1 && renderProjectTable(inmobiliariaProjects.projects)}
                         </Paper>
                     </Grid>
                 </Grid>

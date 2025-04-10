@@ -12,6 +12,7 @@ import {
   Tooltip,
   Avatar,
 } from '@mui/material';
+import { motion } from 'framer-motion';
 import {
   FileText,
   CheckSquare,
@@ -20,6 +21,7 @@ import {
   X,
   Check,
   List as ListIcon,
+  Bell,
 } from 'lucide-react';
 import { useNotification } from '../../context/NotificationContext';
 import dayjs from 'dayjs';
@@ -69,15 +71,27 @@ export const NotificationPanel = memo<NotificationPanelProps>(({ onClose }) => {
     }
   };
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.05
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
     <Box
       sx={{
         width: 380,
         maxHeight: '80vh',
         backgroundColor: 'var(--surface-primary)',
-        borderRadius: '12px',
-        boxShadow: 'var(--shadow-lg)',
-        border: '1px solid var(--border-color)',
         display: 'flex',
         flexDirection: 'column',
       }}
@@ -93,7 +107,8 @@ export const NotificationPanel = memo<NotificationPanelProps>(({ onClose }) => {
           borderBottom: '1px solid var(--border-color)',
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Bell size={18} color="var(--text-primary)" />
           <Typography
             variant="h6"
             sx={{
@@ -105,14 +120,21 @@ export const NotificationPanel = memo<NotificationPanelProps>(({ onClose }) => {
             Notificaciones
           </Typography>
           {unreadCount > 0 && (
-            <Typography
+            <Box
               sx={{
-                fontSize: '0.875rem',
-                color: 'var(--text-secondary)',
+                backgroundColor: 'var(--status-info-bg)',
+                color: 'var(--status-info-text)',
+                borderRadius: '12px',
+                px: 1,
+                py: 0.25,
+                fontSize: '0.75rem',
+                fontWeight: 500,
+                minWidth: 20,
+                textAlign: 'center',
               }}
             >
-              ({unreadCount})
-            </Typography>
+              {unreadCount}
+            </Box>
           )}
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
@@ -120,7 +142,7 @@ export const NotificationPanel = memo<NotificationPanelProps>(({ onClose }) => {
             <Button
               size="small"
               onClick={markAllAsRead}
-              startIcon={<Check size={16} />}
+              startIcon={<Check size={14} />}
               sx={{
                 fontSize: '0.75rem',
                 textTransform: 'none',
@@ -153,9 +175,26 @@ export const NotificationPanel = memo<NotificationPanelProps>(({ onClose }) => {
       {/* Notifications List */}
       {notifications.length > 0 ? (
         <>
-          <List sx={{ flex: 1, overflowY: 'auto', py: 0 }}>
-            {notifications.map((notification, index) => (
-              <React.Fragment key={notification.id}>
+          <List 
+            component={motion.ul}
+            variants={containerVariants}
+            initial="hidden"
+            animate="visible"
+            sx={{ 
+              flex: 1, 
+              overflowY: 'auto', 
+              py: 0,
+              '&::-webkit-scrollbar': {
+                width: '4px',
+              },
+              '&::-webkit-scrollbar-thumb': {
+                backgroundColor: 'var(--text-tertiary)',
+                borderRadius: '4px',
+              },
+            }}
+          >
+            {notifications.map((notification) => (
+              <motion.div key={notification.id} variants={itemVariants}>
                 <ListItem
                   sx={{
                     py: 2,
@@ -166,9 +205,10 @@ export const NotificationPanel = memo<NotificationPanelProps>(({ onClose }) => {
                     '&:hover': {
                       backgroundColor: 'var(--hover-bg)',
                     },
+                    transition: 'background-color 0.2s ease',
                   }}
                 >
-                  <ListItemIcon sx={{ minWidth: 40 }}>
+                  <ListItemIcon sx={{ minWidth: 40, color: getActionColor(notification.action) }}>
                     {getNotificationIcon(notification.type)}
                   </ListItemIcon>
                   <ListItemText
@@ -179,6 +219,7 @@ export const NotificationPanel = memo<NotificationPanelProps>(({ onClose }) => {
                             fontSize: '0.875rem',
                             fontWeight: notification.read ? 400 : 500,
                             color: 'var(--text-primary)',
+                            lineHeight: 1.4,
                           }}
                         >
                           {notification.description}
@@ -213,32 +254,36 @@ export const NotificationPanel = memo<NotificationPanelProps>(({ onClose }) => {
                   />
                   <Box sx={{ display: 'flex', gap: 1 }}>
                     {!notification.read && (
-                      <Tooltip title="Marcar como leído">
+                      <Tooltip title="Marcar como leído" arrow placement="left">
                         <IconButton
                           size="small"
                           onClick={() => markAsRead(notification.id)}
                           sx={{
                             color: 'var(--text-secondary)',
                             '&:hover': {
-                              backgroundColor: 'var(--hover-bg)',
+                              backgroundColor: 'rgba(48, 209, 88, 0.1)',
                               color: '#30d158',
                             },
+                            width: 28,
+                            height: 28,
                           }}
                         >
                           <CheckCircle2 size={16} />
                         </IconButton>
                       </Tooltip>
                     )}
-                    <Tooltip title="Eliminar">
+                    <Tooltip title="Eliminar" arrow placement="left">
                       <IconButton
                         size="small"
                         onClick={() => removeNotification(notification.id)}
                         sx={{
                           color: 'var(--text-secondary)',
                           '&:hover': {
-                            backgroundColor: 'var(--hover-bg)',
+                            backgroundColor: 'rgba(255, 45, 85, 0.1)',
                             color: '#ff2d55',
                           },
+                          width: 28,
+                          height: 28,
                         }}
                       >
                         <Trash2 size={16} />
@@ -246,10 +291,8 @@ export const NotificationPanel = memo<NotificationPanelProps>(({ onClose }) => {
                     </Tooltip>
                   </Box>
                 </ListItem>
-                {index < notifications.length - 1 && (
-                  <Divider sx={{ borderColor: 'var(--border-color)' }} />
-                )}
-              </React.Fragment>
+                <Divider sx={{ borderColor: 'var(--border-color)' }} />
+              </motion.div>
             ))}
           </List>
 
@@ -303,13 +346,37 @@ export const NotificationPanel = memo<NotificationPanelProps>(({ onClose }) => {
             gap: 2,
           }}
         >
+          <Box
+            sx={{
+              width: 60,
+              height: 60,
+              borderRadius: '50%',
+              backgroundColor: 'var(--surface-secondary)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              mb: 2,
+            }}
+          >
+            <Bell size={24} color="var(--text-secondary)" />
+          </Box>
           <Typography
             sx={{
-              color: 'var(--text-secondary)',
+              color: 'var(--text-primary)',
+              fontWeight: 500,
               textAlign: 'center',
             }}
           >
             No hay notificaciones
+          </Typography>
+          <Typography
+            sx={{
+              color: 'var(--text-secondary)',
+              fontSize: '0.875rem',
+              textAlign: 'center',
+            }}
+          >
+            Las notificaciones aparecerán aquí cuando haya actividad en tu cuenta.
           </Typography>
         </Box>
       )}

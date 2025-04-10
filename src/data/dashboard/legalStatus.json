@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "category": "Contratos",
+      "completed": 15,
+      "total": 20,
+      "growth": 25
+    },
+    {
+      "category": "Compliance",
+      "completed": 8,
+      "total": 10,
+      "growth": 15
+    },
+    {
+      "category": "Propiedad Intelectual",
+      "completed": 5,
+      "total": 8,
+      "growth": -10
+    },
+    {
+      "category": "Regulatorio",
+      "completed": 12,
+      "total": 15,
+      "growth": 8
+    }
+  ]
+}

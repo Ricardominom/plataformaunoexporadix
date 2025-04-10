@@ -1,7 +1,7 @@
 import React from 'react';
-import { Box, Typography, IconButton, Tooltip, Badge, Button } from '@mui/material';
+import { Box, Typography, IconButton, Tooltip, Button } from '@mui/material';
 import { motion } from 'framer-motion';
-import { Calendar, Star, Clock, CheckCircle2, Info, Plus } from 'lucide-react';
+import { Plus, Info } from 'lucide-react';
 
 interface TodoHeaderProps {
     selectedFilter: string;
@@ -23,7 +23,7 @@ export const TodoHeader: React.FC<TodoHeaderProps> = ({
     return (
         <Box
             sx={{
-                p: 2,
+                p: 3,
                 borderBottom: '1px solid var(--border-color)',
                 display: 'flex',
                 alignItems: 'center',
@@ -38,8 +38,8 @@ export const TodoHeader: React.FC<TodoHeaderProps> = ({
                 >
                     <Box
                         sx={{
-                            width: 40,
-                            height: 40,
+                            width: 48,
+                            height: 48,
                             borderRadius: '12px',
                             backgroundColor: `${color}20`,
                             display: 'flex',
@@ -56,24 +56,24 @@ export const TodoHeader: React.FC<TodoHeaderProps> = ({
                     </Box>
                 </motion.div>
                 <Box>
-                    <Typography
-                        variant="h6"
-                        sx={{
-                            fontSize: '1.125rem',
-                            fontWeight: 600,
-                            color: 'var(--text-primary)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 1,
-                        }}
-                    >
-                        {label}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                fontSize: '1.25rem',
+                                fontWeight: 600,
+                                color: 'var(--text-primary)',
+                                letterSpacing: '-0.025em',
+                            }}
+                        >
+                            {label}
+                        </Typography>
                         <Tooltip title="Vista general de tus tareas" arrow>
                             <IconButton size="small" sx={{ color: 'var(--text-secondary)' }}>
-                                <Info size={14} />
+                                <Info size={16} />
                             </IconButton>
                         </Tooltip>
-                    </Typography>
+                    </Box>
                     <Typography
                         sx={{
                             fontSize: '0.875rem',
@@ -84,44 +84,34 @@ export const TodoHeader: React.FC<TodoHeaderProps> = ({
                     </Typography>
                 </Box>
             </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Badge
-                    badgeContent={count}
-                    color="primary"
-                    sx={{
-                        '& .MuiBadge-badge': {
-                            backgroundColor: color,
-                            color: '#fff',
-                            fontSize: '0.75rem',
-                            minWidth: '20px',
-                            height: '20px',
-                        },
-                    }}
-                />
-                <Button
-                    variant="contained"
-                    startIcon={<Plus size={16} />}
-                    onClick={onNewReminder}
-                    sx={{
+            <Button
+                variant="contained"
+                startIcon={<Plus size={16} />}
+                onClick={onNewReminder}
+                sx={{
+                    backgroundColor: color,
+                    color: '#fff',
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    textTransform: 'none',
+                    px: 3,
+                    py: 1,
+                    borderRadius: '8px',
+                    boxShadow: 'none',
+                    '&:hover': {
                         backgroundColor: color,
-                        color: '#fff',
-                        fontSize: '0.875rem',
-                        fontWeight: 500,
-                        textTransform: 'none',
-                        px: 2,
-                        height: '32px',
-                        borderRadius: '8px',
-                        boxShadow: 'none',
-                        '&:hover': {
-                            backgroundColor: color,
-                            opacity: 0.9,
-                            boxShadow: 'none',
-                        },
-                    }}
-                >
-                    Nuevo
-                </Button>
-            </Box>
+                        opacity: 0.9,
+                        boxShadow: `0 4px 12px ${color}40`,
+                        transform: 'translateY(-2px)',
+                    },
+                    '&:active': {
+                        transform: 'translateY(0)',
+                    },
+                    transition: 'all 0.2s ease',
+                }}
+            >
+                Nuevo Recordatorio
+            </Button>
         </Box>
     );
 };

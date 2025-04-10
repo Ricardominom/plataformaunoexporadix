@@ -26,6 +26,9 @@ import {
 import { NewLeadDialog } from './Forms/NewLeadDialog';
 import { useNotification } from '../../context/NotificationContext';
 
+// Import mock data from centralized data module
+import { leads } from '../../data/comercial';
+
 interface ComercialLead {
     id: string;
     cuenta: string;
@@ -43,60 +46,6 @@ interface ComercialLead {
     arranque: string;
     comentarios: string;
 }
-
-const mockLeads: ComercialLead[] = [
-    {
-        id: '1',
-        cuenta: 'Empresa A',
-        estatus: 'Activo',
-        comentariosVentas: 'Cliente potencial interesado en servicios completos',
-        enlace: 'Juan Pérez',
-        contacto: 'contacto@empresaa.com',
-        cita: '2024-03-01',
-        presentacion: true,
-        propuesta: 'En revisión',
-        escenarioAprobado: false,
-        monto: 50000,
-        pagos: 'Mensual',
-        contrato: false,
-        arranque: '2024-04-01',
-        comentarios: 'En proceso de negociación final'
-    },
-    {
-        id: '2',
-        cuenta: 'Empresa B',
-        estatus: 'En pausa',
-        comentariosVentas: 'Esperando aprobación de presupuesto',
-        enlace: 'María González',
-        contacto: 'contacto@empresab.com',
-        cita: '2024-02-28',
-        presentacion: true,
-        propuesta: 'Realizada',
-        escenarioAprobado: false,
-        monto: 75000,
-        pagos: 'Trimestral',
-        contrato: false,
-        arranque: '2024-05-01',
-        comentarios: 'Cliente solicita revisión de términos'
-    },
-    {
-        id: '3',
-        cuenta: 'Empresa C',
-        estatus: 'Activo',
-        comentariosVentas: 'Interesado en expansión de servicios actuales',
-        enlace: 'Roberto Sánchez',
-        contacto: 'contacto@empresac.com',
-        cita: '2024-03-15',
-        presentacion: true,
-        propuesta: 'Aceptada',
-        escenarioAprobado: true,
-        monto: 120000,
-        pagos: 'Anual',
-        contrato: true,
-        arranque: '2024-04-15',
-        comentarios: 'Cliente premium con alto potencial de crecimiento'
-    }
-];
 
 const getStatusColor = (status: ComercialLead['estatus']) => {
     const colors = {
@@ -120,20 +69,20 @@ const getPropuestaColor = (propuesta: ComercialLead['propuesta']) => {
 
 export const ComercialTool: React.FC = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [leads, setLeads] = useState<ComercialLead[]>(mockLeads);
+    const [leadsList, setLeadsList] = useState<ComercialLead[]>(leads.leads);
     const [isNewLeadDialogOpen, setIsNewLeadDialogOpen] = useState(false);
     const { addNotification } = useNotification();
 
     const handleNewLead = (lead: Omit<ComercialLead, 'id'>) => {
         const newLead: ComercialLead = {
             ...lead,
-            id: (leads.length + 1).toString(),
+            id: (leadsList.length + 1).toString(),
             presentacion: false,
             escenarioAprobado: false,
             contrato: false,
         };
 
-        setLeads([newLead, ...leads]);
+        setLeadsList([newLead, ...leadsList]);
         addNotification('list', 'created', {
             id: newLead.id,
             title: `Nuevo LEAD: ${newLead.cuenta}`,
@@ -143,7 +92,7 @@ export const ComercialTool: React.FC = () => {
         });
     };
 
-    const filteredLeads = leads.filter(lead => {
+    const filteredLeads = leadsList.filter(lead => {
         if (!searchTerm) return true;
         const searchLower = searchTerm.toLowerCase();
         return (

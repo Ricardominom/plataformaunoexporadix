@@ -1,0 +1,16 @@
+{
+  "agreements": [
+    {
+      "title": "Acuerdo de Confidencialidad",
+      "status": "completed",
+      "owner": "Juan Pérez",
+      "progress": 100
+    },
+    {
+      "title": "Términos y Condiciones App",
+      "status": "pending",
+      "owner": "Carlos Rodríguez",
+      "progress": 30
+    }
+  ]
+}

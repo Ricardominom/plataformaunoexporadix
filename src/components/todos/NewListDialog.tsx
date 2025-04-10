@@ -9,9 +9,11 @@ import {
     Box,
     Typography,
     IconButton,
+    Grid,
 } from '@mui/material';
 import { CirclePicker } from 'react-color';
-import { X } from 'lucide-react';
+import { X, Circle } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface NewListDialogProps {
     open: boolean;
@@ -58,16 +60,22 @@ export const NewListDialog: React.FC<NewListDialogProps> = ({
         <Dialog
             open={open}
             onClose={handleClose}
-            maxWidth="xs"
+            maxWidth="sm"
             fullWidth
             PaperProps={{
                 elevation: 0,
+                component: motion.div,
+                initial: { opacity: 0, y: 20, scale: 0.95 },
+                animate: { opacity: 1, y: 0, scale: 1 },
+                exit: { opacity: 0, y: 20, scale: 0.95 },
+                transition: { duration: 0.2 },
                 sx: {
-                    borderRadius: '12px',
+                    borderRadius: '16px',
                     backgroundColor: 'var(--surface-primary)',
                     backdropFilter: 'blur(20px)',
                     border: '1px solid var(--border-color)',
                     overflow: 'hidden',
+                    maxWidth: '450px',
                 },
             }}
         >
@@ -77,22 +85,37 @@ export const NewListDialog: React.FC<NewListDialogProps> = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        p: 2,
+                        p: 3,
                         borderBottom: '1px solid var(--border-color)',
                         backgroundColor: 'var(--surface-secondary)',
                     }}
                 >
-                    <Typography
-                        variant="h6"
-                        sx={{
-                            fontSize: '1.125rem',
-                            fontWeight: 600,
-                            color: 'var(--text-primary)',
-                            letterSpacing: '-0.025em',
-                        }}
-                    >
-                        Nueva Lista
-                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box
+                            sx={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: '8px',
+                                backgroundColor: `${formData.color}20`,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}
+                        >
+                            <Circle size={16} color={formData.color} fill={formData.color} />
+                        </Box>
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                fontSize: '1.25rem',
+                                fontWeight: 600,
+                                color: 'var(--text-primary)',
+                                letterSpacing: '-0.025em',
+                            }}
+                        >
+                            Nueva Lista
+                        </Typography>
+                    </Box>
                     <IconButton
                         onClick={handleClose}
                         size="small"
@@ -101,71 +124,76 @@ export const NewListDialog: React.FC<NewListDialogProps> = ({
                             '&:hover': {
                                 backgroundColor: 'var(--hover-bg)',
                                 color: 'var(--text-primary)',
+                                transform: 'rotate(90deg)',
                             },
+                            transition: 'all 0.3s ease',
                         }}
                     >
-                        <X size={18} />
+                        <X size={20} />
                     </IconButton>
                 </DialogTitle>
 
-                <DialogContent sx={{ p: 2, pt: 3, backgroundColor: 'var(--surface-primary)' }}>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                        <TextField
-                            label="Nombre de la lista"
-                            fullWidth
-                            value={formData.name}
-                            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                            required
-                            size="small"
-                            sx={{
-                                '& .MuiOutlinedInput-root': {
-                                    borderRadius: '8px',
-                                    backgroundColor: 'var(--surface-secondary)',
-                                    '&:hover': {
+                <DialogContent sx={{ p: 3, backgroundColor: 'var(--surface-primary)' }}>
+                    <Grid container spacing={3}>
+                        <Grid item xs={12}>
+                            <TextField
+                                label="Nombre de la lista"
+                                fullWidth
+                                value={formData.name}
+                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                                required
+                                sx={{
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '10px',
                                         backgroundColor: 'var(--surface-secondary)',
+                                        '&:hover': {
+                                            backgroundColor: 'var(--surface-secondary)',
+                                        },
+                                        '&.Mui-focused': {
+                                            backgroundColor: 'var(--surface-secondary)',
+                                            boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
+                                        },
                                     },
-                                    '&.Mui-focused': {
-                                        backgroundColor: 'var(--surface-secondary)',
-                                        boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
+                                    '& .MuiInputLabel-root': {
+                                        color: 'var(--text-secondary)',
                                     },
-                                },
-                                '& .MuiInputLabel-root': {
-                                    color: 'var(--text-secondary)',
-                                },
-                                '& .MuiOutlinedInput-notchedOutline': {
-                                    borderColor: 'var(--border-color)',
-                                },
-                                '& .MuiInputBase-input': {
-                                    color: 'var(--text-primary)',
-                                },
-                            }}
-                        />
+                                    '& .MuiOutlinedInput-notchedOutline': {
+                                        borderColor: 'var(--border-color)',
+                                    },
+                                    '& .MuiInputBase-input': {
+                                        color: 'var(--text-primary)',
+                                    },
+                                }}
+                            />
+                        </Grid>
 
-                        <Box>
+                        <Grid item xs={12}>
                             <Typography
                                 sx={{
                                     fontSize: '0.875rem',
                                     color: 'var(--text-secondary)',
-                                    mb: 1.5,
+                                    mb: 2,
                                     fontWeight: 500,
                                 }}
                             >
                                 Color
                             </Typography>
-                            <CirclePicker
-                                color={formData.color}
-                                colors={colorOptions}
-                                onChange={(color) => setFormData({ ...formData, color: color.hex })}
-                                circleSize={28}
-                                circleSpacing={12}
-                            />
-                        </Box>
-                    </Box>
+                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                <CirclePicker
+                                    color={formData.color}
+                                    colors={colorOptions}
+                                    onChange={(color) => setFormData({ ...formData, color: color.hex })}
+                                    circleSize={36}
+                                    circleSpacing={16}
+                                />
+                            </Box>
+                        </Grid>
+                    </Grid>
                 </DialogContent>
 
                 <DialogActions
                     sx={{
-                        p: 2,
+                        p: 3,
                         borderTop: '1px solid var(--border-color)',
                         backgroundColor: 'var(--surface-secondary)',
                         gap: 1,
@@ -175,11 +203,12 @@ export const NewListDialog: React.FC<NewListDialogProps> = ({
                         onClick={handleClose}
                         sx={{
                             color: 'var(--text-secondary)',
-                            fontSize: '0.875rem',
+                            fontSize: '0.9375rem',
                             fontWeight: 500,
                             textTransform: 'none',
-                            px: 2.5,
-                            borderRadius: '6px',
+                            px: 3,
+                            py: 1,
+                            borderRadius: '8px',
                             '&:hover': {
                                 backgroundColor: 'var(--hover-bg)',
                                 color: 'var(--text-primary)',
@@ -192,17 +221,23 @@ export const NewListDialog: React.FC<NewListDialogProps> = ({
                         type="submit"
                         variant="contained"
                         sx={{
-                            backgroundColor: '#0071e3',
+                            backgroundColor: formData.color,
                             color: '#fff',
-                            fontSize: '0.875rem',
+                            fontSize: '0.9375rem',
                             fontWeight: 500,
                             textTransform: 'none',
-                            px: 2.5,
-                            borderRadius: '6px',
+                            px: 3,
+                            py: 1,
+                            borderRadius: '8px',
                             boxShadow: 'none',
                             '&:hover': {
-                                backgroundColor: '#0077ED',
-                                boxShadow: 'none',
+                                backgroundColor: formData.color,
+                                opacity: 0.9,
+                                boxShadow: `0 2px 8px ${formData.color}40`,
+                                transform: 'translateY(-2px)',
+                            },
+                            '&:active': {
+                                transform: 'translateY(0)',
                             },
                         }}
                     >

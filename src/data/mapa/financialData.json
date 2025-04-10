@@ -1,0 +1,18 @@
+{
+    "revenue": {
+        "total": 2500000,
+        "breakdown": [
+            { "label": "Ventas Directas", "value": 40 },
+            { "label": "Servicios", "value": 35 },
+            { "label": "Licencias", "value": 25 }
+        ]
+    },
+    "expenses": {
+        "total": 1800000,
+        "breakdown": [
+            { "label": "Operaciones", "value": 45 },
+            { "label": "Marketing", "value": 30 },
+            { "label": "Desarrollo", "value": 25 }
+        ]
+    }
+}

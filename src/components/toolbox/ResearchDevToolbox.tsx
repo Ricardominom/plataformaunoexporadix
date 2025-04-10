@@ -29,61 +29,8 @@ import {
     Workflow,
 } from 'lucide-react';
 
-// Mock data for automation projects
-const mockAutomationProjects = [
-    {
-        id: '1',
-        name: 'Automatización de Reportes Financieros',
-        type: 'RPA',
-        status: 'completed',
-        progress: 100,
-        timeReduction: 85,
-        errorReduction: 95,
-        responsible: 'Ana Martínez',
-        lastUpdate: '2024-02-20',
-        nextMilestone: 'Mantenimiento',
-        description: 'Automatización completa del proceso de generación y distribución de reportes financieros mensuales.',
-    },
-    {
-        id: '2',
-        name: 'Sistema de Monitoreo Predictivo',
-        type: 'ML',
-        status: 'in_progress',
-        progress: 75,
-        timeReduction: 60,
-        errorReduction: 80,
-        responsible: 'Carlos Rodríguez',
-        lastUpdate: '2024-02-25',
-        nextMilestone: 'Implementación de Alertas',
-        description: 'Sistema de machine learning para predecir y prevenir fallos en equipos críticos.',
-    },
-    {
-        id: '3',
-        name: 'Chatbot de Atención al Cliente',
-        type: 'AI',
-        status: 'in_progress',
-        progress: 60,
-        timeReduction: 70,
-        errorReduction: 65,
-        responsible: 'Laura Sánchez',
-        lastUpdate: '2024-02-23',
-        nextMilestone: 'Entrenamiento NLP',
-        description: 'Asistente virtual inteligente para atención al cliente 24/7.',
-    },
-    {
-        id: '4',
-        name: 'Optimización de Rutas Logísticas',
-        type: 'AI',
-        status: 'delayed',
-        progress: 40,
-        timeReduction: 45,
-        errorReduction: 50,
-        responsible: 'Miguel Torres',
-        lastUpdate: '2024-02-22',
-        nextMilestone: 'Integración GPS',
-        description: 'Sistema de optimización de rutas basado en IA para mejorar la eficiencia logística.',
-    },
-];
+// Import mock data from centralized data module
+import { automationProjects } from '../../data/research-dev';
 
 // Project type icons and colors
 const typeConfig = {
@@ -98,7 +45,7 @@ const getStatusColor = (status: string) => {
         in_progress: { bg: 'rgba(0, 113, 227, 0.1)', text: '#0071e3' },
         delayed: { bg: 'rgba(255, 45, 85, 0.1)', text: '#ff2d55' },
     };
-    return colors[status] || colors.in_progress;
+    return colors[status as keyof typeof colors] || colors.in_progress;
 };
 
 const getStatusIcon = (status: string) => {
@@ -120,11 +67,11 @@ const getStatusLabel = (status: string) => {
         in_progress: 'En Progreso',
         delayed: 'Retrasado',
     };
-    return labels[status] || status;
+    return labels[status as keyof typeof labels] || status;
 };
 
 export const ResearchDevToolbox: React.FC = () => {
-    const [projects] = useState(mockAutomationProjects);
+    const [projects] = useState(automationProjects.projects);
 
     // Calculate overall metrics
     const metrics = {
@@ -180,7 +127,7 @@ export const ResearchDevToolbox: React.FC = () => {
                     </Button>
                 </Box>
 
-                {/* Metrics Overview */}
+                {/* Quick Stats Section */}
                 <Grid container spacing={3} sx={{ mb: 4 }}>
                     {[
                         {
@@ -207,7 +154,7 @@ export const ResearchDevToolbox: React.FC = () => {
                             icon: <Zap size={24} />,
                             color: '#5856d6',
                         },
-                    ].map((metric, index) => (
+                    ].map((stat, index) => (
                         <Grid item xs={12} sm={6} md={3} key={index}>
                             <Paper
                                 sx={{
@@ -225,14 +172,14 @@ export const ResearchDevToolbox: React.FC = () => {
                                         width: 48,
                                         height: 48,
                                         borderRadius: '12px',
-                                        backgroundColor: `${metric.color}20`,
+                                        backgroundColor: `${stat.color}20`,
                                         display: 'flex',
                                         alignItems: 'center',
                                         justifyContent: 'center',
-                                        color: metric.color,
+                                        color: stat.color,
                                     }}
                                 >
-                                    {metric.icon}
+                                    {stat.icon}
                                 </Box>
                                 <Box>
                                     <Typography
@@ -242,7 +189,7 @@ export const ResearchDevToolbox: React.FC = () => {
                                             mb: 0.5,
                                         }}
                                     >
-                                        {metric.title}
+                                        {stat.title}
                                     </Typography>
                                     <Typography
                                         sx={{
@@ -251,7 +198,7 @@ export const ResearchDevToolbox: React.FC = () => {
                                             color: 'var(--text-primary)',
                                         }}
                                     >
-                                        {metric.value}
+                                        {stat.value}
                                     </Typography>
                                 </Box>
                             </Paper>
@@ -313,12 +260,12 @@ export const ResearchDevToolbox: React.FC = () => {
                                         </TableCell>
                                         <TableCell>
                                             <Chip
-                                                icon={typeConfig[project.type].icon}
+                                                icon={typeConfig[project.type as keyof typeof typeConfig].icon}
                                                 label={project.type}
                                                 size="small"
                                                 sx={{
-                                                    backgroundColor: `${typeConfig[project.type].color}20`,
-                                                    color: typeConfig[project.type].color,
+                                                    backgroundColor: `${typeConfig[project.type as keyof typeof typeConfig].color}20`,
+                                                    color: typeConfig[project.type as keyof typeof typeConfig].color,
                                                     '& .MuiChip-icon': {
                                                         color: 'inherit',
                                                     },

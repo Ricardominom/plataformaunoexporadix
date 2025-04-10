@@ -1,0 +1,44 @@
+{
+    "cases": [
+        {
+            "id": "1",
+            "apartado": "Otros",
+            "tema": null,
+            "proyecto": "Listo",
+            "instancias": "Listo",
+            "concluido": "Listo"
+        },
+        {
+            "id": "2",
+            "apartado": "Otros",
+            "tema": "Tema 14",
+            "proyecto": "Listo",
+            "instancias": "Listo",
+            "concluido": "En proceso"
+        },
+        {
+            "id": "3",
+            "apartado": "Gobierno Corporativo",
+            "tema": "Tema 8",
+            "proyecto": "En proceso",
+            "instancias": "En proceso",
+            "concluido": "En proceso"
+        },
+        {
+            "id": "4",
+            "apartado": "Gobierno Corporativo",
+            "tema": null,
+            "proyecto": "En proceso",
+            "instancias": "En proceso",
+            "concluido": "Listo"
+        },
+        {
+            "id": "5",
+            "apartado": "Documentos propuestos",
+            "tema": "Tema 7",
+            "proyecto": "En proceso",
+            "instancias": "Detenido",
+            "concluido": "En proceso"
+        }
+    ]
+}

@@ -1,0 +1,34 @@
+{
+    "projects": [
+        {
+            "name": "Desarrollo Centro Logístico Norte",
+            "progress": 60,
+            "status": "in_progress",
+            "startDate": "2024-01-01",
+            "endDate": "2024-12-31",
+            "responsible": "Ana Martínez",
+            "budget": 5000000,
+            "spent": 2800000
+        },
+        {
+            "name": "Renovación Almacenes Sur",
+            "progress": 100,
+            "status": "completed",
+            "startDate": "2023-09-15",
+            "endDate": "2024-02-15",
+            "responsible": "Roberto Sánchez",
+            "budget": 1200000,
+            "spent": 1150000
+        },
+        {
+            "name": "Adquisición Terrenos Este",
+            "progress": 45,
+            "status": "delayed",
+            "startDate": "2024-02-01",
+            "endDate": "2024-05-31",
+            "responsible": "Patricia López",
+            "budget": 3000000,
+            "spent": 1500000
+        }
+    ]
+}

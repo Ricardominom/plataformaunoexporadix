@@ -1,0 +1,25 @@
+{
+  "accounts": [
+    {
+      "account": "Cuenta Principal",
+      "balance": 1500000,
+      "pending": 250000,
+      "status": "active",
+      "lastUpdate": "2024-03-01"
+    },
+    {
+      "account": "Cuenta Operativa",
+      "balance": 800000,
+      "pending": 120000,
+      "status": "active",
+      "lastUpdate": "2024-03-01"
+    },
+    {
+      "account": "Cuenta Reserva",
+      "balance": 2000000,
+      "pending": 0,
+      "status": "active",
+      "lastUpdate": "2024-03-01"
+    }
+  ]
+}

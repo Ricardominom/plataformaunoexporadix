@@ -1,0 +1,25 @@
+{
+    "companies": [
+        {
+            "company": "Espora",
+            "revenue": 1500000,
+            "expenses": 900000,
+            "profit": 600000,
+            "growth": 15.5
+        },
+        {
+            "company": "Mapa",
+            "revenue": 800000,
+            "expenses": 450000,
+            "profit": 350000,
+            "growth": 12.3
+        },
+        {
+            "company": "Interlogis",
+            "revenue": 1200000,
+            "expenses": 750000,
+            "profit": 450000,
+            "growth": 8.7
+        }
+    ]
+}

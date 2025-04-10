@@ -11,7 +11,15 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
+    // Check for saved theme preference
     const savedTheme = localStorage.getItem('theme');
+    
+    // Check for system preference if no saved theme
+    if (!savedTheme) {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      return prefersDark ? 'dark' : 'light';
+    }
+    
     return (savedTheme as Theme) || 'light';
   });
 
@@ -19,58 +27,49 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     localStorage.setItem('theme', theme);
     document.documentElement.setAttribute('data-theme', theme);
 
-    // Apply MUI theme overrides
-    const style = document.createElement('style');
-    style.textContent = `
-      .MuiTypography-root {
-        color: var(--text-primary) !important;
-      }
-      .MuiInputBase-input {
-        color: var(--text-primary) !important;
-      }
-      .MuiInputLabel-root {
-        color: var(--text-secondary) !important;
-      }
-      .MuiTableCell-root {
-        color: var(--text-primary) !important;
-      }
-      .MuiTableCell-head {
-        color: var(--text-secondary) !important;
-      }
-      .MuiMenuItem-root {
-        color: var(--text-primary) !important;
-      }
-      .MuiListItemText-primary {
-        color: var(--text-primary) !important;
-      }
-      .MuiListItemText-secondary {
-        color: var(--text-secondary) !important;
-      }
-      .MuiButton-text {
-        color: var(--text-primary) !important;
-      }
-      .MuiSelect-select {
-        color: var(--text-primary) !important;
-      }
-      .MuiSelect-icon {
-        color: var(--text-secondary) !important;
-      }
-      .MuiTab-root {
-        color: var(--text-secondary) !important;
-      }
-      .MuiTab-root.Mui-selected {
-        color: var(--status-info-text) !important;
-      }
-    `;
-    document.head.appendChild(style);
+    // Apply theme transition class
+    document.documentElement.classList.add('theme-transition');
+    
+    // Remove transition class after transition completes to prevent transition on page load
+    const timer = setTimeout(() => {
+      document.documentElement.classList.remove('theme-transition');
+    }, 300);
 
-    return () => {
-      document.head.removeChild(style);
-    };
+    return () => clearTimeout(timer);
   }, [theme]);
 
+  // Listen for system preference changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const handleChange = (e: MediaQueryListEvent) => {
+      // Only change theme automatically if user hasn't set a preference
+      if (!localStorage.getItem('theme')) {
+        setTheme(e.matches ? 'dark' : 'light');
+      }
+    };
+    
+    // Add listener for older browsers
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', handleChange);
+    } else {
+      mediaQuery.addListener(handleChange);
+    }
+    
+    return () => {
+      if (typeof mediaQuery.removeEventListener === 'function') {
+        mediaQuery.removeEventListener('change', handleChange);
+      } else {
+        mediaQuery.removeListener(handleChange);
+      }
+    };
+  }, []);
+
   const toggleTheme = () => {
-    setTheme(prev => prev === 'light' ? 'dark' : 'light');
+    setTheme(prev => {
+      const newTheme = prev === 'light' ? 'dark' : 'light';
+      return newTheme;
+    });
   };
 
   return (

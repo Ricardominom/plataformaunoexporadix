@@ -5,67 +5,66 @@ import {
     Paper,
     Typography,
     Grid,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
     Tabs,
     Tab,
     IconButton,
+    Badge,
+    Chip,
+    LinearProgress,
+    Tooltip,
 } from '@mui/material';
 import {
     FileSpreadsheet,
     DollarSign,
     Download,
     BarChart2,
+    Clock,
+    CheckCircle2,
+    AlertCircle,
 } from 'lucide-react';
 
-// Mock data for financial metrics
-const mockFinancialData = {
-    holding: {
-        revenue: {
-            total: 2500000,
-            previous: 2000000,
-            breakdown: [
-                { label: 'Servicios Logísticos', value: 45 },
-                { label: 'Almacenamiento', value: 35 },
-                { label: 'Distribución', value: 20 },
-            ]
-        },
-        expenses: {
-            total: 1800000,
-            previous: 1500000,
-            breakdown: [
-                { label: 'Operaciones', value: 50 },
-                { label: 'Personal', value: 30 },
-                { label: 'Mantenimiento', value: 20 },
-            ]
-        },
-        profit: {
-            total: 700000,
-            previous: 500000,
-        }
-    },
-    inmobiliaria: {
-        revenue: {
-            total: 3500000,
-            previous: 3000000,
-            breakdown: [
-                { label: 'Arrendamientos', value: 60 },
-                { label: 'Servicios', value: 25 },
-                { label: 'Otros', value: 15 },
-            ]
-        },
-        expenses: {
-            total: 2200000,
-            previous: 1900000,
-            breakdown: [
-                { label: 'Mantenimiento', value: 40 },
-                { label: 'Servicios', value: 35 },
-                { label: 'Administrativo', value: 25 },
-            ]
-        },
-        profit: {
-            total: 1300000,
-            previous: 1100000,
-        }
+// Import mock data from centralized data module
+import {
+    financialMetrics,
+    holdingProjects,
+    inmobiliariaProjects,
+} from '../../data/admin-interlogis';
+
+const getStatusColor = (status: string) => {
+    const colors = {
+        completed: { bg: 'rgba(48, 209, 88, 0.1)', text: '#30d158' },
+        in_progress: { bg: 'rgba(0, 113, 227, 0.1)', text: '#0071e3' },
+        delayed: { bg: 'rgba(255, 45, 85, 0.1)', text: '#ff2d55' },
+    };
+    return colors[status as keyof typeof colors] || colors.in_progress;
+};
+
+const getStatusIcon = (status: string) => {
+    switch (status) {
+        case 'completed':
+            return <CheckCircle2 size={16} />;
+        case 'in_progress':
+            return <Clock size={16} />;
+        case 'delayed':
+            return <AlertCircle size={16} />;
+        default:
+            return <Clock size={16} />;
     }
+};
+
+const getStatusLabel = (status: string) => {
+    const labels = {
+        completed: 'Completado',
+        in_progress: 'En Progreso',
+        delayed: 'Retrasado',
+    };
+    return labels[status as keyof typeof labels] || status;
 };
 
 export const AdminInterlogisToolbox: React.FC = () => {
@@ -75,30 +74,36 @@ export const AdminInterlogisToolbox: React.FC = () => {
         setCurrentTab(newValue);
     };
 
-    const renderFinancialBalance = (data: typeof mockFinancialData.holding | typeof mockFinancialData.inmobiliaria) => (
+    const renderFinancialBalance = () => (
         <Grid container spacing={3}>
             {[
                 {
                     category: 'Ingresos',
-                    current: data.revenue.total,
-                    previous: data.revenue.previous,
-                    change: ((data.revenue.total - data.revenue.previous) / data.revenue.previous) * 100,
-                    breakdown: data.revenue.breakdown,
+                    current: currentTab === 0 ? financialMetrics.holding.revenue.total : financialMetrics.inmobiliaria.revenue.total,
+                    previous: currentTab === 0 ? financialMetrics.holding.revenue.previous : financialMetrics.inmobiliaria.revenue.previous,
+                    change: ((currentTab === 0 ? financialMetrics.holding.revenue.total : financialMetrics.inmobiliaria.revenue.total) -
+                        (currentTab === 0 ? financialMetrics.holding.revenue.previous : financialMetrics.inmobiliaria.revenue.previous)) /
+                        (currentTab === 0 ? financialMetrics.holding.revenue.previous : financialMetrics.inmobiliaria.revenue.previous) * 100,
+                    breakdown: currentTab === 0 ? financialMetrics.holding.revenue.breakdown : financialMetrics.inmobiliaria.revenue.breakdown,
                 },
                 {
                     category: 'Gastos',
-                    current: data.expenses.total,
-                    previous: data.expenses.previous,
-                    change: ((data.expenses.total - data.expenses.previous) / data.expenses.previous) * 100,
-                    breakdown: data.expenses.breakdown,
+                    current: currentTab === 0 ? financialMetrics.holding.expenses.total : financialMetrics.inmobiliaria.expenses.total,
+                    previous: currentTab === 0 ? financialMetrics.holding.expenses.previous : financialMetrics.inmobiliaria.expenses.previous,
+                    change: ((currentTab === 0 ? financialMetrics.holding.expenses.total : financialMetrics.inmobiliaria.expenses.total) -
+                        (currentTab === 0 ? financialMetrics.holding.expenses.previous : financialMetrics.inmobiliaria.expenses.previous)) /
+                        (currentTab === 0 ? financialMetrics.holding.expenses.previous : financialMetrics.inmobiliaria.expenses.previous) * 100,
+                    breakdown: currentTab === 0 ? financialMetrics.holding.expenses.breakdown : financialMetrics.inmobiliaria.expenses.breakdown,
                 },
                 {
                     category: 'Beneficio',
-                    current: data.profit.total,
-                    previous: data.profit.previous,
-                    change: ((data.profit.total - data.profit.previous) / data.profit.previous) * 100,
+                    current: currentTab === 0 ? financialMetrics.holding.profit.total : financialMetrics.inmobiliaria.profit.total,
+                    previous: currentTab === 0 ? financialMetrics.holding.profit.previous : financialMetrics.inmobiliaria.profit.previous,
+                    change: ((currentTab === 0 ? financialMetrics.holding.profit.total : financialMetrics.inmobiliaria.profit.total) -
+                        (currentTab === 0 ? financialMetrics.holding.profit.previous : financialMetrics.inmobiliaria.profit.previous)) /
+                        (currentTab === 0 ? financialMetrics.holding.profit.previous : financialMetrics.inmobiliaria.profit.previous) * 100,
                 },
-            ].map((item, index) => (
+            ].map((data, index) => (
                 <Grid item xs={12} md={4} key={index}>
                     <Paper
                         sx={{
@@ -117,18 +122,10 @@ export const AdminInterlogisToolbox: React.FC = () => {
                                     color: 'var(--text-primary)',
                                 }}
                             >
-                                {item.category}
+                                {data.category}
                             </Typography>
-                            <IconButton
-                                size="small"
-                                sx={{
-                                    color: 'var(--text-secondary)',
-                                    '&:hover': {
-                                        color: 'var(--text-primary)',
-                                    },
-                                }}
-                            >
-                                <Download size={16} />
+                            <IconButton size="small">
+                                <Download size={18} />
                             </IconButton>
                         </Box>
 
@@ -144,12 +141,12 @@ export const AdminInterlogisToolbox: React.FC = () => {
                             <Typography
                                 variant="h4"
                                 sx={{
-                                    color: item.category === 'Gastos' ? '#ff2d55' : '#30d158',
+                                    color: data.category === 'Gastos' ? '#ff2d55' : '#30d158',
                                     fontWeight: 600,
                                     fontSize: '1.5rem',
                                 }}
                             >
-                                ${item.current.toLocaleString()}
+                                ${data.current.toLocaleString()}
                             </Typography>
                         </Box>
 
@@ -165,13 +162,13 @@ export const AdminInterlogisToolbox: React.FC = () => {
                             <Typography
                                 variant="h4"
                                 sx={{
-                                    color: item.category === 'Gastos' ? '#ff2d55' : '#30d158',
+                                    color: data.category === 'Gastos' ? '#ff2d55' : '#30d158',
                                     fontWeight: 600,
                                     fontSize: '1.5rem',
                                     opacity: 0.7,
                                 }}
                             >
-                                ${item.previous.toLocaleString()}
+                                ${data.previous.toLocaleString()}
                             </Typography>
                         </Box>
 
@@ -180,7 +177,7 @@ export const AdminInterlogisToolbox: React.FC = () => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 gap: 1,
-                                color: item.change >= 0 ? '#30d158' : '#ff2d55',
+                                color: data.change >= 0 ? '#30d158' : '#ff2d55',
                             }}
                         >
                             <BarChart2 size={16} />
@@ -189,13 +186,133 @@ export const AdminInterlogisToolbox: React.FC = () => {
                                     fontWeight: 500,
                                 }}
                             >
-                                {item.change.toFixed(1)}% vs mes anterior
+                                {data.change.toFixed(1)}% vs mes anterior
                             </Typography>
                         </Box>
                     </Paper>
                 </Grid>
             ))}
         </Grid>
+    );
+
+    const renderProjectTable = (projects: typeof holdingProjects.projects | typeof inmobiliariaProjects.projects) => (
+        <TableContainer>
+            <Table>
+                <TableHead>
+                    <TableRow>
+                        <TableCell>Proyecto</TableCell>
+                        <TableCell>Estado</TableCell>
+                        <TableCell>Progreso</TableCell>
+                        <TableCell>Responsable</TableCell>
+                        <TableCell>Fecha Inicio</TableCell>
+                        <TableCell>Fecha Fin</TableCell>
+                        <TableCell>Presupuesto</TableCell>
+                        <TableCell>Gastado</TableCell>
+                        <TableCell>% Utilizado</TableCell>
+                        <TableCell align="right">Acciones</TableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {projects.map((project, index) => (
+                        <TableRow key={index}>
+                            <TableCell>
+                                <Typography
+                                    sx={{
+                                        color: 'var(--text-primary)',
+                                        fontWeight: 500,
+                                    }}
+                                >
+                                    {project.name}
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Chip
+                                    icon={getStatusIcon(project.status)}
+                                    label={getStatusLabel(project.status)}
+                                    size="small"
+                                    sx={{
+                                        backgroundColor: getStatusColor(project.status).bg,
+                                        color: getStatusColor(project.status).text,
+                                        '& .MuiChip-icon': {
+                                            color: 'inherit',
+                                        },
+                                    }}
+                                />
+                            </TableCell>
+                            <TableCell>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, width: 150 }}>
+                                    <LinearProgress
+                                        variant="determinate"
+                                        value={project.progress}
+                                        sx={{
+                                            flex: 1,
+                                            height: 6,
+                                            borderRadius: 3,
+                                            backgroundColor: 'var(--surface-secondary)',
+                                            '& .MuiLinearProgress-bar': {
+                                                backgroundColor: getStatusColor(project.status).text,
+                                                borderRadius: 3,
+                                            },
+                                        }}
+                                    />
+                                    <Typography
+                                        variant="body2"
+                                        sx={{
+                                            color: 'var(--text-primary)',
+                                            minWidth: 40,
+                                        }}
+                                    >
+                                        {project.progress}%
+                                    </Typography>
+                                </Box>
+                            </TableCell>
+                            <TableCell>{project.responsible}</TableCell>
+                            <TableCell>
+                                {new Date(project.startDate).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell>
+                                {new Date(project.endDate).toLocaleDateString()}
+                            </TableCell>
+                            <TableCell>
+                                ${project.budget.toLocaleString()}
+                            </TableCell>
+                            <TableCell>
+                                ${project.spent.toLocaleString()}
+                            </TableCell>
+                            <TableCell>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                    <BarChart2
+                                        size={16}
+                                        color={(project.spent / project.budget) > 0.9 ? '#ff2d55' : '#30d158'}
+                                    />
+                                    <Typography
+                                        sx={{
+                                            color: (project.spent / project.budget) > 0.9 ? '#ff2d55' : '#30d158',
+                                        }}
+                                    >
+                                        {Math.round((project.spent / project.budget) * 100)}%
+                                    </Typography>
+                                </Box>
+                            </TableCell>
+                            <TableCell align="right">
+                                <IconButton
+                                    size="small"
+                                    sx={{
+                                        color: 'var(--text-secondary)',
+                                        '&:hover': {
+                                            backgroundColor: 'var(--hover-bg)',
+                                            color: 'var(--text-primary)',
+                                        },
+                                    }}
+                                >
+                                    <Download size={16} />
+                                </IconButton>
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </TableBody>
+            </Table>
+        </TableContainer>
     );
 
     return (
@@ -267,8 +384,33 @@ export const AdminInterlogisToolbox: React.FC = () => {
                 </Paper>
 
                 <Box sx={{ mt: 3 }}>
-                    {currentTab === 0 && renderFinancialBalance(mockFinancialData.holding)}
-                    {currentTab === 1 && renderFinancialBalance(mockFinancialData.inmobiliaria)}
+                    {renderFinancialBalance()}
+                </Box>
+
+                <Box sx={{ mt: 4 }}>
+                    <Paper
+                        sx={{
+                            borderRadius: '12px',
+                            overflow: 'hidden',
+                            backgroundColor: 'var(--surface-primary)',
+                        }}
+                        className="glass-effect"
+                    >
+                        <Box sx={{ p: 3, borderBottom: '1px solid var(--border-color)' }}>
+                            <Typography
+                                variant="h6"
+                                sx={{
+                                    fontSize: '1.125rem',
+                                    fontWeight: 600,
+                                    color: 'var(--text-primary)',
+                                }}
+                            >
+                                Proyectos Activos
+                            </Typography>
+                        </Box>
+                        {currentTab === 0 && renderProjectTable(holdingProjects.projects)}
+                        {currentTab === 1 && renderProjectTable(inmobiliariaProjects.projects)}
+                    </Paper>
                 </Box>
             </Container>
         </Box>

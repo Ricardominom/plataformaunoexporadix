@@ -10,11 +10,31 @@ export const statusOptions: { value: AgreementStatus; label: string }[] = [
 
 export const getStatusColor = (status: AgreementStatus) => {
     const colors = {
-        not_started: { bg: 'rgba(0, 0, 0, 0.04)', text: 'var(--text-primary)' },
-        in_progress: { bg: 'rgba(0, 113, 227, 0.1)', text: '#0071e3' },
-        stuck: { bg: 'rgba(255, 45, 85, 0.1)', text: '#ff2d55' },
-        sj_review: { bg: 'rgba(255, 149, 0, 0.1)', text: '#ff9500' },
-        completed: { bg: 'rgba(48, 209, 88, 0.1)', text: '#30d158' },
+        not_started: { 
+            bg: 'var(--theme-not-started-bg)', 
+            text: 'var(--theme-not-started-text)',
+            border: 'var(--theme-not-started-border)'
+        },
+        in_progress: { 
+            bg: 'var(--theme-in-progress-bg)', 
+            text: 'var(--theme-in-progress-text)',
+            border: 'var(--theme-in-progress-border)'
+        },
+        stuck: { 
+            bg: 'var(--theme-stuck-bg)', 
+            text: 'var(--theme-stuck-text)',
+            border: 'var(--theme-stuck-border)'
+        },
+        sj_review: { 
+            bg: 'var(--theme-sj-review-bg)', 
+            text: 'var(--theme-sj-review-text)',
+            border: 'var(--theme-sj-review-border)'
+        },
+        completed: { 
+            bg: 'var(--theme-completed-bg)', 
+            text: 'var(--theme-completed-text)',
+            border: 'var(--theme-completed-border)'
+        },
     };
     return colors[status];
 };

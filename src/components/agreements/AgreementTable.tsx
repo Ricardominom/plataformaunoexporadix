@@ -16,7 +16,7 @@ import {
     MenuItem,
     Tooltip,
 } from '@mui/material';
-import { FileDown, ChevronRight, Edit2, Trash2 } from 'lucide-react';
+import { FileDown, MessageSquare, Edit2, Trash2 } from 'lucide-react';
 import { Agreement, AgreementStatus } from '../../types/agreement';
 import { statusOptions, getStatusColor } from '../../utils/statusUtils';
 
@@ -26,6 +26,7 @@ interface AgreementTableProps {
     onEdit: (agreement: Agreement) => void;
     onDelete: (agreement: Agreement) => void;
     onResponsibleChange: (id: string, responsible: string) => void;
+    onNewAgreement?: () => void;
 }
 
 const TableHeader = memo(() => {
@@ -45,7 +46,6 @@ const TableHeader = memo(() => {
     return (
         <TableHead>
             <TableRow>
-                <TableCell padding="checkbox" sx={{ width: 40, borderBottom: '1px solid var(--border-color)' }} />
                 {headers.map((header) => (
                     <TableCell
                         key={header}
@@ -110,7 +110,7 @@ StatusSelect.displayName = 'StatusSelect';
 
 const AgreementRow = memo<{
     agreement: Agreement;
-    onStatusChange: (id: string, status: AgreementStatus) => void;
+    onStatusChange: (id: string, status: AgreementStatus, isSJStatus?: boolean) => void;
     onEdit: (agreement: Agreement) => void;
     onDelete: (agreement: Agreement) => void;
     onDownload: (agreement: Agreement) => void;
@@ -124,17 +124,6 @@ const AgreementRow = memo<{
             '& td': { borderBottom: '1px solid var(--border-color)' },
         }}
     >
-        <TableCell padding="checkbox">
-            <IconButton
-                size="small"
-                sx={{
-                    color: 'var(--text-secondary)',
-                    '&:hover': { backgroundColor: 'transparent', color: 'var(--text-primary)' },
-                }}
-            >
-                <ChevronRight size={16} />
-            </IconButton>
-        </TableCell>
         <TableCell>
             <Typography variant="body2" sx={{ color: 'var(--text-primary)', fontSize: '0.875rem' }}>
                 {agreement.element}

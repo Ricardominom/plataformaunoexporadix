@@ -1,0 +1,50 @@
+{
+    "holding": {
+        "revenue": {
+            "total": 2500000,
+            "previous": 2000000,
+            "breakdown": [
+                { "label": "Servicios Logísticos", "value": 45 },
+                { "label": "Almacenamiento", "value": 35 },
+                { "label": "Distribución", "value": 20 }
+            ]
+        },
+        "expenses": {
+            "total": 1800000,
+            "previous": 1500000,
+            "breakdown": [
+                { "label": "Operaciones", "value": 50 },
+                { "label": "Personal", "value": 30 },
+                { "label": "Mantenimiento", "value": 20 }
+            ]
+        },
+        "profit": {
+            "total": 700000,
+            "previous": 500000
+        }
+    },
+    "inmobiliaria": {
+        "revenue": {
+            "total": 3500000,
+            "previous": 3000000,
+            "breakdown": [
+                { "label": "Arrendamientos", "value": 60 },
+                { "label": "Servicios", "value": 25 },
+                { "label": "Otros", "value": 15 }
+            ]
+        },
+        "expenses": {
+            "total": 2200000,
+            "previous": 1900000,
+            "breakdown": [
+                { "label": "Mantenimiento", "value": 40 },
+                { "label": "Servicios", "value": 35 },
+                { "label": "Administrativo", "value": 25 }
+            ]
+        },
+        "profit": {
+            "total": 1300000,
+            "previous": 1100000
+        }
+    }
+}

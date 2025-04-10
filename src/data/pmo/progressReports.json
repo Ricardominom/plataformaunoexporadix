@@ -1,0 +1,28 @@
+{
+    "reports": [
+        {
+            "project": "Automatización de Procesos",
+            "status": "completed",
+            "progress": 100,
+            "lastUpdate": "2024-02-20",
+            "dueDate": "2024-02-25",
+            "responsible": "Equipo DevOps"
+        },
+        {
+            "project": "Migración de Base de Datos",
+            "status": "in_progress",
+            "progress": 75,
+            "lastUpdate": "2024-02-19",
+            "dueDate": "2024-03-01",
+            "responsible": "Equipo Backend"
+        },
+        {
+            "project": "Implementación CRM",
+            "status": "delayed",
+            "progress": 45,
+            "lastUpdate": "2024-02-18",
+            "dueDate": "2024-02-15",
+            "responsible": "Equipo Integración"
+        }
+    ]
+}

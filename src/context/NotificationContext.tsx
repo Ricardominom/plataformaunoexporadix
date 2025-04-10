@@ -7,7 +7,7 @@ import { useAuth } from './AuthContext';
 interface NotificationContextType {
   notifications: Notification[];
   unreadCount: number;
-  addNotification: (type: NotificationType, action: NotificationAction, entity: Agreement | Todo, location?: string) => void;
+  addNotification: (message: string, type?: 'success' | 'error' | 'info', duration?: number) => void;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
   removeNotification: (id: string) => void;
@@ -29,69 +29,33 @@ export const NotificationProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  const getNotificationDetails = (
-    type: NotificationType,
-    action: NotificationAction,
-    entity: Agreement | Todo,
-    location?: string
+  const addNotification = useCallback((
+    message: string,
+    type: 'success' | 'error' | 'info' = 'success',
+    duration: number = 5000
   ) => {
-    const isAgreement = type === 'agreement';
-    const title = isAgreement ? (entity as Agreement).element : (entity as Todo).title;
-    const listName = location || 'General';
-
-    let actionText = '';
-    switch (action) {
-      case 'created':
-        actionText = 'fue creado';
-        break;
-      case 'updated':
-        actionText = 'fue actualizado';
-        break;
-      case 'deleted':
-        actionText = 'fue eliminado';
-        break;
-    }
-
-    const description = isAgreement
-      ? `${title} ${actionText} en ${listName}`
-      : `Tarea "${title}" ${actionText} en la lista "${listName}"`;
-
-    return {
-      title,
-      description,
+    const newNotification: Notification = {
+      id: crypto.randomUUID(),
+      type: 'info',
+      message,
+      timestamp: new Date().toISOString(),
+      read: false,
       metadata: {
-        listName,
         userId: user?.id,
         userName: user?.name,
         userRole: user?.role,
         timestamp: new Date().toISOString(),
       }
     };
-  };
-
-  const addNotification = useCallback((
-    type: NotificationType,
-    action: NotificationAction,
-    entity: Agreement | Todo,
-    location?: string
-  ) => {
-    const details = getNotificationDetails(type, action, entity, location);
-    
-    const newNotification: Notification = {
-      id: crypto.randomUUID(),
-      type,
-      action,
-      title: details.title,
-      description: details.description,
-      timestamp: new Date().toISOString(),
-      read: false,
-      entityId: entity.id,
-      entityType: type === 'agreement' ? 'agreement' : 'todo',
-      entityData: entity,
-      metadata: details.metadata,
-    };
 
     setNotifications(prev => [newNotification, ...prev]);
+
+    // Auto-remove notification after duration
+    if (duration > 0) {
+      setTimeout(() => {
+        removeNotification(newNotification.id);
+      }, duration);
+    }
   }, [user]);
 
   const markAsRead = useCallback((id: string) => {

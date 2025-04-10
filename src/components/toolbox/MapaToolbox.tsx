@@ -21,51 +21,8 @@ import {
     Download,
 } from 'lucide-react';
 
-// Mock data for accounts
-const mockAccounts = [
-    {
-        name: "Cuenta 1",
-        progress: {
-            estrategia: 50,
-            setup: 93.5,
-            acompanamiento: 70,
-            gerencia: 14,
-            produccion: 20,
-            difusion: 30,
-        }
-    },
-    {
-        name: "Cuenta 2",
-        progress: {
-            estrategia: 80,
-            setup: 65,
-            acompanamiento: 45,
-            gerencia: 30,
-            produccion: 55,
-            difusion: 40,
-        }
-    },
-];
-
-// Mock data for financial metrics
-const mockFinancialData = {
-    revenue: {
-        total: 2500000,
-        breakdown: [
-            { label: 'Ventas Directas', value: 40 },
-            { label: 'Servicios', value: 35 },
-            { label: 'Licencias', value: 25 },
-        ]
-    },
-    expenses: {
-        total: 1800000,
-        breakdown: [
-            { label: 'Operaciones', value: 45 },
-            { label: 'Marketing', value: 30 },
-            { label: 'Desarrollo', value: 25 },
-        ]
-    }
-};
+// Import mock data from centralized data module
+import { accounts, financialData } from '../../data/mapa';
 
 export const MapaToolbox: React.FC = () => {
     const [currentTab, setCurrentTab] = useState(0);
@@ -242,7 +199,7 @@ export const MapaToolbox: React.FC = () => {
                         Avance de Cuentas
                     </Typography>
                     <List>
-                        {mockAccounts.map((account, index) => (
+                        {accounts.accounts.map((account, index) => (
                             <ListItem
                                 key={index}
                                 sx={{
@@ -287,14 +244,14 @@ export const MapaToolbox: React.FC = () => {
                                             </Box>
                                             <LinearProgress
                                                 variant="determinate"
-                                                value={value}
+                                                value={value as number}
                                                 sx={{
                                                     height: 6,
                                                     borderRadius: 3,
                                                     backgroundColor: 'var(--surface-secondary)',
                                                     '& .MuiLinearProgress-bar': {
-                                                        backgroundColor: value < 30 ? '#ff3b30' :
-                                                            value < 70 ? '#ff9500' : '#30d158',
+                                                        backgroundColor: (value as number) < 30 ? '#ff3b30' :
+                                                            (value as number) < 70 ? '#ff9500' : '#30d158',
                                                         borderRadius: 3,
                                                     },
                                                 }}
@@ -315,20 +272,20 @@ export const MapaToolbox: React.FC = () => {
             {[
                 {
                     category: 'Ingresos',
-                    current: mockFinancialData.revenue.total,
-                    previous: mockFinancialData.revenue.total * 0.8,
+                    current: financialData.revenue.total,
+                    previous: financialData.revenue.total * 0.8,
                     change: 25,
                 },
                 {
                     category: 'Gastos',
-                    current: mockFinancialData.expenses.total,
-                    previous: mockFinancialData.expenses.total * 0.85,
+                    current: financialData.expenses.total,
+                    previous: financialData.expenses.total * 0.85,
                     change: 14.3,
                 },
                 {
                     category: 'Beneficio',
-                    current: mockFinancialData.revenue.total - mockFinancialData.expenses.total,
-                    previous: (mockFinancialData.revenue.total - mockFinancialData.expenses.total) * 0.7,
+                    current: financialData.revenue.total - financialData.expenses.total,
+                    previous: (financialData.revenue.total - financialData.expenses.total) * 0.7,
                     change: 40,
                 },
             ].map((data, index) => (

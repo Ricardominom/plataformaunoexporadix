@@ -1,0 +1,56 @@
+{
+    "projects": [
+        {
+            "id": "1",
+            "name": "Automatización de Reportes Financieros",
+            "type": "RPA",
+            "status": "completed",
+            "progress": 100,
+            "timeReduction": 85,
+            "errorReduction": 95,
+            "responsible": "Ana Martínez",
+            "lastUpdate": "2024-02-20",
+            "nextMilestone": "Mantenimiento",
+            "description": "Automatización completa del proceso de generación y distribución de reportes financieros mensuales."
+        },
+        {
+            "id": "2",
+            "name": "Sistema de Monitoreo Predictivo",
+            "type": "ML",
+            "status": "in_progress",
+            "progress": 75,
+            "timeReduction": 60,
+            "errorReduction": 80,
+            "responsible": "Carlos Rodríguez",
+            "lastUpdate": "2024-02-25",
+            "nextMilestone": "Implementación de Alertas",
+            "description": "Sistema de machine learning para predecir y prevenir fallos en equipos críticos."
+        },
+        {
+            "id": "3",
+            "name": "Chatbot de Atención al Cliente",
+            "type": "AI",
+            "status": "in_progress",
+            "progress": 60,
+            "timeReduction": 70,
+            "errorReduction": 65,
+            "responsible": "Laura Sánchez",
+            "lastUpdate": "2024-02-23",
+            "nextMilestone": "Entrenamiento NLP",
+            "description": "Asistente virtual inteligente para atención al cliente 24/7."
+        },
+        {
+            "id": "4",
+            "name": "Optimización de Rutas Logísticas",
+            "type": "AI",
+            "status": "delayed",
+            "progress": 40,
+            "timeReduction": 45,
+            "errorReduction": 50,
+            "responsible": "Miguel Torres",
+            "lastUpdate": "2024-02-22",
+            "nextMilestone": "Integración GPS",
+            "description": "Sistema de optimización de rutas basado en IA para mejorar la eficiencia logística."
+        }
+    ]
+}

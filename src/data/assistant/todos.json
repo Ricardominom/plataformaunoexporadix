@@ -1,0 +1,25 @@
+{
+    "todos": [
+        {
+            "title": "Revisión de presupuesto Q2",
+            "dueDate": "2024-03-15",
+            "priority": "high",
+            "status": "pending",
+            "assignee": "María González"
+        },
+        {
+            "title": "Reunión con inversores",
+            "dueDate": "2024-03-10",
+            "priority": "high",
+            "status": "completed",
+            "assignee": "Juan Pérez"
+        },
+        {
+            "title": "Aprobación de contratos",
+            "dueDate": "2024-03-20",
+            "priority": "medium",
+            "status": "in_progress",
+            "assignee": "Carlos Rodríguez"
+        }
+    ]
+}

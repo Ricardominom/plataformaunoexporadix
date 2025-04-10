@@ -33,127 +33,25 @@ import {
     Upload,
 } from 'lucide-react';
 
-interface AccountProgress {
-    name: string;
-    progress: {
-        estrategia: number;
-        setup: number;
-        acompanamiento: number;
-        gerencia: number;
-        produccion: number;
-        difusion: number;
-    };
-}
+// Import mock data from centralized data module
+import { accounts, progressReports, financialData } from '../../data/pmo';
 
-interface ProgressReport {
-    project: string;
-    status: 'completed' | 'in_progress' | 'delayed';
-    progress: number;
-    lastUpdate: string;
-    dueDate: string;
-    responsible: string;
-}
-
-interface FinancialData {
-    company: string;
-    revenue: number;
-    expenses: number;
-    profit: number;
-    growth: number;
-}
-
-const mockAccounts: AccountProgress[] = [
-    {
-        name: "Cuenta 1",
-        progress: {
-            estrategia: 50,
-            setup: 93.5,
-            acompanamiento: 70,
-            gerencia: 14,
-            produccion: 20,
-            difusion: 30,
-        }
-    },
-    {
-        name: "Cuenta 2",
-        progress: {
-            estrategia: 80,
-            setup: 65,
-            acompanamiento: 45,
-            gerencia: 30,
-            produccion: 55,
-            difusion: 40,
-        }
-    },
-];
-
-const mockProgressReports: ProgressReport[] = [
-    {
-        project: "Automatización de Procesos",
-        status: "completed",
-        progress: 100,
-        lastUpdate: "2024-02-20",
-        dueDate: "2024-02-25",
-        responsible: "Equipo DevOps"
-    },
-    {
-        project: "Migración de Base de Datos",
-        status: "in_progress",
-        progress: 75,
-        lastUpdate: "2024-02-19",
-        dueDate: "2024-03-01",
-        responsible: "Equipo Backend"
-    },
-    {
-        project: "Implementación CRM",
-        status: "delayed",
-        progress: 45,
-        lastUpdate: "2024-02-18",
-        dueDate: "2024-02-15",
-        responsible: "Equipo Integración"
-    }
-];
-
-const mockFinancialData: FinancialData[] = [
-    {
-        company: "Espora",
-        revenue: 1500000,
-        expenses: 900000,
-        profit: 600000,
-        growth: 15.5,
-    },
-    {
-        company: "Mapa",
-        revenue: 800000,
-        expenses: 450000,
-        profit: 350000,
-        growth: 12.3,
-    },
-    {
-        company: "Interlogis",
-        revenue: 1200000,
-        expenses: 750000,
-        profit: 450000,
-        growth: 8.7,
-    },
-];
-
-const getStatusColor = (status: ProgressReport['status']) => {
+const getStatusColor = (status: string) => {
     const colors = {
         completed: { bg: 'rgba(48, 209, 88, 0.1)', text: '#30d158' },
         in_progress: { bg: 'rgba(0, 113, 227, 0.1)', text: '#0071e3' },
         delayed: { bg: 'rgba(255, 45, 85, 0.1)', text: '#ff2d55' },
     };
-    return colors[status];
+    return colors[status as keyof typeof colors] || colors.in_progress;
 };
 
-const getStatusLabel = (status: ProgressReport['status']) => {
+const getStatusLabel = (status: string) => {
     const labels = {
         completed: 'Completado',
         in_progress: 'En Progreso',
         delayed: 'Retrasado',
     };
-    return labels[status];
+    return labels[status as keyof typeof labels] || status;
 };
 
 export const PMOToolbox: React.FC = () => {
@@ -331,7 +229,7 @@ export const PMOToolbox: React.FC = () => {
                         Avance de Cuentas
                     </Typography>
                     <List>
-                        {mockAccounts.map((account, index) => (
+                        {accounts.accounts.map((account, index) => (
                             <ListItem
                                 key={index}
                                 sx={{
@@ -376,14 +274,14 @@ export const PMOToolbox: React.FC = () => {
                                             </Box>
                                             <LinearProgress
                                                 variant="determinate"
-                                                value={value}
+                                                value={value as number}
                                                 sx={{
                                                     height: 6,
                                                     borderRadius: 3,
                                                     backgroundColor: 'var(--surface-secondary)',
                                                     '& .MuiLinearProgress-bar': {
-                                                        backgroundColor: value < 30 ? '#ff3b30' :
-                                                            value < 70 ? '#ff9500' : '#30d158',
+                                                        backgroundColor: (value as number) < 30 ? '#ff3b30' :
+                                                            (value as number) < 70 ? '#ff9500' : '#30d158',
                                                         borderRadius: 3,
                                                     },
                                                 }}
@@ -421,7 +319,7 @@ export const PMOToolbox: React.FC = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {mockProgressReports.map((report, index) => (
+                        {progressReports.reports.map((report, index) => (
                             <TableRow key={index}>
                                 <TableCell>
                                     <Typography
@@ -495,7 +393,7 @@ export const PMOToolbox: React.FC = () => {
 
     const renderFinancialBalance = () => (
         <Grid container spacing={3}>
-            {mockFinancialData.map((data, index) => (
+            {financialData.companies.map((data, index) => (
                 <Grid item xs={12} md={4} key={index}>
                     <Paper
                         sx={{
