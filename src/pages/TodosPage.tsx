@@ -7,25 +7,33 @@ import {
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  Divider,
-  Badge,
   Checkbox,
   IconButton,
+  Badge,
+  Divider,
+  Tooltip,
+  Chip,
+  TextField,
+  InputAdornment,
 } from '@mui/material';
 import {
   Calendar,
-  Circle,
+  Star,
   Clock,
   CheckCircle2,
+  Circle,
+  AlertCircle,
   Plus,
-  Star,
   ChevronRight,
-  MoreVertical,
   Search,
+  Info,
+  X,
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { TodoList, Todo, TodoPriority } from '../types/todo';
 import { NewListDialog } from '../components/todos/NewListDialog';
 import { NewReminderDialog } from '../components/todos/NewReminderDialog';
+import { TodoHeader } from '../components/todos/TodoHeader';
 import { useNotification } from '../context/NotificationContext';
 import { useTodos } from '../hooks/useTodos';
 import dayjs from 'dayjs';
@@ -35,7 +43,8 @@ export const TodosPage: React.FC = () => {
   const [selectedList, setSelectedList] = useState('1');
   const [isNewListOpen, setIsNewListOpen] = useState(false);
   const [isNewReminderOpen, setIsNewReminderOpen] = useState(false);
-  
+  const [searchTerm, setSearchTerm] = useState('');
+
   const { todos, lists, loading, getTodosCount, toggleTodo, setTodos, setLists } = useTodos();
   const { addNotification } = useNotification();
 
@@ -46,12 +55,10 @@ export const TodosPage: React.FC = () => {
       color: list.color,
       userId: '1',
     };
-    
+
     setLists([...lists, newList]);
     setSelectedList(newList.id);
     setSelectedFilter('all');
-    
-    // Add notification for new list creation
     addNotification('list', 'created', {
       id: newList.id,
       title: newList.name,
@@ -59,7 +66,7 @@ export const TodosPage: React.FC = () => {
       completed: false,
       createdAt: new Date().toISOString(),
     });
-    
+
     setIsNewListOpen(false);
   };
 
@@ -80,7 +87,7 @@ export const TodosPage: React.FC = () => {
       createdAt: new Date().toISOString(),
       userId: '1',
     };
-    
+
     setTodos([...todos, newTodo]);
     addNotification('todo', 'created', newTodo);
     setIsNewReminderOpen(false);
@@ -91,36 +98,52 @@ export const TodosPage: React.FC = () => {
     if (todo) {
       const updatedTodo = { ...todo, completed: !todo.completed };
       setTodos(todos.map(t => t.id === todoId ? updatedTodo : t));
-      
+
       if (updatedTodo.completed) {
         addNotification('todo', 'updated', updatedTodo);
       }
     }
   };
 
-  const filteredTodos = useMemo(() => {
-    let filtered = [...todos];
-    const today = dayjs().startOf('day');
+  const filters = [
+    { icon: <Calendar size={16} />, label: 'Hoy', filter: 'today', color: '#0071e3' },
+    { icon: <Star size={16} />, label: 'Todos', filter: 'all', color: '#ff9500' },
+    { icon: <Clock size={16} />, label: 'Programados', filter: 'scheduled', color: '#ff2d55' },
+    { icon: <CheckCircle2 size={16} />, label: 'Terminados', filter: 'completed', color: '#30d158' },
+  ];
 
-    switch (selectedFilter) {
-      case 'today':
-        filtered = filtered.filter(todo =>
-          dayjs(todo.dueDate).startOf('day').isSame(today)
-        );
-        break;
-      case 'scheduled':
-        filtered = filtered.filter(todo => todo.dueDate);
-        break;
-      case 'completed':
-        filtered = filtered.filter(todo => todo.completed);
-        break;
-      case 'all':
-        if (selectedList) {
-          filtered = filtered.filter(todo => todo.listId === selectedList);
-        }
-        break;
+  const currentFilter = filters.find(f => f.filter === selectedFilter)!;
+
+  const filteredTodos = useMemo(() => {
+    const today = dayjs().startOf('day');
+    let filtered = todos;
+
+    // Apply search filter
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(todo =>
+        todo.title.toLowerCase().includes(searchLower) ||
+        todo.notes?.toLowerCase().includes(searchLower)
+      );
     }
 
+    // Apply status filter
+    filtered = filtered.filter(todo => {
+      switch (selectedFilter) {
+        case 'today':
+          return !todo.completed && dayjs(todo.dueDate).startOf('day').isSame(today);
+        case 'all':
+          return !todo.completed;
+        case 'scheduled':
+          return !todo.completed && todo.dueDate;
+        case 'completed':
+          return todo.completed;
+        default:
+          return false;
+      }
+    });
+
+    // Sort todos
     return filtered.sort((a, b) => {
       if (a.completed !== b.completed) return a.completed ? 1 : -1;
       const priorityOrder = { high: 0, medium: 1, low: 2, none: 3 };
@@ -129,7 +152,17 @@ export const TodosPage: React.FC = () => {
       }
       return dayjs(a.dueDate).isBefore(dayjs(b.dueDate)) ? -1 : 1;
     });
-  }, [todos, selectedFilter, selectedList]);
+  }, [todos, selectedFilter, searchTerm]);
+
+  const getPriorityInfo = (priority: string) => {
+    const info = {
+      high: { color: '#ff2d55', icon: <AlertCircle size={12} />, label: 'Alta' },
+      medium: { color: '#ff9500', icon: <Clock size={12} />, label: 'Media' },
+      low: { color: '#30d158', icon: <CheckCircle2 size={12} />, label: 'Baja' },
+      none: { color: 'var(--text-secondary)', icon: <Circle size={12} />, label: 'Normal' }
+    };
+    return info[priority as keyof typeof info] || info.none;
+  };
 
   if (loading) {
     return (
@@ -150,6 +183,10 @@ export const TodosPage: React.FC = () => {
       gap: 3,
     }}>
       <Paper
+        component={motion.div}
+        initial={{ x: -20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.3 }}
         sx={{
           width: 280,
           borderRadius: '12px',
@@ -165,43 +202,53 @@ export const TodosPage: React.FC = () => {
             p: 1.5,
             display: 'flex',
             alignItems: 'center',
+            gap: 1,
           }}
         >
-          <Box
-            sx={{
-              flex: 1,
-              height: 28,
-              backgroundColor: 'var(--surface-secondary)',
-              borderRadius: '6px',
-              display: 'flex',
-              alignItems: 'center',
-              px: 1.5,
-              gap: 1,
-              color: 'var(--text-secondary)',
-              '&:hover': {
-                backgroundColor: 'var(--hover-bg)',
-              },
+          <TextField
+            fullWidth
+            size="small"
+            placeholder="Buscar..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search size={16} color="var(--text-secondary)" />
+                </InputAdornment>
+              ),
+              endAdornment: searchTerm && (
+                <InputAdornment position="end">
+                  <IconButton
+                    size="small"
+                    onClick={() => setSearchTerm('')}
+                    sx={{ color: 'var(--text-secondary)' }}
+                  >
+                    <X size={14} />
+                  </IconButton>
+                </InputAdornment>
+              ),
+              sx: {
+                height: '36px',
+                backgroundColor: 'var(--surface-secondary)',
+                borderRadius: '8px',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  border: 'none',
+                },
+                '&:hover': {
+                  backgroundColor: 'var(--hover-bg)',
+                },
+                '& input::placeholder': {
+                  color: 'var(--text-secondary)',
+                  opacity: 1,
+                },
+              }
             }}
-          >
-            <Search size={14} />
-            <Typography
-              sx={{
-                fontSize: '0.875rem',
-                color: 'var(--text-secondary)',
-              }}
-            >
-              Buscar
-            </Typography>
-          </Box>
+          />
         </Box>
 
         <List sx={{ py: 1 }}>
-          {[
-            { icon: <Calendar size={18} />, label: 'Hoy', filter: 'today', count: getTodosCount('today') },
-            { icon: <Star size={18} />, label: 'Todos', filter: 'all', count: getTodosCount('all') },
-            { icon: <Clock size={18} />, label: 'Programados', filter: 'scheduled', count: getTodosCount('scheduled') },
-            { icon: <CheckCircle2 size={18} />, label: 'Terminados', filter: 'completed', count: getTodosCount('completed') },
-          ].map((item) => (
+          {filters.map((item) => (
             <ListItemButton
               key={item.filter}
               selected={selectedFilter === item.filter}
@@ -209,11 +256,13 @@ export const TodosPage: React.FC = () => {
               sx={{
                 borderRadius: 1,
                 mx: 1,
-                height: 32,
+                height: 36,
+                transition: 'all 0.2s ease',
                 '&.Mui-selected': {
-                  backgroundColor: 'var(--hover-bg)',
+                  backgroundColor: `${item.color}20`,
+                  color: item.color,
                   '&:hover': {
-                    backgroundColor: 'var(--hover-bg)',
+                    backgroundColor: `${item.color}30`,
                   },
                 },
               }}
@@ -221,9 +270,7 @@ export const TodosPage: React.FC = () => {
               <ListItemIcon
                 sx={{
                   minWidth: 32,
-                  color: item.filter === 'today' ? '#0071e3' :
-                    item.filter === 'all' ? '#ff9500' :
-                      item.filter === 'scheduled' ? '#ff2d55' : '#30d158'
+                  color: selectedFilter === item.filter ? item.color : 'var(--text-primary)',
                 }}
               >
                 {item.icon}
@@ -233,18 +280,16 @@ export const TodosPage: React.FC = () => {
                 primaryTypographyProps={{
                   fontSize: '0.875rem',
                   fontWeight: selectedFilter === item.filter ? 500 : 400,
-                  color: 'var(--text-primary)',
                 }}
               />
-              {item.count > 0 && (
+              {getTodosCount(item.filter) > 0 && (
                 <Typography
                   sx={{
                     fontSize: '0.875rem',
-                    color: 'var(--text-secondary)',
-                    ml: 1,
+                    color: selectedFilter === item.filter ? item.color : 'var(--text-secondary)',
                   }}
                 >
-                  {item.count}
+                  {getTodosCount(item.filter)}
                 </Typography>
               )}
             </ListItemButton>
@@ -277,11 +322,13 @@ export const TodosPage: React.FC = () => {
               sx={{
                 borderRadius: 1,
                 mx: 1,
-                height: 32,
+                height: 36,
+                transition: 'all 0.2s ease',
                 '&.Mui-selected': {
-                  backgroundColor: 'var(--hover-bg)',
+                  backgroundColor: `${list.color}20`,
+                  color: list.color,
                   '&:hover': {
-                    backgroundColor: 'var(--hover-bg)',
+                    backgroundColor: `${list.color}30`,
                   },
                 },
               }}
@@ -293,14 +340,13 @@ export const TodosPage: React.FC = () => {
                 primary={list.name}
                 primaryTypographyProps={{
                   fontSize: '0.875rem',
-                  color: 'var(--text-primary)',
+                  color: selectedList === list.id ? list.color : 'var(--text-primary)',
                 }}
               />
               <Typography
                 sx={{
                   fontSize: '0.875rem',
-                  color: 'var(--text-secondary)',
-                  ml: 1,
+                  color: selectedList === list.id ? list.color : 'var(--text-secondary)',
                 }}
               >
                 {todos.filter(todo => todo.listId === list.id).length}
@@ -312,8 +358,9 @@ export const TodosPage: React.FC = () => {
             sx={{
               borderRadius: 1,
               mx: 1,
-              height: 32,
+              height: 36,
               color: '#0071e3',
+              transition: 'all 0.2s ease',
               '&:hover': {
                 backgroundColor: 'rgba(0, 113, 227, 0.04)',
               },
@@ -333,6 +380,10 @@ export const TodosPage: React.FC = () => {
       </Paper>
 
       <Paper
+        component={motion.div}
+        initial={{ x: 20, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.3 }}
         sx={{
           flex: 1,
           borderRadius: '12px',
@@ -344,135 +395,98 @@ export const TodosPage: React.FC = () => {
         }}
         className="glass-effect"
       >
-        <Box
-          sx={{
-            p: 2,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            borderBottom: '1px solid var(--border-color)',
-          }}
-        >
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 500,
-                color: 'var(--text-primary)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-              }}
-            >
-              <Circle
-                size={12}
-                fill={selectedFilter === 'today' ? '#0071e3' :
-                  selectedFilter === 'all' ? '#ff9500' :
-                    selectedFilter === 'scheduled' ? '#ff2d55' :
-                      selectedFilter === 'completed' ? '#30d158' :
-                        lists.find(l => l.id === selectedList)?.color || '#0071e3'}
-                color={selectedFilter === 'today' ? '#0071e3' :
-                  selectedFilter === 'all' ? '#ff9500' :
-                    selectedFilter === 'scheduled' ? '#ff2d55' :
-                      selectedFilter === 'completed' ? '#30d158' :
-                        lists.find(l => l.id === selectedList)?.color || '#0071e3'}
-              />
-              {selectedFilter === 'today' ? 'HOY' :
-                selectedFilter === 'all' ? 'TODOS' :
-                  selectedFilter === 'scheduled' ? 'PROGRAMADOS' :
-                    selectedFilter === 'completed' ? 'TERMINADOS' :
-                      lists.find(l => l.id === selectedList)?.name.toUpperCase() || ''}
-            </Typography>
-            <Typography
-              sx={{
-                fontSize: '0.875rem',
-                color: 'var(--text-secondary)',
-              }}
-            >
-              {filteredTodos.length}
-            </Typography>
-          </Box>
-          <IconButton size="small">
-            <MoreVertical size={16} color="var(--text-secondary)" />
-          </IconButton>
-        </Box>
+        <TodoHeader
+          selectedFilter={selectedFilter}
+          count={filteredTodos.length}
+          label={currentFilter.label}
+          icon={currentFilter.icon}
+          color={currentFilter.color}
+          onNewReminder={() => setIsNewReminderOpen(true)}
+        />
 
-        <List sx={{ flex: 1, p: 0 }}>
-          {filteredTodos.map((todo) => (
-            <ListItemButton
-              key={todo.id}
-              sx={{
-                py: 1,
-                px: 2,
-                '&:hover': {
-                  backgroundColor: 'var(--hover-bg)',
-                },
-                opacity: todo.completed ? 0.6 : 1,
-                transition: 'opacity 0.2s ease',
-              }}
-              onClick={() => handleToggleTodo(todo.id)}
-            >
-              <Checkbox
-                checked={todo.completed}
-                sx={{
-                  color: 'var(--text-secondary)',
-                  '&.Mui-checked': {
-                    color: '#30d158',
-                  },
-                  transition: 'color 0.2s ease',
-                }}
-              />
-              <ListItemText
-                primary={todo.title}
-                secondary={todo.notes}
-                primaryTypographyProps={{
-                  fontSize: '0.875rem',
-                  color: todo.completed ? 'var(--text-secondary)' : 'var(--text-primary)',
-                  sx: {
-                    textDecoration: todo.completed ? 'line-through' : 'none',
+        <List sx={{ flex: 1, p: 0, overflowY: 'auto' }}>
+          <AnimatePresence>
+            {filteredTodos.map((todo, index) => (
+              <motion.div
+                key={todo.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.2, delay: index * 0.05 }}
+              >
+                <ListItemButton
+                  onClick={() => handleToggleTodo(todo.id)}
+                  sx={{
+                    py: 2,
+                    px: 2,
+                    opacity: todo.completed ? 0.6 : 1,
                     transition: 'all 0.2s ease',
-                  },
-                }}
-                secondaryTypographyProps={{
-                  fontSize: '0.75rem',
-                  color: 'var(--text-secondary)',
-                  sx: {
-                    textDecoration: todo.completed ? 'line-through' : 'none',
-                    transition: 'all 0.2s ease',
-                  },
-                }}
-              />
-            </ListItemButton>
-          ))}
+                    '&:hover': {
+                      backgroundColor: 'var(--hover-bg)',
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 40 }}>
+                    <Checkbox
+                      edge="start"
+                      checked={todo.completed}
+                      sx={{
+                        color: 'var(--text-secondary)',
+                        '&.Mui-checked': {
+                          color: getPriorityInfo(todo.priority).color,
+                        },
+                        transition: 'color 0.2s ease',
+                      }}
+                    />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Typography
+                          sx={{
+                            fontSize: '0.875rem',
+                            color: todo.completed ? 'var(--text-secondary)' : 'var(--text-primary)',
+                            textDecoration: todo.completed ? 'line-through' : 'none',
+                            fontWeight: 500,
+                          }}
+                        >
+                          {todo.title}
+                        </Typography>
+                        <Chip
+                          size="small"
+                          label={getPriorityInfo(todo.priority).label}
+                          icon={getPriorityInfo(todo.priority).icon}
+                          sx={{
+                            height: '20px',
+                            backgroundColor: `${getPriorityInfo(todo.priority).color}20`,
+                            color: getPriorityInfo(todo.priority).color,
+                            '& .MuiChip-icon': { color: 'inherit' },
+                            '& .MuiChip-label': { px: 1, fontSize: '0.7rem', fontWeight: 500 },
+                          }}
+                        />
+                      </Box>
+                    }
+                    secondary={
+                      <Typography
+                        sx={{
+                          fontSize: '0.75rem',
+                          color: 'var(--text-secondary)',
+                          mt: 0.5,
+                        }}
+                      >
+                        Vence el {dayjs(todo.dueDate).format('D [de] MMMM')}
+                      </Typography>
+                    }
+                  />
+                  <ChevronRight size={16} color="var(--text-secondary)" />
+                </ListItemButton>
+                {index < filteredTodos.length - 1 && (
+                  <Divider sx={{ borderColor: 'var(--border-color)' }} />
+                )}
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </List>
-
-        <Box
-          sx={{
-            p: 2,
-            borderTop: '1px solid var(--border-color)',
-          }}
-        >
-          <ListItemButton
-            onClick={() => setIsNewReminderOpen(true)}
-            sx={{
-              borderRadius: 1,
-              color: '#0071e3',
-              '&:hover': {
-                backgroundColor: 'rgba(0, 113, 227, 0.04)',
-              },
-            }}
-          >
-            <ListItemIcon sx={{ minWidth: 36, color: 'inherit' }}>
-              <Plus size={18} />
-            </ListItemIcon>
-            <ListItemText
-              primary="Nuevo Recordatorio"
-              primaryTypographyProps={{
-                fontSize: '0.875rem',
-              }}
-            />
-          </ListItemButton>
-        </Box>
       </Paper>
 
       <NewListDialog
