@@ -140,13 +140,10 @@ export const PresidentToolbox: React.FC = () => {
         }}>
             <Container maxWidth="xl">
                 <Grid container spacing={3}>
-                    <PendingApprovals count={15} />
-
-                    <LeadsBoard />
+                    <RecentAgreements agreements={mockAgreements} />
 
                     <LegalStatus items={mockLegalStatus} />
-
-                    <RecentAgreements agreements={mockAgreements} />
+                    <PendingApprovals count={15} />
 
                     <TodosOverview todos={mockTodos} />
 
@@ -155,6 +152,7 @@ export const PresidentToolbox: React.FC = () => {
                     <ActionPlansProgress plans={mockActionPlansProgress} />
 
                     <AccountStatus accounts={mockAccountStatus} />
+                    <LeadsBoard />
                 </Grid>
             </Container>
         </Box>
