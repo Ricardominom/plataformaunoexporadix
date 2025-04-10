@@ -11,6 +11,7 @@ import { AccountStatus } from './dashboardComponents/AccountStatus';
 import { AccountProgress } from './dashboardComponents/AccountProgress';
 import { PendingApprovals } from './dashboardComponents/PendingApprovals';
 import { ActionPlansProgress } from './dashboardComponents/ActionPlansProgress';
+import { LeadsBoard } from './dashboardComponents/LeadsBoard';
 
 // Mock data for account progress
 const mockAccountProgress = [
@@ -40,7 +41,6 @@ const mockAccountProgress = [
 
 // Mock data for action plans progress
 const mockActionPlansProgress = [
-
     {
         indicator: "Optimización del SEO y rendimiento",
         goal: 100,
@@ -65,7 +65,6 @@ const mockLegalStatus = [
 
 // Mock data for agreements
 const mockAgreements = [
-
     {
         title: 'Acuerdo de Confidencialidad',
         status: 'completed',
@@ -142,6 +141,8 @@ export const PresidentToolbox: React.FC = () => {
             <Container maxWidth="xl">
                 <Grid container spacing={3}>
                     <PendingApprovals count={15} />
+
+                    <LeadsBoard />
 
                     <LegalStatus items={mockLegalStatus} />
 
