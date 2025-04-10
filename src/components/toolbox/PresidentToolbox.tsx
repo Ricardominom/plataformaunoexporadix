@@ -12,6 +12,7 @@ import { TodosOverview } from './dashboardComponents/TodosOverview';
 import { AccountStatus } from './dashboardComponents/AccountStatus';
 import { AccountProgress } from './dashboardComponents/AccountProgress';
 import { PendingApprovals } from './dashboardComponents/PendingApprovals';
+import { ActionPlansProgress } from './dashboardComponents/ActionPlansProgress';
 
 // Mock data for account progress
 const mockAccountProgress = [
@@ -37,6 +38,23 @@ const mockAccountProgress = [
             difusion: 40,
         }
     },
+];
+
+// Mock data for action plans progress
+const mockActionPlansProgress = [
+
+    {
+        indicator: "Optimización del SEO y rendimiento",
+        goal: 100,
+        achieved: 0,
+        progress: 0
+    },
+    {
+        indicator: "Lanzamiento y Monitoreo",
+        goal: 100,
+        achieved: 0,
+        progress: 0
+    }
 ];
 
 // Mock data for financial metrics
@@ -81,12 +99,7 @@ const mockLegalStatus = [
 
 // Mock data for agreements
 const mockAgreements = [
-    {
-        title: 'Contrato de Servicios Cloud',
-        status: 'in_progress',
-        owner: 'María González',
-        progress: 75,
-    },
+
     {
         title: 'Acuerdo de Confidencialidad',
         status: 'completed',
@@ -192,6 +205,8 @@ export const PresidentToolbox: React.FC = () => {
                     <TodosOverview todos={mockTodos} />
 
                     <AccountProgress accounts={mockAccountProgress} />
+
+                    <ActionPlansProgress plans={mockActionPlansProgress} />
 
                     <AccountStatus accounts={mockAccountStatus} />
                 </Grid>
