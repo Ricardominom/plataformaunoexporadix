@@ -3,6 +3,7 @@ import {
     Box,
     Container,
     Grid,
+    Typography,
 } from '@mui/material';
 import { LegalStatus } from './dashboardComponents/LegalStatus';
 import { RecentAgreements } from './dashboardComponents/RecentAgreements';
@@ -12,6 +13,7 @@ import { AccountProgress } from './dashboardComponents/AccountProgress';
 import { PendingApprovals } from './dashboardComponents/PendingApprovals';
 import { ActionPlansProgress } from './dashboardComponents/ActionPlansProgress';
 import { LeadsBoard } from './dashboardComponents/LeadsBoard';
+import { useAuth } from '../../context/AuthContext';
 
 // Mock data for account progress
 const mockAccountProgress = [
@@ -130,6 +132,8 @@ const mockAccountStatus = [
 ];
 
 export const PresidentToolbox: React.FC = () => {
+    const { user } = useAuth();
+
     return (
         <Box sx={{
             pt: 'calc(var(--nav-height) + 24px)',
@@ -139,18 +143,35 @@ export const PresidentToolbox: React.FC = () => {
             backgroundColor: 'var(--app-bg)',
         }}>
             <Container maxWidth="xl">
+                <Box sx={{ mb: 4 }}>
+                    <Typography
+                        variant="h4"
+                        sx={{
+                            fontSize: '2rem',
+                            fontWeight: 600,
+                            color: 'var(--text-primary)',
+                            mb: 1,
+                        }}
+                    >
+                        Dashboard General
+                    </Typography>
+                    <Typography
+                        sx={{
+                            fontSize: '1rem',
+                            color: 'var(--text-secondary)',
+                        }}
+                    >
+                        {user?.role}
+                    </Typography>
+                </Box>
+
                 <Grid container spacing={3}>
                     <RecentAgreements agreements={mockAgreements} />
-
                     <LegalStatus items={mockLegalStatus} />
                     <PendingApprovals count={15} />
-
                     <TodosOverview todos={mockTodos} />
-
                     <AccountProgress accounts={mockAccountProgress} />
-
                     <ActionPlansProgress plans={mockActionPlansProgress} />
-
                     <AccountStatus accounts={mockAccountStatus} />
                     <LeadsBoard />
                 </Grid>
