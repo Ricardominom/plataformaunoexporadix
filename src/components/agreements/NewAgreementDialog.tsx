@@ -62,6 +62,50 @@ const initialFormState = {
   deliverableName: '',
 };
 
+// Estilos comunes para campos más compactos
+const inputStyles = {
+  '& .MuiOutlinedInput-root': {
+    borderRadius: '8px',
+    backgroundColor: 'var(--surface-secondary)',
+    height: '40px',
+    '&:hover': {
+      backgroundColor: 'var(--surface-secondary)',
+    },
+    '&.Mui-focused': {
+      backgroundColor: 'var(--surface-secondary)',
+      boxShadow: '0 0 0 2px rgba(0, 113, 227, 0.1)',
+    },
+  },
+  '& .MuiInputLabel-root': {
+    color: 'var(--text-secondary)',
+    fontSize: '0.8rem',
+    transform: 'translate(14px, 12px) scale(1)',
+    '&.MuiInputLabel-shrink': {
+      transform: 'translate(14px, -6px) scale(0.75)',
+    },
+  },
+  '& .MuiOutlinedInput-notchedOutline': {
+    borderColor: 'var(--border-color)',
+  },
+  '& .MuiInputBase-input': {
+    color: 'var(--text-primary)',
+    fontSize: '0.8rem',
+    padding: '8px 14px',
+  },
+};
+
+// Estilos para campos multilinea
+const multilineStyles = {
+  ...inputStyles,
+  '& .MuiOutlinedInput-root': {
+    ...inputStyles['& .MuiOutlinedInput-root'],
+    height: 'auto',
+  },
+  '& .MuiInputBase-inputMultiline': {
+    padding: '8px 14px',
+  },
+};
+
 export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
   open,
   onClose,
@@ -109,6 +153,13 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
       onClose={handleClose}
       maxWidth="md"
       fullWidth
+      sx={{
+        '& .MuiDialog-paper': {
+          margin: '16px',
+          width: 'calc(100% - 32px)',
+          maxWidth: '800px'
+        }
+      }}
       PaperProps={{
         elevation: 0,
         component: motion.div,
@@ -117,12 +168,13 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
         exit: { opacity: 0, y: 20, scale: 0.95 },
         transition: { duration: 0.2 },
         sx: {
-          borderRadius: '16px',
+          borderRadius: '12px',
           backgroundColor: 'var(--surface-primary)',
           backdropFilter: 'blur(20px)',
           border: '1px solid var(--border-color)',
-          overflow: 'hidden',
-          maxHeight: '90vh',
+          overflow: 'auto',
+          height: 'auto',
+          maxHeight: '95vh',
         },
       }}
     >
@@ -132,7 +184,7 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            p: 3,
+            p: 2,
             borderBottom: '1px solid var(--border-color)',
             backgroundColor: 'var(--surface-secondary)',
           }}
@@ -140,10 +192,9 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
           <Typography
             variant="h6"
             sx={{
-              fontSize: '1.25rem',
+              fontSize: '1rem',
               fontWeight: 600,
               color: 'var(--text-primary)',
-              letterSpacing: '-0.025em',
             }}
           >
             Nuevo Acuerdo
@@ -153,20 +204,19 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
             size="small"
             sx={{
               color: 'var(--text-secondary)',
+              padding: '4px',
               '&:hover': {
                 backgroundColor: 'var(--hover-bg)',
                 color: 'var(--text-primary)',
-                transform: 'rotate(90deg)',
               },
-              transition: 'all 0.3s ease',
             }}
           >
-            <X size={20} />
+            <X size={18} />
           </IconButton>
         </DialogTitle>
 
-        <DialogContent sx={{ p: 3, backgroundColor: 'var(--surface-primary)' }}>
-          <Grid container spacing={3}>
+        <DialogContent sx={{ p: 2, backgroundColor: 'var(--surface-primary)' }}>
+          <Grid container spacing={2}>
             <Grid item xs={12} md={8}>
               <TextField
                 label="Elemento"
@@ -174,75 +224,33 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                 value={formData.element}
                 onChange={(e) => setFormData({ ...formData, element: e.target.value })}
                 required
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    backgroundColor: 'var(--surface-secondary)',
-                    '&:hover': {
-                      backgroundColor: 'var(--surface-secondary)',
-                    },
-                    '&.Mui-focused': {
-                      backgroundColor: 'var(--surface-secondary)',
-                      boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
-                    },
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: 'var(--text-secondary)',
-                  },
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: 'var(--border-color)',
-                  },
-                  '& .MuiInputBase-input': {
-                    color: 'var(--text-primary)',
-                  },
-                }}
+                sx={inputStyles}
               />
             </Grid>
             <Grid item xs={12} md={4}>
-              <FormControl
-                fullWidth
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    backgroundColor: 'var(--surface-secondary)',
-                    '&:hover': {
-                      backgroundColor: 'var(--surface-secondary)',
-                    },
-                    '&.Mui-focused': {
-                      backgroundColor: 'var(--surface-secondary)',
-                      boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
-                    },
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: 'var(--text-secondary)',
-                  },
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: 'var(--border-color)',
-                  },
-                }}
-              >
+              <FormControl fullWidth sx={inputStyles}>
                 <InputLabel>Responsable</InputLabel>
                 <Select
                   value={formData.responsible}
                   label="Responsable"
                   onChange={(e) => setFormData({ ...formData, responsible: e.target.value })}
                   required
+                  sx={{
+                    fontSize: '0.8rem',
+                  }}
                   MenuProps={{
                     PaperProps: {
                       sx: {
                         backgroundColor: 'var(--surface-primary)',
                         backgroundImage: 'none',
-                        borderRadius: '12px',
+                        borderRadius: '8px',
                         boxShadow: 'var(--shadow-lg)',
                         border: '1px solid var(--border-color)',
                         mt: 1,
                         '& .MuiMenuItem-root': {
-                          fontSize: '0.875rem',
-                          py: 1,
+                          fontSize: '0.8rem',
+                          py: 0.75,
                           px: 2,
-                          '&:hover': {
-                            backgroundColor: 'var(--hover-bg)',
-                          },
                         },
                       },
                     },
@@ -258,45 +266,28 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel sx={{ color: 'var(--text-secondary)' }}>Estado</InputLabel>
+              <FormControl fullWidth sx={inputStyles}>
+                <InputLabel>Estado</InputLabel>
                 <Select
                   value={formData.status}
                   label="Estado"
                   onChange={(e) => setFormData({ ...formData, status: e.target.value as AgreementStatus })}
                   sx={{
-                    borderRadius: '10px',
-                    backgroundColor: 'var(--surface-secondary)',
-                    '&:hover': {
-                      backgroundColor: 'var(--surface-secondary)',
-                    },
-                    '&.Mui-focused': {
-                      backgroundColor: 'var(--surface-secondary)',
-                      boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
-                    },
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: 'var(--border-color)',
-                    },
-                    '& .MuiSelect-select': {
-                      color: 'var(--text-primary)',
-                    },
+                    fontSize: '0.8rem',
                   }}
                   MenuProps={{
                     PaperProps: {
                       sx: {
                         backgroundColor: 'var(--surface-primary)',
                         backgroundImage: 'none',
-                        borderRadius: '12px',
+                        borderRadius: '8px',
                         boxShadow: 'var(--shadow-lg)',
                         border: '1px solid var(--border-color)',
                         mt: 1,
                         '& .MuiMenuItem-root': {
-                          fontSize: '0.875rem',
-                          py: 1,
+                          fontSize: '0.8rem',
+                          py: 0.75,
                           px: 2,
-                          '&:hover': {
-                            backgroundColor: 'var(--hover-bg)',
-                          },
                         },
                       },
                     },
@@ -312,45 +303,28 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
             </Grid>
 
             <Grid item xs={12} md={6}>
-              <FormControl fullWidth>
-                <InputLabel sx={{ color: 'var(--text-secondary)' }}>Estado SJ</InputLabel>
+              <FormControl fullWidth sx={inputStyles}>
+                <InputLabel>Estado SJ</InputLabel>
                 <Select
                   value={formData.sjStatus}
                   label="Estado SJ"
                   onChange={(e) => setFormData({ ...formData, sjStatus: e.target.value as AgreementStatus })}
                   sx={{
-                    borderRadius: '10px',
-                    backgroundColor: 'var(--surface-secondary)',
-                    '&:hover': {
-                      backgroundColor: 'var(--surface-secondary)',
-                    },
-                    '&.Mui-focused': {
-                      backgroundColor: 'var(--surface-secondary)',
-                      boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
-                    },
-                    '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: 'var(--border-color)',
-                    },
-                    '& .MuiSelect-select': {
-                      color: 'var(--text-primary)',
-                    },
+                    fontSize: '0.8rem',
                   }}
                   MenuProps={{
                     PaperProps: {
                       sx: {
                         backgroundColor: 'var(--surface-primary)',
                         backgroundImage: 'none',
-                        borderRadius: '12px',
+                        borderRadius: '8px',
                         boxShadow: 'var(--shadow-lg)',
                         border: '1px solid var(--border-color)',
                         mt: 1,
                         '& .MuiMenuItem-root': {
-                          fontSize: '0.875rem',
-                          py: 1,
+                          fontSize: '0.8rem',
+                          py: 0.75,
                           px: 2,
-                          '&:hover': {
-                            backgroundColor: 'var(--hover-bg)',
-                          },
                         },
                       },
                     },
@@ -370,32 +344,11 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                 label="Fecha solicitud"
                 value={formData.requestDate}
                 onChange={(date) => setFormData({ ...formData, requestDate: date ?? dayjs() })}
-                slotProps={{ 
-                  textField: { 
-                    size: "medium",
+                slotProps={{
+                  textField: {
                     fullWidth: true,
-                    sx: {
-                      '& .MuiOutlinedInput-root': {
-                        backgroundColor: 'var(--surface-secondary)',
-                        borderRadius: '10px',
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          borderColor: 'var(--border-color)',
-                        },
-                        '&:hover': {
-                          backgroundColor: 'var(--surface-secondary)',
-                        },
-                        '&.Mui-focused': {
-                          backgroundColor: 'var(--surface-secondary)',
-                          boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
-                        },
-                      },
-                      '& .MuiInputLabel-root': {
-                        color: 'var(--text-secondary)',
-                      },
-                      '& .MuiInputBase-input': {
-                        color: 'var(--text-primary)',
-                      },
-                    }
+                    size: "small",
+                    sx: inputStyles
                   }
                 }}
               />
@@ -406,32 +359,11 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                 label="Fecha entrega"
                 value={formData.deliveryDate}
                 onChange={(date) => setFormData({ ...formData, deliveryDate: date ?? dayjs() })}
-                slotProps={{ 
-                  textField: { 
-                    size: "medium",
+                slotProps={{
+                  textField: {
                     fullWidth: true,
-                    sx: {
-                      '& .MuiOutlinedInput-root': {
-                        backgroundColor: 'var(--surface-secondary)',
-                        borderRadius: '10px',
-                        '& .MuiOutlinedInput-notchedOutline': {
-                          borderColor: 'var(--border-color)',
-                        },
-                        '&:hover': {
-                          backgroundColor: 'var(--surface-secondary)',
-                        },
-                        '&.Mui-focused': {
-                          backgroundColor: 'var(--surface-secondary)',
-                          boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
-                        },
-                      },
-                      '& .MuiInputLabel-root': {
-                        color: 'var(--text-secondary)',
-                      },
-                      '& .MuiInputBase-input': {
-                        color: 'var(--text-primary)',
-                      },
-                    }
+                    size: "small",
+                    sx: inputStyles
                   }
                 }}
               />
@@ -442,31 +374,10 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                 label="Relato"
                 fullWidth
                 multiline
-                rows={3}
+                rows={2}
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    backgroundColor: 'var(--surface-secondary)',
-                    '&:hover': {
-                      backgroundColor: 'var(--surface-secondary)',
-                    },
-                    '&.Mui-focused': {
-                      backgroundColor: 'var(--surface-secondary)',
-                      boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
-                    },
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: 'var(--text-secondary)',
-                  },
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: 'var(--border-color)',
-                  },
-                  '& .MuiInputBase-input': {
-                    color: 'var(--text-primary)',
-                  },
-                }}
+                sx={multilineStyles}
               />
             </Grid>
 
@@ -475,86 +386,59 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                 label="Solicitud SJ"
                 fullWidth
                 multiline
-                rows={3}
+                rows={2}
                 value={formData.sjRequest}
                 onChange={(e) => setFormData({ ...formData, sjRequest: e.target.value })}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    borderRadius: '10px',
-                    backgroundColor: 'var(--surface-secondary)',
-                    '&:hover': {
-                      backgroundColor: 'var(--surface-secondary)',
-                    },
-                    '&.Mui-focused': {
-                      backgroundColor: 'var(--surface-secondary)',
-                      boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
-                    },
-                  },
-                  '& .MuiInputLabel-root': {
-                    color: 'var(--text-secondary)',
-                  },
-                  '& .MuiOutlinedInput-notchedOutline': {
-                    borderColor: 'var(--border-color)',
-                  },
-                  '& .MuiInputBase-input': {
-                    color: 'var(--text-primary)',
-                  },
-                }}
+                sx={multilineStyles}
               />
             </Grid>
 
-            {/* File Upload Section */}
+            {/* File Upload Section - Compactado */}
             <Grid item xs={12}>
               <Box
                 sx={{
-                  p: 3,
-                  borderRadius: '10px',
+                  p: 2,
+                  borderRadius: '8px',
                   backgroundColor: 'var(--surface-secondary)',
                   border: '1px dashed var(--border-color)',
                   transition: 'all 0.2s ease',
-                  '&:hover': {
-                    borderColor: '#0071e3',
-                    backgroundColor: 'rgba(0, 113, 227, 0.05)',
-                  },
                 }}
               >
                 <input
                   type="file"
                   onChange={handleFileChange}
-                  sx={{ display: 'none' }}
                   ref={fileInputRef}
                   style={{ display: 'none' }}
                 />
-                
+
                 {(formData.deliverable || formData.deliverableName) ? (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                     <Box
                       sx={{
-                        width: 40,
-                        height: 40,
-                        borderRadius: '10px',
+                        width: 32,
+                        height: 32,
+                        borderRadius: '6px',
                         backgroundColor: 'rgba(0, 113, 227, 0.1)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
                     >
-                      <FileText size={20} color="#0071e3" />
+                      <FileText size={16} color="#0071e3" />
                     </Box>
                     <Box sx={{ flex: 1 }}>
                       <Typography
                         sx={{
-                          fontSize: '0.875rem',
+                          fontSize: '0.8rem',
                           color: 'var(--text-primary)',
                           fontWeight: 500,
-                          mb: 0.5,
                         }}
                       >
                         {formData.deliverableName}
                       </Typography>
                       <Typography
                         sx={{
-                          fontSize: '0.75rem',
+                          fontSize: '0.7rem',
                           color: 'var(--text-secondary)',
                         }}
                       >
@@ -565,21 +449,17 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                       size="small"
                       onClick={handleRemoveFile}
                       sx={{
+                        padding: '4px',
                         color: 'var(--text-secondary)',
-                        '&:hover': {
-                          color: '#ff2d55',
-                          backgroundColor: 'rgba(255, 45, 85, 0.1)',
-                        },
                       }}
                     >
-                      <Trash2 size={18} />
+                      <Trash2 size={16} />
                     </IconButton>
                   </Box>
                 ) : (
                   <Box
                     sx={{
                       display: 'flex',
-                      flexDirection: 'column',
                       alignItems: 'center',
                       gap: 2,
                       cursor: 'pointer',
@@ -588,35 +468,34 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                   >
                     <Box
                       sx={{
-                        width: 60,
-                        height: 60,
-                        borderRadius: '50%',
+                        width: 40,
+                        height: 40,
+                        borderRadius: '6px',
                         backgroundColor: 'rgba(0, 113, 227, 0.1)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                       }}
                     >
-                      <Upload size={24} color="#0071e3" />
+                      <Upload size={20} color="#0071e3" />
                     </Box>
-                    <Box sx={{ textAlign: 'center' }}>
+                    <Box>
                       <Typography
                         sx={{
-                          fontSize: '0.875rem',
+                          fontSize: '0.8rem',
                           color: 'var(--text-primary)',
                           fontWeight: 500,
-                          mb: 0.5,
                         }}
                       >
-                        Arrastra y suelta o haz clic para subir
+                        Clic para subir documento
                       </Typography>
                       <Typography
                         sx={{
-                          fontSize: '0.75rem',
+                          fontSize: '0.7rem',
                           color: 'var(--text-secondary)',
                         }}
                       >
-                        Soporta PDF, Word, Excel y otros documentos
+                        Soporta PDF, Word, Excel
                       </Typography>
                     </Box>
                   </Box>
@@ -628,7 +507,7 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
 
         <DialogActions
           sx={{
-            p: 3,
+            p: 2,
             borderTop: '1px solid var(--border-color)',
             backgroundColor: 'var(--surface-secondary)',
             gap: 1,
@@ -638,16 +517,13 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
             onClick={handleClose}
             sx={{
               color: 'var(--text-secondary)',
-              fontSize: '0.9375rem',
+              fontSize: '0.8rem',
               fontWeight: 500,
               textTransform: 'none',
-              px: 3,
-              py: 1,
-              borderRadius: '8px',
-              '&:hover': {
-                backgroundColor: 'var(--hover-bg)',
-                color: 'var(--text-primary)',
-              },
+              px: 2,
+              py: 0.75,
+              borderRadius: '6px',
+              minHeight: '32px',
             }}
           >
             Cancelar
@@ -658,17 +534,14 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
             sx={{
               backgroundColor: '#0071e3',
               color: '#fff',
-              fontSize: '0.9375rem',
+              fontSize: '0.8rem',
               fontWeight: 500,
               textTransform: 'none',
-              px: 3,
-              py: 1,
-              borderRadius: '8px',
+              px: 2,
+              py: 0.75,
+              borderRadius: '6px',
+              minHeight: '32px',
               boxShadow: 'none',
-              '&:hover': {
-                backgroundColor: '#0077ED',
-                boxShadow: '0 2px 8px rgba(0, 113, 227, 0.3)',
-              },
             }}
           >
             Crear Acuerdo
