@@ -34,6 +34,28 @@
       "owner": "Roberto Sánchez",
       "progress": 100,
       "company": "Interlogis Holding"
+    },
+    {
+      "title": "Acuerdo de Colaboración",
+      "status": "pending",
+      "owner": "Laura Fernández",
+      "progress": 20,
+      "company": "Interlogis Comercial"
+    },
+    {
+      "title": "Contrato de Mantenimiento",
+      "status": "in_progress",
+      "owner": "Javier López",
+      "progress": 50,
+      "company": "Interlogis Comercial"
+    },
+    {
+      "title": "Acuerdo de Asociación",
+      "status": "completed",
+      "owner": "Sofía Torres",
+      "progress": 100,
+      "company": "Interlogis Comercial"
     }
+
   ]
 }
