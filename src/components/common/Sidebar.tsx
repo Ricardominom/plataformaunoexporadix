@@ -1,34 +1,35 @@
 import React, { useState } from 'react';
-import { 
-  Box, 
-  Drawer, 
-  List, 
-  ListItem, 
-  ListItemButton, 
-  ListItemIcon, 
-  ListItemText, 
-  Divider, 
-  IconButton, 
-  Typography, 
-  Avatar, 
+import {
+  Box,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Divider,
+  IconButton,
+  Typography,
+  Avatar,
   Tooltip,
   useMediaQuery,
   useTheme as useMuiTheme,
   Menu,
   MenuItem,
 } from '@mui/material';
-import { 
-  FileText, 
-  CheckSquare, 
-  Wrench, 
-  Moon, 
-  Sun, 
-  LogOut, 
+import {
+  Building2,
+  FileText,
+  CheckSquare,
+  Wrench,
+  Moon,
+  Sun,
+  LogOut,
   Menu as MenuIcon,
   User,
   Settings,
   ChevronRight,
-  Building,
+  Briefcase,
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -99,9 +100,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
   }
 
   const drawerContent = (
-    <Box sx={{ 
-      display: 'flex', 
-      flexDirection: 'column', 
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
       height: '100%',
       backgroundColor: 'var(--surface-primary)',
       color: 'var(--text-primary)',
@@ -170,7 +171,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
             </Box>
             <ChevronRight size={16} color="var(--text-secondary)" />
           </Box>
-          
+
           <motion.div
             whileHover={{ rotate: 180 }}
             transition={{ duration: 0.3 }}
@@ -192,61 +193,84 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
         </Box>
       </Box>
 
-      {/* Logo and Brand */}
-      <Box 
+      {/* Logo and Brand - Enhanced with animation and styling */}
+      <Box
+        component={motion.div}
+        whileHover={{
+          scale: 1.02,
+          transition: { duration: 0.2 }
+        }}
         onClick={navigateToAgreements}
-        sx={{ 
-          p: 2, 
-          display: 'flex', 
+        sx={{
+          p: 2,
+          display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
           cursor: 'pointer',
           borderRadius: '12px',
           mx: 2,
           mb: 2,
+          background: 'linear-gradient(135deg, var(--brand-primary) 0%, #40a9ff 100%)',
+          boxShadow: '0 4px 12px rgba(0, 113, 227, 0.2)',
           transition: 'all 0.3s ease',
           '&:hover': {
-            backgroundColor: 'var(--hover-bg)',
+            boxShadow: '0 6px 16px rgba(0, 113, 227, 0.3)',
           }
         }}
       >
-        <Box
+        <motion.div
+          initial={{ scale: 1 }}
+          whileHover={{ scale: 1.1, rotate: 5 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+        >
+          <Box
+            sx={{
+              width: 48,
+              height: 48,
+              borderRadius: '12px',
+              backgroundColor: 'rgba(255, 255, 255, 0.2)',
+              backdropFilter: 'blur(4px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#FFFFFF',
+              mb: 1.5,
+            }}
+          >
+            <Briefcase size={24} />
+          </Box>
+        </motion.div>
+        <Typography
+          variant="h6"
+          component={motion.h6}
+          initial={{ opacity: 1 }}
+          whileHover={{ y: -2 }}
           sx={{
-            width: 40,
-            height: 40,
-            borderRadius: '10px',
-            backgroundColor: 'var(--brand-primary)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
+            fontSize: '1rem',
+            fontWeight: 600,
             color: '#FFFFFF',
-            mr: 2,
+            textAlign: 'center',
+            letterSpacing: '-0.01em',
           }}
         >
-          <Building size={22} />
-        </Box>
-        <Box>
-          <Typography
-            variant="h6"
-            sx={{
-              fontSize: '1rem',
-              fontWeight: 600,
-              color: 'var(--text-primary)',
-              lineHeight: 1.2,
-            }}
-          >
-            Alpha Office
-          </Typography>
-          <Typography
-            variant="body2"
-            sx={{
-              fontSize: '0.75rem',
-              color: 'var(--text-secondary)',
-              lineHeight: 1.2,
-            }}
-          >
-            team management
-          </Typography>
-        </Box>
+          Alpha Office
+        </Typography>
+        <Typography
+          variant="body2"
+          component={motion.p}
+          initial={{ opacity: 0.9 }}
+          whileHover={{ opacity: 1 }}
+          sx={{
+            fontSize: '0.75rem',
+            fontWeight: 500,
+            color: 'rgba(255, 255, 255, 0.9)',
+            textAlign: 'center',
+            letterSpacing: '0.02em',
+            textTransform: 'uppercase',
+          }}
+        >
+          team management
+        </Typography>
       </Box>
 
       <Divider sx={{ borderColor: 'var(--border-color)', my: 1 }} />
@@ -254,11 +278,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       {/* Navigation Links */}
       <List sx={{ px: 1, flex: 1 }}>
         {navLinks.map((item) => {
-          const isActive = location.pathname === item.path || 
-                          (item.path === '/agreements' && location.pathname.startsWith('/agreements')) ||
-                          (item.path === '/todos' && location.pathname.startsWith('/todos')) ||
-                          (item.path === '/toolbox' && location.pathname.startsWith('/toolbox'));
-          
+          const isActive = location.pathname === item.path ||
+            (item.path === '/agreements' && location.pathname.startsWith('/agreements')) ||
+            (item.path === '/todos' && location.pathname.startsWith('/todos')) ||
+            (item.path === '/toolbox' && location.pathname.startsWith('/toolbox'));
+
           return (
             <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
               <ListItemButton
@@ -337,44 +361,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-        <MenuItem
-          onClick={handleUserMenuClose}
-          sx={{
-            '&:hover': {
-              backgroundColor: 'var(--hover-bg)',
-            },
-          }}
-        >
-          <ListItemIcon>
-            <User size={18} color="var(--text-secondary)" />
-          </ListItemIcon>
-          <ListItemText
-            primary="Mi Perfil"
-            primaryTypographyProps={{
-              fontSize: '0.875rem',
-              fontWeight: 500,
-            }}
-          />
-        </MenuItem>
-        <MenuItem
-          onClick={handleUserMenuClose}
-          sx={{
-            '&:hover': {
-              backgroundColor: 'var(--hover-bg)',
-            },
-          }}
-        >
-          <ListItemIcon>
-            <Settings size={18} color="var(--text-secondary)" />
-          </ListItemIcon>
-          <ListItemText
-            primary="Configuración"
-            primaryTypographyProps={{
-              fontSize: '0.875rem',
-              fontWeight: 500,
-            }}
-          />
-        </MenuItem>
+
         <Divider sx={{ my: 1, borderColor: 'var(--border-color)' }} />
         <MenuItem
           onClick={handleLogoutClick}
@@ -431,11 +418,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
             >
               <MenuIcon />
             </IconButton>
-            <Box 
+            <Box
+              component={motion.div}
+              whileHover={{ scale: 1.02 }}
               onClick={navigateToAgreements}
-              sx={{ 
-                display: 'flex', 
-                alignItems: 'center', 
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
                 gap: 1.5,
                 cursor: 'pointer'
               }}
@@ -445,14 +434,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
                   width: 32,
                   height: 32,
                   borderRadius: '8px',
-                  backgroundColor: 'var(--brand-primary)',
+                  background: 'linear-gradient(135deg, var(--brand-primary) 0%, #40a9ff 100%)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: '#FFFFFF',
                 }}
               >
-                <Building size={18} />
+                <Briefcase size={18} />
               </Box>
               <Box>
                 <Typography
@@ -470,7 +459,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
                   variant="body2"
                   sx={{
                     fontSize: '0.7rem',
+                    fontWeight: 500,
                     color: 'var(--text-secondary)',
+                    letterSpacing: '0.02em',
+                    textTransform: 'uppercase',
                     lineHeight: 1.2,
                   }}
                 >
