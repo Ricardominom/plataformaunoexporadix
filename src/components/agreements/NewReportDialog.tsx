@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -21,10 +21,21 @@ import { X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import dayjs from 'dayjs';
 
+interface Report {
+    id: string;
+    project: string;
+    status: 'completed' | 'in_progress' | 'delayed';
+    progress: number;
+    lastUpdate: string;
+    dueDate: string;
+    responsible: string;
+}
+
 interface NewReportDialogProps {
     open: boolean;
     onClose: () => void;
     onSubmit: (report: any) => void;
+    report?: Report | null; // Optional report for editing
 }
 
 // Opciones para el estado del reporte
@@ -45,15 +56,19 @@ const responsibleOptions = [
     'Especialista UX',
     'Tester Principal',
     'Arquitecto de Software',
+    'Equipo DevOps',
+    'Equipo Backend',
+    'Equipo Integración',
 ];
 
 // Estado inicial del formulario
 const initialFormState = {
+    id: '',
     project: '',
-    status: 'in_progress',
+    status: 'in_progress' as const,
     progress: 0,
-    lastUpdate: dayjs(),
-    dueDate: dayjs().add(1, 'month'),
+    lastUpdate: dayjs().format('YYYY-MM-DD'),
+    dueDate: dayjs().add(1, 'month').format('YYYY-MM-DD'),
     responsible: '',
 };
 
@@ -93,16 +108,33 @@ export const NewReportDialog: React.FC<NewReportDialogProps> = ({
     open,
     onClose,
     onSubmit,
+    report
 }) => {
     const [formData, setFormData] = useState(initialFormState);
+    const isEditing = !!report;
+
+    // Update form data when editing an existing report
+    useEffect(() => {
+        if (report) {
+            console.log("Setting form data from report:", report);
+            setFormData({
+                id: report.id,
+                project: report.project,
+                status: report.status,
+                progress: report.progress,
+                lastUpdate: report.lastUpdate,
+                dueDate: report.dueDate,
+                responsible: report.responsible,
+            });
+        } else {
+            setFormData(initialFormState);
+        }
+    }, [report]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit({
-            ...formData,
-            lastUpdate: formData.lastUpdate.format('YYYY-MM-DD'),
-            dueDate: formData.dueDate.format('YYYY-MM-DD'),
-        });
+        console.log("Submitting form data:", formData);
+        onSubmit(formData);
         setFormData(initialFormState); // Reset form to initial state
     };
 
@@ -168,7 +200,7 @@ export const NewReportDialog: React.FC<NewReportDialogProps> = ({
                             color: 'var(--text-primary)',
                         }}
                     >
-                        Nuevo Reporte de Avance
+                        {isEditing ? 'Editar Reporte de Avance' : 'Nuevo Reporte de Avance'}
                     </Typography>
                     <IconButton
                         onClick={handleClose}
@@ -188,6 +220,23 @@ export const NewReportDialog: React.FC<NewReportDialogProps> = ({
 
                 <DialogContent sx={{ p: 2, backgroundColor: 'var(--surface-primary)' }}>
                     <Grid container spacing={2} sx={{ pt: 1 }}>
+                        {isEditing && (
+                            <Grid item xs={12}>
+                                <TextField
+                                    label="ID"
+                                    fullWidth
+                                    value={formData.id}
+                                    disabled
+                                    sx={{
+                                        ...inputStyles,
+                                        '& .MuiInputBase-input.Mui-disabled': {
+                                            WebkitTextFillColor: 'var(--text-secondary)',
+                                        }
+                                    }}
+                                />
+                            </Grid>
+                        )}
+
                         <Grid item xs={12}>
                             <TextField
                                 label="Nombre del Proyecto"
@@ -205,7 +254,7 @@ export const NewReportDialog: React.FC<NewReportDialogProps> = ({
                                 <Select
                                     value={formData.status}
                                     label="Estado"
-                                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                                    onChange={(e) => setFormData({ ...formData, status: e.target.value as Report['status'] })}
                                     required
                                     sx={{
                                         fontSize: '0.8rem',
@@ -279,8 +328,11 @@ export const NewReportDialog: React.FC<NewReportDialogProps> = ({
                         <Grid item xs={12} md={6}>
                             <DatePicker
                                 label="Última Actualización"
-                                value={formData.lastUpdate}
-                                onChange={(date) => setFormData({ ...formData, lastUpdate: date || dayjs() })}
+                                value={dayjs(formData.lastUpdate)}
+                                onChange={(date) => setFormData({ 
+                                    ...formData, 
+                                    lastUpdate: date ? date.format('YYYY-MM-DD') : dayjs().format('YYYY-MM-DD') 
+                                })}
                                 slotProps={{
                                     textField: {
                                         fullWidth: true,
@@ -294,8 +346,11 @@ export const NewReportDialog: React.FC<NewReportDialogProps> = ({
                         <Grid item xs={12} md={6}>
                             <DatePicker
                                 label="Fecha Límite"
-                                value={formData.dueDate}
-                                onChange={(date) => setFormData({ ...formData, dueDate: date || dayjs() })}
+                                value={dayjs(formData.dueDate)}
+                                onChange={(date) => setFormData({ 
+                                    ...formData, 
+                                    dueDate: date ? date.format('YYYY-MM-DD') : dayjs().add(1, 'month').format('YYYY-MM-DD') 
+                                })}
                                 slotProps={{
                                     textField: {
                                         fullWidth: true,
@@ -351,7 +406,7 @@ export const NewReportDialog: React.FC<NewReportDialogProps> = ({
                             },
                         }}
                     >
-                        Crear Reporte
+                        {isEditing ? 'Guardar Cambios' : 'Crear Reporte'}
                     </Button>
                 </DialogActions>
             </form>

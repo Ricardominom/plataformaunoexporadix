@@ -1,6 +1,7 @@
 {
     "reports": [
         {
+            "id": "1",
             "project": "Automatización de Procesos",
             "status": "completed",
             "progress": 100,
@@ -9,6 +10,7 @@
             "responsible": "Equipo DevOps"
         },
         {
+            "id": "2",
             "project": "Migración de Base de Datos",
             "status": "in_progress",
             "progress": 75,
@@ -17,12 +19,31 @@
             "responsible": "Equipo Backend"
         },
         {
+            "id": "3",
             "project": "Implementación CRM",
             "status": "delayed",
             "progress": 45,
             "lastUpdate": "2024-02-18",
             "dueDate": "2024-02-15",
             "responsible": "Equipo Integración"
+        },
+        {
+            "id": "4",
+            "project": "Desarrollo de API REST",
+            "status": "in_progress",
+            "progress": 60,
+            "lastUpdate": "2024-02-22",
+            "dueDate": "2024-03-15",
+            "responsible": "Desarrollador Senior"
+        },
+        {
+            "id": "5",
+            "project": "Rediseño de Interfaz de Usuario",
+            "status": "in_progress",
+            "progress": 80,
+            "lastUpdate": "2024-02-21",
+            "dueDate": "2024-03-05",
+            "responsible": "Especialista UX"
         }
     ]
 }
