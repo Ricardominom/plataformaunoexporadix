@@ -107,7 +107,7 @@ export const NewMoneyApprovalDialog: React.FC<NewMoneyApprovalDialogProps> = ({
                             letterSpacing: '-0.025em',
                         }}
                     >
-                        Nueva Aprobación de Dinero
+                        Nueva Aprobación de Erogacion
                     </Typography>
                     <IconButton
                         onClick={onClose}

@@ -40,7 +40,7 @@ const approvedRequests = [
         requestedAmount: 35000,
         approvedAmount: 35000,
         approvedBy: 'María Gómez',
-        status: 'En proceso',
+        status: 'Completo',
     },
     {
         id: '3',
@@ -52,7 +52,7 @@ const approvedRequests = [
         requestedAmount: 80000,
         approvedAmount: 75000,
         approvedBy: 'Carlos Rodríguez',
-        status: 'Pendiente',
+        status: 'Completo',
     },
 ];
 
