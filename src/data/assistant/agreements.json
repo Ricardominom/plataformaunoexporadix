@@ -1,16 +1,39 @@
 {
-    "agreements": [
-        {
-            "title": "Acuerdo de Confidencialidad",
-            "status": "completed",
-            "owner": "Juan Pérez",
-            "progress": 100
-        },
-        {
-            "title": "Términos y Condiciones App",
-            "status": "pending",
-            "owner": "Carlos Rodríguez",
-            "progress": 30
-        }
-    ]
+  "agreements": [
+    {
+      "title": "Acuerdo de Confidencialidad",
+      "status": "completed",
+      "owner": "Juan Pérez",
+      "progress": 100,
+      "company": "Interlogis Holding"
+    },
+    {
+      "title": "Términos y Condiciones App",
+      "status": "pending",
+      "owner": "Carlos Rodríguez",
+      "progress": 30,
+      "company": "Interlogis Inmobiliaria"
+    },
+    {
+      "title": "Contrato de Servicios Cloud",
+      "status": "in_progress",
+      "owner": "María González",
+      "progress": 75,
+      "company": "Interlogis Holding"
+    },
+    {
+      "title": "Contrato de Arrendamiento",
+      "status": "in_progress",
+      "owner": "Ana Martínez",
+      "progress": 60,
+      "company": "Interlogis Inmobiliaria"
+    },
+    {
+      "title": "Acuerdo de Servicios",
+      "status": "completed",
+      "owner": "Roberto Sánchez",
+      "progress": 100,
+      "company": "Interlogis Holding"
+    }
+  ]
 }

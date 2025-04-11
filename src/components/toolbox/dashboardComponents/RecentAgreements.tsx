@@ -1,12 +1,14 @@
-import React from 'react';
-import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Box, Chip, LinearProgress } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Box, Chip, LinearProgress, Tabs, Tab, Divider } from '@mui/material';
 import { CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface Agreement {
     title: string;
     status: string;
     owner: string;
     progress: number;
+    company?: string; // Added company field
 }
 
 interface RecentAgreementsProps {
@@ -21,22 +23,57 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
             status: "in_progress",
             owner: "María González",
             progress: 75,
+            company: "Interlogis Holding"
         },
         {
             title: "Acuerdo de Confidencialidad",
             status: "completed",
             owner: "Juan Pérez",
             progress: 100,
+            company: "Interlogis Holding"
         },
         {
             title: "Términos y Condiciones App",
             status: "pending",
             owner: "Carlos Rodríguez",
             progress: 30,
+            company: "Interlogis Inmobiliaria"
         },
+        {
+            title: "Contrato de Arrendamiento",
+            status: "in_progress",
+            owner: "Ana Martínez",
+            progress: 60,
+            company: "Interlogis Inmobiliaria"
+        },
+        {
+            title: "Acuerdo de Servicios",
+            status: "completed",
+            owner: "Roberto Sánchez",
+            progress: 100,
+            company: "Interlogis Holding"
+        }
     ];
 
-    const displayAgreements = agreements.length > 0 ? agreements : defaultAgreements;
+    const displayAgreements = agreements.length > 0
+        ? agreements.map(a => ({ ...a, company: a.company || "Interlogis Holding" }))
+        : defaultAgreements;
+
+    // Get unique companies from agreements
+    const companies = [...new Set(displayAgreements.map(a => a.company || ""))];
+
+    // Set initial selected company to the first one in the list
+    const [selectedCompany, setSelectedCompany] = useState<string>(companies[0] || "");
+
+    // Update selected company if companies change
+    useEffect(() => {
+        if (companies.length > 0 && !companies.includes(selectedCompany)) {
+            setSelectedCompany(companies[0]);
+        }
+    }, [companies, selectedCompany]);
+
+    // Filter agreements by selected company
+    const filteredAgreements = displayAgreements.filter(a => a.company === selectedCompany);
 
     const getStatusColor = (status: string) => {
         const colors = {
@@ -72,6 +109,10 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
         return labels[status as keyof typeof labels] || status;
     };
 
+    const handleTabChange = (_: React.SyntheticEvent, newValue: string) => {
+        setSelectedCompany(newValue);
+    };
+
     return (
         <Paper
             sx={{
@@ -84,7 +125,14 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
                 flexDirection: 'column',
             }}
         >
-            <Box sx={{ p: 2, borderBottom: '1px solid #333333' }}>
+            {/* Header with title */}
+            <Box sx={{
+                p: 2,
+                borderBottom: '1px solid #333333',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between'
+            }}>
                 <Typography
                     variant="h6"
                     sx={{
@@ -95,7 +143,57 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
                 >
                     ACUERDOS
                 </Typography>
+
+                {/* Optional: Add a count badge or other info on the right */}
+                <Chip
+                    label={`${filteredAgreements.length} acuerdos`}
+                    size="small"
+                    sx={{
+                        backgroundColor: 'rgba(0, 204, 136, 0.2)',
+                        color: '#00CC88',
+                        height: '24px',
+                        fontSize: '0.75rem',
+                    }}
+                />
             </Box>
+
+            {/* Company Tabs - Now below the title with a divider */}
+            <Box sx={{ borderBottom: '1px solid #333333' }}>
+                <Tabs
+                    value={selectedCompany}
+                    onChange={handleTabChange}
+                    variant="scrollable"
+                    scrollButtons="auto"
+                    sx={{
+                        minHeight: '40px', // Slightly taller tabs
+                        '& .MuiTabs-indicator': {
+                            backgroundColor: '#00CC88',
+                            height: '2px',
+                        },
+                        '& .MuiTab-root': {
+                            minHeight: '40px', // Slightly taller tabs
+                            fontSize: '0.8rem', // Slightly larger font
+                            fontWeight: 500,
+                            color: '#BBBBBB',
+                            textTransform: 'none',
+                            padding: '6px 16px', // More padding
+                            '&.Mui-selected': {
+                                color: '#00CC88',
+                                fontWeight: 600,
+                            },
+                        },
+                    }}
+                >
+                    {companies.map((company) => (
+                        <Tab
+                            key={company}
+                            value={company}
+                            label={company}
+                        />
+                    ))}
+                </Tabs>
+            </Box>
+
             <TableContainer sx={{ flex: 1, overflowY: 'auto' }}>
                 <Table size="small">
                     <TableHead>
@@ -123,9 +221,9 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {displayAgreements.map((agreement, index) => (
-                            <TableRow 
-                                key={index} 
+                        {filteredAgreements.map((agreement, index) => (
+                            <TableRow
+                                key={index}
                                 hover
                                 sx={{
                                     height: '48px', // Fixed height for rows
@@ -201,6 +299,15 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
                                 </TableCell>
                             </TableRow>
                         ))}
+                        {filteredAgreements.length === 0 && (
+                            <TableRow>
+                                <TableCell colSpan={4} align="center" sx={{ py: 3 }}>
+                                    <Typography sx={{ color: '#BBBBBB' }}>
+                                        No hay acuerdos para mostrar
+                                    </Typography>
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>
@@ -213,7 +320,7 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
                             Total acuerdos
                         </Typography>
                         <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#FFFFFF' }}>
-                            {displayAgreements.length}
+                            {filteredAgreements.length}
                         </Typography>
                     </Box>
                     <Box>
@@ -221,7 +328,7 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
                             En proceso
                         </Typography>
                         <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#00CC88' }}>
-                            {displayAgreements.filter(a => a.status === 'in_progress').length}
+                            {filteredAgreements.filter(a => a.status === 'in_progress').length}
                         </Typography>
                     </Box>
                     <Box>
@@ -229,7 +336,7 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
                             Completados
                         </Typography>
                         <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#00CC88' }}>
-                            {displayAgreements.filter(a => a.status === 'completed').length}
+                            {filteredAgreements.filter(a => a.status === 'completed').length}
                         </Typography>
                     </Box>
                 </Box>
