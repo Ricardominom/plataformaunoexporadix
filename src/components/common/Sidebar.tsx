@@ -18,7 +18,6 @@ import {
   MenuItem,
 } from '@mui/material';
 import { 
-  Building2, 
   FileText, 
   CheckSquare, 
   Wrench, 
@@ -29,6 +28,7 @@ import {
   User,
   Settings,
   ChevronRight,
+  Building,
 } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -85,6 +85,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
     setIsLogoutDialogOpen(false);
     logout();
     navigate('/');
+  };
+
+  const navigateToAgreements = () => {
+    navigate('/agreements');
+    if (isMobile) {
+      setMobileOpen(false);
+    }
   };
 
   if (!user) {
@@ -186,31 +193,60 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
       </Box>
 
       {/* Logo and Brand */}
-      <Box sx={{ p: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Box 
+        onClick={navigateToAgreements}
+        sx={{ 
+          p: 2, 
+          display: 'flex', 
+          alignItems: 'center',
+          cursor: 'pointer',
+          borderRadius: '12px',
+          mx: 2,
+          mb: 2,
+          transition: 'all 0.3s ease',
+          '&:hover': {
+            backgroundColor: 'var(--hover-bg)',
+          }
+        }}
+      >
         <Box
           sx={{
-            width: 32,
-            height: 32,
-            borderRadius: '8px',
+            width: 40,
+            height: 40,
+            borderRadius: '10px',
             backgroundColor: 'var(--brand-primary)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color: '#FFFFFF',
+            mr: 2,
           }}
         >
-          <Building2 size={18} />
+          <Building size={22} />
         </Box>
-        <Typography
-          variant="h6"
-          sx={{
-            fontSize: '1.125rem',
-            fontWeight: 600,
-            color: 'var(--text-primary)',
-          }}
-        >
-          Alpha Office team management
-        </Typography>
+        <Box>
+          <Typography
+            variant="h6"
+            sx={{
+              fontSize: '1rem',
+              fontWeight: 600,
+              color: 'var(--text-primary)',
+              lineHeight: 1.2,
+            }}
+          >
+            Alpha Office
+          </Typography>
+          <Typography
+            variant="body2"
+            sx={{
+              fontSize: '0.75rem',
+              color: 'var(--text-secondary)',
+              lineHeight: 1.2,
+            }}
+          >
+            team management
+          </Typography>
+        </Box>
       </Box>
 
       <Divider sx={{ borderColor: 'var(--border-color)', my: 1 }} />
@@ -301,7 +337,44 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       >
-       
+        <MenuItem
+          onClick={handleUserMenuClose}
+          sx={{
+            '&:hover': {
+              backgroundColor: 'var(--hover-bg)',
+            },
+          }}
+        >
+          <ListItemIcon>
+            <User size={18} color="var(--text-secondary)" />
+          </ListItemIcon>
+          <ListItemText
+            primary="Mi Perfil"
+            primaryTypographyProps={{
+              fontSize: '0.875rem',
+              fontWeight: 500,
+            }}
+          />
+        </MenuItem>
+        <MenuItem
+          onClick={handleUserMenuClose}
+          sx={{
+            '&:hover': {
+              backgroundColor: 'var(--hover-bg)',
+            },
+          }}
+        >
+          <ListItemIcon>
+            <Settings size={18} color="var(--text-secondary)" />
+          </ListItemIcon>
+          <ListItemText
+            primary="Configuración"
+            primaryTypographyProps={{
+              fontSize: '0.875rem',
+              fontWeight: 500,
+            }}
+          />
+        </MenuItem>
         <Divider sx={{ my: 1, borderColor: 'var(--border-color)' }} />
         <MenuItem
           onClick={handleLogoutClick}
@@ -358,16 +431,53 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
             >
               <MenuIcon />
             </IconButton>
-            <Typography
-              variant="h6"
-              sx={{
-                fontSize: '1.125rem',
-                fontWeight: 600,
-                color: 'var(--text-primary)',
+            <Box 
+              onClick={navigateToAgreements}
+              sx={{ 
+                display: 'flex', 
+                alignItems: 'center', 
+                gap: 1.5,
+                cursor: 'pointer'
               }}
             >
-              Alpha Office team management
-            </Typography>
+              <Box
+                sx={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: '8px',
+                  backgroundColor: 'var(--brand-primary)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  color: '#FFFFFF',
+                }}
+              >
+                <Building size={18} />
+              </Box>
+              <Box>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    color: 'var(--text-primary)',
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Alpha Office
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontSize: '0.7rem',
+                    color: 'var(--text-secondary)',
+                    lineHeight: 1.2,
+                  }}
+                >
+                  team management
+                </Typography>
+              </Box>
+            </Box>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Tooltip title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}>
