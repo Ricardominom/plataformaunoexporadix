@@ -30,5 +30,21 @@
             "transferToDemotactica": 4000,
             "transferToDotcom": 3000
         }
+        ,
+        {
+            "id": "3",
+            "urgent": true,
+            "paymentDate": "2024-03-01",
+            "category": "Operaciones",
+            "subcategory": "Mantenimiento",
+            "concept": "Mantenimiento de equipos de oficina",
+            "sscComments": "Revisión anual programada",
+            "amount": 12000,
+            "transferToEspora": 3000,
+            "toDispatchForTransfer": 2000,
+            "transferToInterlogis": 4000,
+            "transferToDemotactica": 3000,
+            "transferToDotcom": 2000
+        }
     ]
 }
