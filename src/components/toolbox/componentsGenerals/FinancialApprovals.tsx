@@ -69,7 +69,7 @@ const getStatusColor = (status: string) => {
 // Estilos comunes para tablas ultra compactas
 const tableStyles = {
     size: 'small' as const,
-    sx: { 
+    sx: {
         '& .MuiTableCell-root': {
             padding: '4px 6px',  // Padding mínimo
             fontSize: '0.75rem',  // Tamaño de fuente mínimo
@@ -253,7 +253,7 @@ export const FinancialApprovals: React.FC = () => {
                     </TableBody>
                 </Table>
             </TableContainer>
-            
+
             {/* NUEVA SECCIÓN: Solicitudes Aprobadas */}
             <Box sx={{ mt: 2 }}>
                 <Typography variant="h6" sx={{ color: 'var(--text-primary)', mb: 1, fontSize: '1rem', fontWeight: 600 }}>
@@ -317,7 +317,7 @@ export const FinancialApprovals: React.FC = () => {
                     </Table>
                 </TableContainer>
             </Box>
-            
+
             <NewMoneyApprovalDialog
                 open={isNewApprovalOpen}
                 onClose={() => setIsNewApprovalOpen(false)}
