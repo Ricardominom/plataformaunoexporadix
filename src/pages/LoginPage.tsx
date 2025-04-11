@@ -1,18 +1,19 @@
 import React, { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  Box, 
-  Typography, 
-  TextField, 
-  Button, 
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
   InputAdornment,
   IconButton,
   Paper,
   Grid,
 } from '@mui/material';
 import { motion } from 'framer-motion';
-import { Mail, Lock, Eye, EyeOff, ChevronRight } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, ChevronRight, Building2 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../hooks/useTheme';
 
 interface FormState {
   email: string;
@@ -29,6 +30,9 @@ export function Login() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { theme } = useTheme();
+
+  const isDark = theme === 'dark';
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -72,11 +76,11 @@ export function Login() {
   return (
     <Grid container sx={{ height: '100vh' }}>
       {/* Left Side - Gradient Background with Text */}
-      <Grid 
-        item 
-        xs={12} 
-        md={6} 
-        sx={{ 
+      <Grid
+        item
+        xs={12}
+        md={6}
+        sx={{
           position: 'relative',
           background: 'linear-gradient(135deg, #6e8efb 0%, #a777e3 100%)',
           display: 'flex',
@@ -86,8 +90,19 @@ export function Login() {
           overflow: 'hidden'
         }}
       >
-        {/* Grid Overlay */}
-        <Box 
+        {/* Animated Background Pattern */}
+        <Box
+          component={motion.div}
+          animate={{
+            backgroundPosition: ['0% 0%', '100% 100%'],
+            opacity: [0.3, 0.4, 0.3]
+          }}
+          transition={{
+            duration: 20,
+            repeat: Infinity,
+            repeatType: 'reverse',
+            ease: 'linear'
+          }}
           sx={{
             position: 'absolute',
             top: 0,
@@ -96,7 +111,6 @@ export function Login() {
             bottom: 0,
             backgroundImage: 'linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)',
             backgroundSize: '20px 20px',
-            opacity: 0.4,
             zIndex: 1
           }}
         />
@@ -126,30 +140,45 @@ export function Login() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
             >
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                <ChevronRight size={24} color="#fff" />
-                <Typography 
-                  variant="h3" 
-                  component="h1" 
-                  sx={{ 
+              <Box
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  mb: 2,
+                  gap: 2
+                }}
+              >
+                <motion.div
+                  whileHover={{ rotate: 360, scale: 1.2 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Building2 size={40} color="#fff" />
+                </motion.div>
+                <Typography
+                  variant="h3"
+                  component="h1"
+                  sx={{
                     color: '#fff',
-                    fontWeight: 300,
+                    fontWeight: 600,
                     fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
-                    lineHeight: 1.2
+                    lineHeight: 1.2,
+                    letterSpacing: '-0.02em'
                   }}
                 >
                   Alpha Office
                 </Typography>
               </Box>
-              <Typography 
-                variant="h3" 
-                component="h1" 
-                sx={{ 
-                  color: '#fff',
+              <Typography
+                variant="h3"
+                component="h2"
+                sx={{
+                  color: 'rgba(255, 255, 255, 0.9)',
                   fontWeight: 300,
-                  fontSize: { xs: '2rem', sm: '2.5rem', md: '3rem' },
+                  fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' },
                   lineHeight: 1.2,
-                  mb: 1
+                  mb: 3,
+                  letterSpacing: '0.02em',
+                  textTransform: 'uppercase'
                 }}
               >
                 team management
@@ -160,54 +189,87 @@ export function Login() {
       </Grid>
 
       {/* Right Side - Login Form */}
-      <Grid 
-        item 
-        xs={12} 
-        md={6} 
-        sx={{ 
+      <Grid
+        item
+        xs={12}
+        md={6}
+        sx={{
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           p: 4,
-          backgroundColor: '#fff'
+          backgroundColor: isDark ? 'var(--dark-surface)' : '#fff',
+          transition: 'all 0.3s ease'
         }}
       >
-        <Box 
+        <Box
           component={motion.div}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          sx={{ 
-            maxWidth: 400, 
+          sx={{
+            maxWidth: 400,
             width: '100%',
             px: { xs: 2, sm: 0 }
           }}
         >
           {/* Welcome Text */}
           <Box sx={{ mb: 4, textAlign: 'center' }}>
-            <Typography 
-              variant="h4" 
-              component="h1" 
-              sx={{ 
-                fontWeight: 600, 
-                color: '#1a237e',
-                mb: 1
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.5 }}
+            >
+              <Typography
+                variant="h4"
+                component="h1"
+                sx={{
+                  fontWeight: 700,
+                  color: isDark ? '#fff' : '#1a237e',
+                  mb: 1,
+                  transition: 'color 0.3s ease',
+                  fontSize: '2rem',
+                  letterSpacing: '-0.02em'
+                }}
+              >
+                Welcome back! 👋
+              </Typography>
+            </motion.div>
+            <Typography
+              sx={{
+                color: isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
+                transition: 'color 0.3s ease',
+                fontSize: '1rem',
+                mt: 1
               }}
             >
-              Hey, hello 👋
+              Sign in to continue to your workspace
             </Typography>
           </Box>
 
           {/* Login Form */}
           <form onSubmit={handleSubmit}>
-            <Box sx={{ mb: 3 }}>
-              <Typography 
-                variant="subtitle2" 
-                sx={{ 
-                  mb: 1, 
+            <Box
+              sx={{
+                mb: 3,
+                '& .MuiTextField-root': {
+                  backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
+                  transition: 'all 0.3s ease',
+                  borderRadius: 2,
+                  '&:hover': {
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)',
+                  }
+                }
+              }}
+            >
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  mb: 1,
                   fontWeight: 500,
-                  color: '#334155'
+                  color: isDark ? 'rgba(255, 255, 255, 0.7)' : '#334155',
+                  transition: 'color 0.3s ease'
                 }}
               >
                 Email
@@ -223,32 +285,37 @@ export function Login() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Mail size={18} color="#64748b" />
+                      <Mail size={18} color={isDark ? '#ffffff80' : '#64748b'} />
                     </InputAdornment>
                   ),
                   sx: {
-                    borderRadius: '8px',
+                    color: isDark ? '#fff' : 'inherit',
                     '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#e2e8f0',
+                      borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#e2e8f0',
                     },
                     '&:hover .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#cbd5e1',
+                      borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : '#cbd5e1',
                     },
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                       borderColor: '#3b82f6',
+                      borderWidth: 2
+                    },
+                    '& input::placeholder': {
+                      color: isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.4)',
                     }
                   }
                 }}
               />
             </Box>
 
-            <Box sx={{ mb: 2 }}>
-              <Typography 
-                variant="subtitle2" 
-                sx={{ 
-                  mb: 1, 
+            <Box sx={{ mb: 3 }}>
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  mb: 1,
                   fontWeight: 500,
-                  color: '#334155'
+                  color: isDark ? 'rgba(255, 255, 255, 0.7)' : '#334155',
+                  transition: 'color 0.3s ease'
                 }}
               >
                 Password
@@ -264,7 +331,7 @@ export function Login() {
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
-                      <Lock size={18} color="#64748b" />
+                      <Lock size={18} color={isDark ? '#ffffff80' : '#64748b'} />
                     </InputAdornment>
                   ),
                   endAdornment: (
@@ -273,21 +340,35 @@ export function Login() {
                         onClick={handleTogglePassword}
                         edge="end"
                         size="small"
+                        sx={{
+                          color: isDark ? '#ffffff80' : '#64748b',
+                          '&:hover': {
+                            backgroundColor: isDark ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.05)',
+                          }
+                        }}
                       >
-                        {showPassword ? <EyeOff size={18} color="#64748b" /> : <Eye size={18} color="#64748b" />}
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                       </IconButton>
                     </InputAdornment>
                   ),
                   sx: {
-                    borderRadius: '8px',
+                    color: isDark ? '#fff' : 'inherit',
+                    backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.02)',
                     '& .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#e2e8f0',
+                      borderColor: isDark ? 'rgba(255, 255, 255, 0.1)' : '#e2e8f0',
                     },
                     '&:hover .MuiOutlinedInput-notchedOutline': {
-                      borderColor: '#cbd5e1',
+                      borderColor: isDark ? 'rgba(255, 255, 255, 0.2)' : '#cbd5e1',
                     },
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
                       borderColor: '#3b82f6',
+                      borderWidth: 2
+                    },
+                    '&:hover': {
+                      backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)',
+                    },
+                    '& input::placeholder': {
+                      color: isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.4)',
                     }
                   }
                 }}
@@ -295,41 +376,124 @@ export function Login() {
             </Box>
 
             {error && (
-              <Typography 
-                variant="body2" 
-                sx={{ 
-                  color: '#ef4444', 
-                  mb: 2,
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Box
+                  sx={{
+                    p: 2,
+                    mb: 3,
+                    borderRadius: 2,
+                    backgroundColor: isDark ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.1)',
+                    borderLeft: '4px solid #ef4444',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}
+                >
+                  <Box
+                    sx={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: '#ef4444',
+                      color: 'white',
+                      fontSize: '0.875rem',
+                      fontWeight: 'bold'
+                    }}
+                  >
+                    !
+                  </Box>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: isDark ? '#fca5a5' : '#ef4444',
+                      fontSize: '0.875rem',
+                      fontWeight: 500
+                    }}
+                  >
+                    {error}
+                  </Typography>
+                </Box>
+              </motion.div>
+            )}
+
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                disabled={isLoading}
+                sx={{
+                  py: 1.5,
+                  background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
+                  color: '#fff',
+                  borderRadius: '12px',
+                  textTransform: 'none',
+                  fontWeight: 600,
+                  fontSize: '0.95rem',
+                  boxShadow: isDark
+                    ? '0 4px 12px rgba(59, 130, 246, 0.5)'
+                    : '0 4px 12px rgba(59, 130, 246, 0.3)',
+                  transition: 'all 0.3s ease',
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #2563eb 0%, #1e40af 100%)',
+                    boxShadow: isDark
+                      ? '0 8px 20px rgba(59, 130, 246, 0.6)'
+                      : '0 8px 20px rgba(59, 130, 246, 0.4)',
+                    transform: 'translateY(-2px)',
+                  },
+                  '&:active': {
+                    transform: 'translateY(0)',
+                  },
+                  mb: 3
+                }}
+              >
+                {isLoading ? (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    >
+                      <Box
+                        component="span"
+                        sx={{
+                          width: 16,
+                          height: 16,
+                          border: '2px solid rgba(255, 255, 255, 0.3)',
+                          borderTop: '2px solid #fff',
+                          borderRadius: '50%',
+                          display: 'inline-block',
+                        }}
+                      />
+                    </motion.div>
+                    Signing in...
+                  </Box>
+                ) : (
+                  'Sign in'
+                )}
+              </Button>
+            </motion.div>
+
+            <Box sx={{ textAlign: 'center', mt: 2 }}>
+              <Typography
+                variant="body2"
+                sx={{
+                  color: isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.5)',
                   fontSize: '0.875rem'
                 }}
               >
-                {error}
+                © 2025 Alpha Office. All rights reserved.
               </Typography>
-            )}
-
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              disabled={isLoading}
-              sx={{
-                py: 1.5,
-                backgroundColor: '#3b82f6',
-                color: '#fff',
-                borderRadius: '8px',
-                textTransform: 'none',
-                fontWeight: 600,
-                fontSize: '0.95rem',
-                boxShadow: '0 4px 6px -1px rgba(59, 130, 246, 0.2), 0 2px 4px -1px rgba(59, 130, 246, 0.1)',
-                '&:hover': {
-                  backgroundColor: '#2563eb',
-                  boxShadow: '0 10px 15px -3px rgba(59, 130, 246, 0.3), 0 4px 6px -2px rgba(59, 130, 246, 0.1)',
-                },
-                mb: 3
-              }}
-            >
-              {isLoading ? 'Logging in...' : 'Login'}
-            </Button>
+            </Box>
           </form>
         </Box>
       </Grid>
