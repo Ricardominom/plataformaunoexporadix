@@ -66,6 +66,52 @@ const getStatusColor = (status: string) => {
     return colors[status as keyof typeof colors] || { bg: 'rgba(142, 142, 147, 0.1)', text: '#8e8e93' };
 };
 
+// Estilos comunes para tablas ultra compactas
+const tableStyles = {
+    size: 'small' as const,
+    sx: { 
+        '& .MuiTableCell-root': {
+            padding: '4px 6px',  // Padding mínimo
+            fontSize: '0.75rem',  // Tamaño de fuente mínimo
+            lineHeight: '1.1',   // Altura de línea reducida
+        },
+        '& .MuiTableRow-root': {
+            height: '32px',  // Altura de fila mínima
+        }
+    }
+};
+
+// Estilo para las cabeceras de tabla
+const tableHeadStyles = {
+    sx: {
+        '& .MuiTableCell-head': {
+            fontWeight: 600,
+            backgroundColor: 'rgba(0, 0, 0, 0.02)',
+            whiteSpace: 'nowrap',
+            fontSize: '0.7rem',  // Aún más pequeño para cabeceras
+            padding: '3px 6px',  // Padding reducido para cabeceras
+        }
+    }
+};
+
+// Estilo para los chips más pequeños
+const chipStyles = {
+    size: 'small' as const,
+    sx: {
+        height: '18px',  // Altura mínima
+        fontSize: '0.65rem',  // Tamaño de texto mínimo
+        '& .MuiChip-label': {
+            padding: '0 6px',  // Padding horizontal reducido en etiquetas
+        }
+    }
+};
+
+// Estilo para texto monetario
+const moneyTextStyles = {
+    fontSize: '0.75rem',
+    fontWeight: 400,
+};
+
 export const FinancialApprovals: React.FC = () => {
     const [isNewApprovalOpen, setIsNewApprovalOpen] = useState(false);
     const [approvedReqs, setApprovedReqs] = useState(approvedRequests);
@@ -101,22 +147,24 @@ export const FinancialApprovals: React.FC = () => {
     return (
         <>
             {/* Aprobaciones Financieras Pendientes */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography variant="h6" sx={{ color: 'var(--text-primary)' }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                <Typography variant="h6" sx={{ color: 'var(--text-primary)', fontSize: '1rem', fontWeight: 600 }}>
                     Aprobaciones Financieras Pendientes
                 </Typography>
                 <Button
-                    startIcon={<Plus size={16} />}
+                    startIcon={<Plus size={12} />}
                     variant="outlined"
                     onClick={() => setIsNewApprovalOpen(true)}
                     sx={{
                         color: '#ff2d55',
                         borderColor: '#ff2d55',
-                        fontSize: '0.875rem',
+                        fontSize: '0.7rem',
                         fontWeight: 500,
                         textTransform: 'none',
-                        px: 2.5,
-                        borderRadius: '6px',
+                        px: 1.5,
+                        py: 0.5,
+                        borderRadius: '4px',
+                        minHeight: '24px',
                         '&:hover': {
                             borderColor: '#ff2d55',
                             backgroundColor: 'rgba(255, 45, 85, 0.1)',
@@ -126,22 +174,22 @@ export const FinancialApprovals: React.FC = () => {
                     Solicitud De Erogaciones
                 </Button>
             </Box>
-            <TableContainer>
-                <Table>
-                    <TableHead>
+            <TableContainer sx={{ maxHeight: 250, overflowY: 'auto', mb: 2, border: '1px solid rgba(224, 224, 224, 0.5)', borderRadius: '4px' }}>
+                <Table {...tableStyles} padding="none">
+                    <TableHead {...tableHeadStyles}>
                         <TableRow>
                             <TableCell>Urgente</TableCell>
-                            <TableCell>Fecha de pago</TableCell>
+                            <TableCell>Fecha</TableCell>
                             <TableCell>Categoría</TableCell>
                             <TableCell>Subcategoría</TableCell>
                             <TableCell>Concepto</TableCell>
-                            <TableCell>Comentarios SSC</TableCell>
+                            <TableCell>Comentarios</TableCell>
                             <TableCell>Suma</TableCell>
-                            <TableCell>Transferencia a Espora</TableCell>
-                            <TableCell>A despacho para transferir</TableCell>
-                            <TableCell>Transferencia a Interlogis</TableCell>
-                            <TableCell>Transferencia a Demotáctica</TableCell>
-                            <TableCell>Transferencia a Dotcom</TableCell>
+                            <TableCell>T. Espora</TableCell>
+                            <TableCell>Despacho</TableCell>
+                            <TableCell>T. Interlogis</TableCell>
+                            <TableCell>T. Demotáctica</TableCell>
+                            <TableCell>T. Dotcom</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
@@ -150,8 +198,9 @@ export const FinancialApprovals: React.FC = () => {
                                 <TableCell>
                                     <Chip
                                         label={approval.urgent ? 'Urgente' : 'Normal'}
-                                        size="small"
+                                        {...chipStyles}
                                         sx={{
+                                            ...chipStyles.sx,
                                             backgroundColor: approval.urgent ? 'rgba(255, 45, 85, 0.1)' : 'rgba(0, 113, 227, 0.1)',
                                             color: approval.urgent ? '#ff2d55' : '#0071e3',
                                         }}
@@ -163,32 +212,32 @@ export const FinancialApprovals: React.FC = () => {
                                 <TableCell>{approval.concept}</TableCell>
                                 <TableCell>{approval.sscComments}</TableCell>
                                 <TableCell>
-                                    <Typography sx={{ color: 'var(--text-primary)', fontWeight: 500 }}>
+                                    <Typography sx={{ ...moneyTextStyles, fontWeight: 500 }}>
                                         ${approval.amount.toLocaleString()}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography sx={{ color: 'var(--text-primary)' }}>
+                                    <Typography sx={moneyTextStyles}>
                                         ${approval.transferToEspora.toLocaleString()}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography sx={{ color: 'var(--text-primary)' }}>
+                                    <Typography sx={moneyTextStyles}>
                                         ${approval.toDispatchForTransfer.toLocaleString()}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography sx={{ color: 'var(--text-primary)' }}>
+                                    <Typography sx={moneyTextStyles}>
                                         ${approval.transferToInterlogis.toLocaleString()}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography sx={{ color: 'var(--text-primary)' }}>
+                                    <Typography sx={moneyTextStyles}>
                                         ${approval.transferToDemotactica.toLocaleString()}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography sx={{ color: 'var(--text-primary)' }}>
+                                    <Typography sx={moneyTextStyles}>
                                         ${approval.transferToDotcom.toLocaleString()}
                                     </Typography>
                                 </TableCell>
@@ -196,30 +245,31 @@ export const FinancialApprovals: React.FC = () => {
                         ))}
                         {pendingApprovals.length === 0 && (
                             <TableRow>
-                                <TableCell colSpan={12} align="center" sx={{ py: 3 }}>
-                                    No hay aprobaciones pendientes
+                                <TableCell colSpan={12} align="center" sx={{ py: 1.5 }}>
+                                    <Typography sx={{ fontSize: '0.75rem' }}>No hay aprobaciones pendientes</Typography>
                                 </TableCell>
                             </TableRow>
                         )}
                     </TableBody>
                 </Table>
             </TableContainer>
+            
             {/* NUEVA SECCIÓN: Solicitudes Aprobadas */}
-            <Box sx={{ mt: 4 }}>
-                <Typography variant="h6" sx={{ color: 'var(--text-primary)', mb: 2 }}>
+            <Box sx={{ mt: 2 }}>
+                <Typography variant="h6" sx={{ color: 'var(--text-primary)', mb: 1, fontSize: '1rem', fontWeight: 600 }}>
                     Solicitudes Aprobadas
                 </Typography>
-                <TableContainer>
-                    <Table>
-                        <TableHead>
+                <TableContainer sx={{ maxHeight: 250, overflowY: 'auto', border: '1px solid rgba(224, 224, 224, 0.5)', borderRadius: '4px' }}>
+                    <Table {...tableStyles} padding="none">
+                        <TableHead {...tableHeadStyles}>
                             <TableRow>
-                                <TableCell>Fecha solicitud</TableCell>
-                                <TableCell>Fecha aprobación</TableCell>
+                                <TableCell>F. solicitud</TableCell>
+                                <TableCell>F. aprobación</TableCell>
                                 <TableCell>Categoría</TableCell>
                                 <TableCell>Subcategoría</TableCell>
                                 <TableCell>Concepto</TableCell>
-                                <TableCell>Monto solicitado</TableCell>
-                                <TableCell>Monto aprobado</TableCell>
+                                <TableCell>M. solicitado</TableCell>
+                                <TableCell>M. aprobado</TableCell>
                                 <TableCell>Aprobado por</TableCell>
                                 <TableCell>Estado</TableCell>
                             </TableRow>
@@ -233,12 +283,12 @@ export const FinancialApprovals: React.FC = () => {
                                     <TableCell>{request.subcategory}</TableCell>
                                     <TableCell>{request.concept}</TableCell>
                                     <TableCell>
-                                        <Typography sx={{ color: 'var(--text-primary)' }}>
+                                        <Typography sx={moneyTextStyles}>
                                             ${request.requestedAmount.toLocaleString()}
                                         </Typography>
                                     </TableCell>
                                     <TableCell>
-                                        <Typography sx={{ color: 'var(--text-primary)', fontWeight: 500 }}>
+                                        <Typography sx={{ ...moneyTextStyles, fontWeight: 500 }}>
                                             ${request.approvedAmount.toLocaleString()}
                                         </Typography>
                                     </TableCell>
@@ -246,8 +296,9 @@ export const FinancialApprovals: React.FC = () => {
                                     <TableCell>
                                         <Chip
                                             label={request.status}
-                                            size="small"
+                                            {...chipStyles}
                                             sx={{
+                                                ...chipStyles.sx,
                                                 backgroundColor: getStatusColor(request.status).bg,
                                                 color: getStatusColor(request.status).text,
                                             }}
@@ -257,8 +308,8 @@ export const FinancialApprovals: React.FC = () => {
                             ))}
                             {approvedReqs.length === 0 && (
                                 <TableRow>
-                                    <TableCell colSpan={9} align="center" sx={{ py: 3 }}>
-                                        No hay solicitudes aprobadas
+                                    <TableCell colSpan={9} align="center" sx={{ py: 1.5 }}>
+                                        <Typography sx={{ fontSize: '0.75rem' }}>No hay solicitudes aprobadas</Typography>
                                     </TableCell>
                                 </TableRow>
                             )}
@@ -266,6 +317,7 @@ export const FinancialApprovals: React.FC = () => {
                     </Table>
                 </TableContainer>
             </Box>
+            
             <NewMoneyApprovalDialog
                 open={isNewApprovalOpen}
                 onClose={() => setIsNewApprovalOpen(false)}
