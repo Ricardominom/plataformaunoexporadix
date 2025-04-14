@@ -404,53 +404,84 @@ export const AgreementsPage: React.FC = () => {
             <Tabs
               value={currentTab}
               onChange={(_, newValue: number) => setCurrentTab(newValue)}
+              variant="scrollable"
+              scrollButtons="auto"
               sx={{
                 borderBottom: '1px solid var(--border-color)',
                 '& .MuiTabs-indicator': {
                   backgroundColor: lists[currentTab]?.color || 'var(--brand-primary)',
                 },
+                '& .MuiTabs-flexContainer': {
+                  gap: 1.5, // Add gap between tabs
+                },
+              }}
+              TabIndicatorProps={{
+                style: {
+                  height: '3px',
+                  borderRadius: '3px 3px 0 0',
+                }
               }}
             >
               {lists.map((list, index) => (
                 <Tab
                   key={list.id}
                   label={
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box 
+                      sx={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        height: '32px',
+                        py: 0.5,
+                        px: 1.5,
+                        borderRadius: '16px',
+                        // Inverted behavior: unselected is vibrant, selected is more subtle
+                        backgroundColor: currentTab === index 
+                          ? `${list.color}70` // 70% opacity when selected
+                          : list.color, // Full opacity when not selected
+                        color: '#fff', // White text for both states for better contrast
+                        transition: 'all 0.2s ease',
+                        boxShadow: currentTab === index 
+                          ? 'none' // No shadow when selected
+                          : `0 2px 8px ${list.color}40`, // Shadow when not selected
+                      }}
+                    >
+                      <Typography 
+                        sx={{ 
+                          fontSize: '0.875rem',
+                          fontWeight: 600,
+                          mr: 1,
+                        }}
+                      >
+                        {list.name}
+                      </Typography>
                       <Box
                         sx={{
-                          width: 8,
-                          height: 8,
-                          borderRadius: '50%',
-                          backgroundColor: list.color,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          minWidth: 20,
+                          height: 20,
+                          borderRadius: '10px',
+                          backgroundColor: 'rgba(255, 255, 255, 0.3)',
+                          color: '#fff',
+                          fontSize: '0.75rem',
+                          fontWeight: 600,
                         }}
-                      />
-                      {list.name}
-                      <Badge
-                        badgeContent={agreements.filter(a => a.listId === list.id).length}
-                        color="primary"
-                        sx={{
-                          '& .MuiBadge-badge': {
-                            backgroundColor: list.color,
-                            color: '#fff',
-                            fontSize: '0.75rem',
-                            minWidth: '20px',
-                            height: '20px',
-                          },
-                        }}
-                      />
+                      >
+                        {agreements.filter(a => a.listId === list.id).length}
+                      </Box>
                     </Box>
                   }
                   value={index}
                   sx={{
                     textTransform: 'none',
-                    fontSize: '0.875rem',
-                    fontWeight: 500,
                     minHeight: '48px',
-                    color: 'var(--text-secondary)',
-                    '&.Mui-selected': {
-                      color: list.color,
-                    },
+                    padding: 0,
+                    minWidth: 'auto',
+                    marginRight: 0,
+                    opacity: 1,
                   }}
+                  disableRipple
                 />
               ))}
             </Tabs>

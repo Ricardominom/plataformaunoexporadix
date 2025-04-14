@@ -14,10 +14,12 @@ import {
     Chip,
     Box,
     Typography,
+    Alert,
 } from '@mui/material';
-import { DollarSign, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
+import { DollarSign, CheckCircle, XCircle, AlertCircle, Info } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useMoneyApprovals } from '../../../hooks/useMoneyApprovals';
+import { useAuth } from '../../../context/AuthContext';
 
 interface MoneyApprovalsModalProps {
     open: boolean;
@@ -151,6 +153,10 @@ const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
 
 export const MoneyApprovalsModal: React.FC<MoneyApprovalsModalProps> = ({ open, onClose }) => {
     const { pendingApprovals, approveExpense, rejectExpense } = useMoneyApprovals();
+    const { user } = useAuth();
+
+    // Check if user is President (can approve/reject) or Assistant (view only)
+    const isPresident = user?.role === 'Presidente';
 
     // State for confirmation dialogs
     const [approvalToConfirm, setApprovalToConfirm] = useState<string | null>(null);
@@ -218,6 +224,27 @@ export const MoneyApprovalsModal: React.FC<MoneyApprovalsModalProps> = ({ open, 
                     <DollarSign size={24} color="#00CC88" />
                     Aprobaciones Financieras Pendientes
                 </DialogTitle>
+                
+                {/* Information Alert for Assistant Role */}
+                {!isPresident && (
+                    <Box sx={{ px: 3, pt: 3 }}>
+                        <Alert 
+                            icon={<Info size={20} />}
+                            severity="info"
+                            sx={{
+                                backgroundColor: 'rgba(0, 204, 136, 0.1)',
+                                color: '#00CC88',
+                                border: '1px solid rgba(0, 204, 136, 0.2)',
+                                '& .MuiAlert-icon': {
+                                    color: '#00CC88'
+                                }
+                            }}
+                        >
+                            Solo el Presidente puede aprobar o cancelar erogaciones
+                        </Alert>
+                    </Box>
+                )}
+                
                 <DialogContent sx={{ p: 0 }}>
                     <TableContainer sx={{ maxHeight: '60vh' }}>
                         <Table stickyHeader>
@@ -230,7 +257,9 @@ export const MoneyApprovalsModal: React.FC<MoneyApprovalsModalProps> = ({ open, 
                                     <TableCell sx={{ backgroundColor: '#2C2C2C', color: '#BBBBBB' }}>Concepto</TableCell>
                                     <TableCell sx={{ backgroundColor: '#2C2C2C', color: '#BBBBBB' }}>Comentarios SSC</TableCell>
                                     <TableCell sx={{ backgroundColor: '#2C2C2C', color: '#BBBBBB' }}>Suma</TableCell>
-                                    <TableCell sx={{ backgroundColor: '#2C2C2C', color: '#BBBBBB' }}>Acciones</TableCell>
+                                    {isPresident && (
+                                        <TableCell sx={{ backgroundColor: '#2C2C2C', color: '#BBBBBB' }}>Acciones</TableCell>
+                                    )}
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -258,49 +287,51 @@ export const MoneyApprovalsModal: React.FC<MoneyApprovalsModalProps> = ({ open, 
                                         <TableCell sx={{ color: '#00CC88', fontWeight: 600 }}>
                                             ${approval.amount.toLocaleString()}
                                         </TableCell>
-                                        <TableCell>
-                                            <Box sx={{ display: 'flex', gap: 1 }}>
-                                                <Button
-                                                    variant="contained"
-                                                    size="small"
-                                                    startIcon={<CheckCircle size={16} />}
-                                                    onClick={() => handleApproveClick(approval.id)}
-                                                    sx={{
-                                                        backgroundColor: 'rgba(0, 204, 136, 0.2)',
-                                                        color: '#00CC88',
-                                                        '&:hover': {
-                                                            backgroundColor: 'rgba(0, 204, 136, 0.3)',
-                                                        },
-                                                        textTransform: 'none',
-                                                        fontSize: '0.75rem',
-                                                    }}
-                                                >
-                                                    Aprobar Erogación
-                                                </Button>
-                                                <Button
-                                                    variant="contained"
-                                                    size="small"
-                                                    startIcon={<XCircle size={16} />}
-                                                    onClick={() => handleRejectClick(approval.id)}
-                                                    sx={{
-                                                        backgroundColor: 'rgba(255, 45, 85, 0.2)',
-                                                        color: '#FF2D55',
-                                                        '&:hover': {
-                                                            backgroundColor: 'rgba(255, 45, 85, 0.3)',
-                                                        },
-                                                        textTransform: 'none',
-                                                        fontSize: '0.75rem',
-                                                    }}
-                                                >
-                                                    Cancelar Erogación
-                                                </Button>
-                                            </Box>
-                                        </TableCell>
+                                        {isPresident && (
+                                            <TableCell>
+                                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                                    <Button
+                                                        variant="contained"
+                                                        size="small"
+                                                        startIcon={<CheckCircle size={16} />}
+                                                        onClick={() => handleApproveClick(approval.id)}
+                                                        sx={{
+                                                            backgroundColor: 'rgba(0, 204, 136, 0.2)',
+                                                            color: '#00CC88',
+                                                            '&:hover': {
+                                                                backgroundColor: 'rgba(0, 204, 136, 0.3)',
+                                                            },
+                                                            textTransform: 'none',
+                                                            fontSize: '0.75rem',
+                                                        }}
+                                                    >
+                                                        Aprobar Erogación
+                                                    </Button>
+                                                    <Button
+                                                        variant="contained"
+                                                        size="small"
+                                                        startIcon={<XCircle size={16} />}
+                                                        onClick={() => handleRejectClick(approval.id)}
+                                                        sx={{
+                                                            backgroundColor: 'rgba(255, 45, 85, 0.2)',
+                                                            color: '#FF2D55',
+                                                            '&:hover': {
+                                                                backgroundColor: 'rgba(255, 45, 85, 0.3)',
+                                                            },
+                                                            textTransform: 'none',
+                                                            fontSize: '0.75rem',
+                                                        }}
+                                                    >
+                                                        Cancelar Erogación
+                                                    </Button>
+                                                </Box>
+                                            </TableCell>
+                                        )}
                                     </TableRow>
                                 ))}
                                 {pendingApprovals.length === 0 && (
                                     <TableRow>
-                                        <TableCell colSpan={8} sx={{ textAlign: 'center', py: 4, color: '#BBBBBB' }}>
+                                        <TableCell colSpan={isPresident ? 8 : 7} sx={{ textAlign: 'center', py: 4, color: '#BBBBBB' }}>
                                             No hay aprobaciones pendientes
                                         </TableCell>
                                     </TableRow>
@@ -325,8 +356,8 @@ export const MoneyApprovalsModal: React.FC<MoneyApprovalsModalProps> = ({ open, 
                 </DialogActions>
             </Dialog>
 
-            {/* Approve Confirmation Dialog */}
-            {approvalToConfirm && (
+            {/* Approve Confirmation Dialog - Only for President */}
+            {isPresident && approvalToConfirm && (
                 <ConfirmationDialog
                     isOpen={!!approvalToConfirm}
                     onOpenChange={() => setApprovalToConfirm(null)}
@@ -339,8 +370,8 @@ export const MoneyApprovalsModal: React.FC<MoneyApprovalsModalProps> = ({ open, 
                 />
             )}
 
-            {/* Reject Confirmation Dialog */}
-            {rejectionToConfirm && (
+            {/* Reject Confirmation Dialog - Only for President */}
+            {isPresident && rejectionToConfirm && (
                 <ConfirmationDialog
                     isOpen={!!rejectionToConfirm}
                     onOpenChange={() => setRejectionToConfirm(null)}

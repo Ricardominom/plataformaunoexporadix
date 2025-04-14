@@ -67,20 +67,42 @@ export const AccountProgress: React.FC<AccountProgressProps> = ({ accounts }) =>
             sx={{
                 p: 3,
                 borderRadius: '12px',
-                backgroundColor: '#1E1E1E',
-                border: '1px solid #333333',
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
+                background: 'linear-gradient(135deg, #1E1E1E 0%, #252525 100%)',
+                position: 'relative',
+                overflow: 'hidden',
+                border: '1px solid #00CC88',
+                boxShadow: '0 8px 24px rgba(0, 204, 136, 0.15)',
+                '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    height: '6px',
+                    background: 'linear-gradient(90deg, #00CC88 0%, #00CCAA 100%)',
+                    boxShadow: '0 0 20px rgba(0, 204, 136, 0.5)',
+                },
+                '&:hover': {
+                    boxShadow: '0 12px 30px rgba(0, 204, 136, 0.25)',
+                    '& .progress-bar': {
+                        boxShadow: '0 0 15px rgba(0, 204, 136, 0.7)',
+                    }
+                }
             }}
         >
             <Typography
                 variant="h6"
                 sx={{
-                    fontSize: '1.125rem',
-                    fontWeight: 600,
-                    color: '#00CC88',
+                    fontSize: '1.25rem',
+                    fontWeight: 700,
                     mb: 2,
+                    background: 'linear-gradient(135deg, #00CC88 0%, #00CCAA 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
                 }}
             >
                 AVANCE DE CUENTAS
@@ -99,6 +121,7 @@ export const AccountProgress: React.FC<AccountProgressProps> = ({ accounts }) =>
                                                 fontSize: '1.1rem',
                                                 fontWeight: 600,
                                                 color: '#FFFFFF',
+                                                textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
                                             }}
                                         >
                                             {account.name}
@@ -107,13 +130,21 @@ export const AccountProgress: React.FC<AccountProgressProps> = ({ accounts }) =>
                                             display: 'flex', 
                                             alignItems: 'center', 
                                             gap: 1,
-                                            backgroundColor: 'rgba(0, 204, 136, 0.2)',
+                                            background: 'linear-gradient(135deg, rgba(0, 204, 136, 0.3) 0%, rgba(0, 204, 170, 0.3) 100%)',
                                             px: 1.5,
                                             py: 0.5,
-                                            borderRadius: '12px'
+                                            borderRadius: '12px',
+                                            boxShadow: '0 2px 8px rgba(0, 204, 136, 0.2)',
                                         }}>
-                                            <TrendingUp size={14} color="#00CC88" />
-                                            <Typography sx={{ fontSize: '0.8rem', fontWeight: 600, color: '#00CC88' }}>
+                                            <TrendingUp size={14} color="#00FFAA" />
+                                            <Typography sx={{ 
+                                                fontSize: '0.8rem', 
+                                                fontWeight: 700, 
+                                                background: 'linear-gradient(135deg, #00FFAA 0%, #00CCAA 100%)',
+                                                WebkitBackgroundClip: 'text',
+                                                WebkitTextFillColor: 'transparent',
+                                                textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+                                            }}>
                                                 {calculateTotalProgress(account.progress)}% promedio
                                             </Typography>
                                         </Box>
@@ -144,7 +175,8 @@ export const AccountProgress: React.FC<AccountProgressProps> = ({ accounts }) =>
                                                                     width: 8,
                                                                     height: 8,
                                                                     borderRadius: '50%',
-                                                                    backgroundColor: '#00CC88',
+                                                                    background: 'linear-gradient(135deg, #00FFAA 0%, #00CCAA 100%)',
+                                                                    boxShadow: '0 0 5px rgba(0, 204, 170, 0.7)',
                                                                 }}
                                                             />
                                                             {detail.label}
@@ -152,24 +184,41 @@ export const AccountProgress: React.FC<AccountProgressProps> = ({ accounts }) =>
                                                         <Typography
                                                             sx={{
                                                                 fontSize: '0.85rem',
-                                                                color: '#00CC88',
-                                                                fontWeight: 600,
+                                                                fontWeight: 700,
+                                                                background: 'linear-gradient(135deg, #00FFAA 0%, #00CCAA 100%)',
+                                                                WebkitBackgroundClip: 'text',
+                                                                WebkitTextFillColor: 'transparent',
+                                                                textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
                                                             }}
                                                         >
                                                             {detail.value}%
                                                         </Typography>
                                                     </Box>
                                                     <LinearProgress
+                                                        className="progress-bar"
                                                         variant="determinate"
                                                         value={detail.value}
                                                         sx={{
-                                                            height: 8,
-                                                            borderRadius: 4,
+                                                            height: 10,
+                                                            borderRadius: 5,
                                                             backgroundColor: 'rgba(255, 255, 255, 0.1)',
                                                             '& .MuiLinearProgress-bar': {
-                                                                backgroundColor: '#00CC88',
-                                                                borderRadius: 4,
+                                                                borderRadius: 5,
+                                                                background: 'linear-gradient(90deg, #00CC88 0%, #00CCAA 100%)',
+                                                                boxShadow: '0 0 10px rgba(0, 204, 170, 0.5)',
+                                                                '&::after': {
+                                                                    content: '""',
+                                                                    position: 'absolute',
+                                                                    top: 0,
+                                                                    right: 0,
+                                                                    width: '10px',
+                                                                    height: '100%',
+                                                                    background: 'rgba(255, 255, 255, 0.7)',
+                                                                    borderRadius: '0 5px 5px 0',
+                                                                    filter: 'blur(3px)',
+                                                                }
                                                             },
+                                                            transition: 'all 0.3s ease',
                                                         }}
                                                     />
                                                 </Box>
@@ -182,7 +231,7 @@ export const AccountProgress: React.FC<AccountProgressProps> = ({ accounts }) =>
                                     <Box 
                                         sx={{ 
                                             height: '1px', 
-                                            backgroundColor: '#333333', 
+                                            background: 'linear-gradient(90deg, rgba(0, 204, 136, 0.1) 0%, rgba(0, 204, 136, 0.5) 50%, rgba(0, 204, 136, 0.1) 100%)', 
                                             my: 2 
                                         }} 
                                     />
@@ -194,14 +243,20 @@ export const AccountProgress: React.FC<AccountProgressProps> = ({ accounts }) =>
             </Box>
             
             {/* Summary section */}
-            <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid #333333' }}>
+            <Box sx={{ 
+                mt: 2, 
+                pt: 2, 
+                borderTop: '1px solid rgba(0, 204, 136, 0.3)',
+                background: 'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 204, 136, 0.1) 100%)',
+            }}>
                 <Typography
                     variant="subtitle2"
                     sx={{
                         fontSize: '0.9rem',
                         color: '#FFFFFF',
-                        fontWeight: 600,
+                        fontWeight: 700,
                         mb: 1,
+                        textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
                     }}
                 >
                     Resumen de avance
@@ -211,19 +266,34 @@ export const AccountProgress: React.FC<AccountProgressProps> = ({ accounts }) =>
                     {accounts.map((account, index) => (
                         <Grid item xs={6} key={index}>
                             <Box 
+                                component={motion.div}
+                                whileHover={{ 
+                                    scale: 1.05,
+                                    boxShadow: '0 8px 20px rgba(0, 204, 136, 0.3)'
+                                }}
                                 sx={{
                                     p: 1.5,
-                                    backgroundColor: 'rgba(0, 204, 136, 0.1)',
+                                    background: 'linear-gradient(135deg, rgba(0, 204, 136, 0.2) 0%, rgba(0, 204, 170, 0.2) 100%)',
                                     borderRadius: '8px',
                                     display: 'flex',
                                     flexDirection: 'column',
                                     alignItems: 'center',
+                                    boxShadow: '0 4px 15px rgba(0, 204, 136, 0.2)',
+                                    border: '1px solid rgba(0, 204, 136, 0.3)',
+                                    transition: 'all 0.3s ease',
                                 }}
                             >
-                                <Typography sx={{ fontSize: '1.25rem', fontWeight: 600, color: '#00CC88' }}>
+                                <Typography sx={{ 
+                                    fontSize: '1.5rem', 
+                                    fontWeight: 800, 
+                                    background: 'linear-gradient(135deg, #00FFAA 0%, #00CCAA 100%)',
+                                    WebkitBackgroundClip: 'text',
+                                    WebkitTextFillColor: 'transparent',
+                                    textShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                }}>
                                     {calculateTotalProgress(account.progress)}%
                                 </Typography>
-                                <Typography sx={{ fontSize: '0.8rem', color: '#BBBBBB', textAlign: 'center' }}>
+                                <Typography sx={{ fontSize: '0.8rem', color: '#FFFFFF', textAlign: 'center', fontWeight: 500 }}>
                                     {account.name}
                                 </Typography>
                             </Box>
