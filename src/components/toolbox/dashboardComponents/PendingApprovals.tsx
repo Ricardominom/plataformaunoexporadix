@@ -1,18 +1,11 @@
 import React, { useState } from 'react';
-import { 
-  IconButton, 
-  Badge, 
-  Popper, 
-  Grow, 
-  Paper, 
-  ClickAwayListener,
-  Box,
-  Typography,
-  Button,
-  Chip,
+import {
+    Paper,
+    Box,
+    Typography,
 } from '@mui/material';
-import { DollarSign, TrendingUp, Clock } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { TrendingUp } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { useMoneyApprovals } from '../../../hooks/useMoneyApprovals';
 import { MoneyApprovalsModal } from './MoneyApprovalsModal';
 
@@ -70,62 +63,31 @@ export const PendingApprovals: React.FC<PendingApprovalsProps> = ({ count: initi
                     }
                 }}
             >
-                {/* Notification Badge in top-right corner - Now shows "?" when count > 0 */}
-                {count > 0 && (
-                    <motion.div
-                        whileHover={{ scale: 1.3 }}
-                        whileTap={{ scale: 0.9 }}
-                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
-                        style={{
-                            position: 'absolute',
-                            top: 12,
-                            right: 12,
-                            zIndex: 10
+                {/* TÍTULO CON TEXTO GARANTIZADO EN BLANCO */}
+                <Box component="div" sx={{ mb: 2 }}>
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            fontSize: '1.25rem',
+                            fontWeight: 700,
+                            color: '#FFFFFF !important', // Forzar color blanco con !important
+                            textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+                            WebkitTextFillColor: '#FFFFFF !important', // Garantizar color en navegadores webkit
+                            textFillColor: '#FFFFFF !important',
                         }}
                     >
-                        <Badge
-                            badgeContent="?"
-                            color="default"
-                            sx={{
-                                '& .MuiBadge-badge': {
-                                    background: 'linear-gradient(135deg, #FFFFFF 0%, #E0FFF0 100%)',
-                                    color: '#00AA77',
-                                    fontWeight: 800,
-                                    fontSize: '1.5rem',
-                                    minWidth: '50px',
-                                    height: '50px',
-                                    borderRadius: '25px',
-                                    padding: '0 8px',
-                                    transition: 'all 0.3s ease',
-                                    boxShadow: '0 0 20px rgba(255, 255, 255, 0.6), 0 0 30px rgba(0, 204, 136, 0.4)'
-                                }
-                            }}
-                        />
-                    </motion.div>
-                )}
-
-                <Typography
-                    variant="h6"
-                    sx={{
-                        fontSize: '1.25rem',
-                        fontWeight: 700,
-                        color: '#FFFFFF',
-                        mb: 2,
-                        textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-                    }}
-                >
-                    APROBACIONES PENDIENTES
-                </Typography>
+                        APROBACIONES PENDIENTES
+                    </Typography>
+                </Box>
 
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, mb: 2 }}>
-                    {/* Replaced dollar sign icon with the count number */}
                     <Box
                         component={motion.div}
                         whileHover={{ scale: 1.1 }}
-                        animate={{ 
+                        animate={{
                             boxShadow: ['0 0 20px rgba(255, 255, 255, 0.4)', '0 0 40px rgba(255, 255, 255, 0.6)', '0 0 20px rgba(255, 255, 255, 0.4)'],
                         }}
-                        transition={{ 
+                        transition={{
                             duration: 2,
                             repeat: Infinity,
                             repeatType: "reverse"
