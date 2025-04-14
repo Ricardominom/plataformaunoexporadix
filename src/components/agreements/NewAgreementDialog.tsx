@@ -25,6 +25,8 @@ interface NewAgreementDialogProps {
   open: boolean;
   onClose: () => void;
   onSubmit: (agreement: any) => void;
+  lists: { id: string; name: string; color: string }[]; // Añadido para recibir las listas disponibles
+  currentListId?: string; // Añadido para recibir la lista actual como predeterminada
 }
 
 const statusOptions: { value: AgreementStatus; label: string }[] = [
@@ -47,20 +49,6 @@ const responsibleOptions = [
   'Administrador de Interlogis',
   'Research and Development',
 ];
-
-// Initial form state
-const initialFormState = {
-  element: '',
-  responsible: '',
-  status: 'not_started' as AgreementStatus,
-  requestDate: dayjs(),
-  deliveryDate: dayjs().add(1, 'week'),
-  description: '',
-  sjRequest: '',
-  sjStatus: 'not_started' as AgreementStatus,
-  deliverable: null as File | null,
-  deliverableName: '',
-};
 
 // Estilos comunes para campos más compactos
 const inputStyles = {
@@ -110,7 +98,24 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
   open,
   onClose,
   onSubmit,
+  lists = [], // Parámetro nuevo para recibir las listas
+  currentListId, // Parámetro nuevo para la lista predeterminada
 }) => {
+  // Inicialización del estado del formulario incluyendo el listId
+  const initialFormState = {
+    element: '',
+    responsible: '',
+    status: 'not_started' as AgreementStatus,
+    requestDate: dayjs(),
+    deliveryDate: dayjs().add(1, 'week'),
+    description: '',
+    sjRequest: '',
+    sjStatus: 'not_started' as AgreementStatus,
+    deliverable: null as File | null,
+    deliverableName: '',
+    listId: currentListId || (lists.length > 0 ? lists[0].id : ''), // Valor predeterminado
+  };
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState(initialFormState);
 
@@ -217,6 +222,54 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
 
         <DialogContent sx={{ p: 2, backgroundColor: 'var(--surface-primary)' }}>
           <Grid container spacing={2}>
+            {/* Selector de Lista - NUEVO CAMPO */}
+            <Grid item xs={12}>
+              <FormControl fullWidth required sx={inputStyles}>
+                <InputLabel>Lista</InputLabel>
+                <Select
+                  value={formData.listId}
+                  label="Lista"
+                  onChange={(e) => setFormData({ ...formData, listId: e.target.value })}
+                  sx={{
+                    fontSize: '0.8rem',
+                  }}
+                  MenuProps={{
+                    PaperProps: {
+                      sx: {
+                        backgroundColor: 'var(--surface-primary)',
+                        backgroundImage: 'none',
+                        borderRadius: '8px',
+                        boxShadow: 'var(--shadow-lg)',
+                        border: '1px solid var(--border-color)',
+                        mt: 1,
+                        '& .MuiMenuItem-root': {
+                          fontSize: '0.8rem',
+                          py: 0.75,
+                          px: 2,
+                        },
+                      },
+                    },
+                  }}
+                >
+                  {lists.map((list) => (
+                    <MenuItem key={list.id} value={list.id}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Box
+                          sx={{
+                            width: 12,
+                            height: 12,
+                            borderRadius: '50%',
+                            backgroundColor: list.color
+                          }}
+                        />
+                        {list.name}
+                      </Box>
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+
             <Grid item xs={12} md={8}>
               <TextField
                 label="Elemento"

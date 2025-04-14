@@ -22,14 +22,14 @@ import {
   Grid,
 } from '@mui/material';
 import { motion } from 'framer-motion';
-import { 
-  Plus, 
-  Search, 
-  Trash2, 
-  FileText, 
-  AlertCircle, 
-  CheckCircle2, 
-  Clock, 
+import {
+  Plus,
+  Search,
+  Trash2,
+  FileText,
+  AlertCircle,
+  CheckCircle2,
+  Clock,
 } from 'lucide-react';
 import { AgreementTable } from '../components/agreements/AgreementTable';
 import { NewAgreementDialog } from '../components/agreements/NewAgreementDialog';
@@ -46,7 +46,7 @@ export const AgreementsPage: React.FC = () => {
   const { user, hasShownWelcome, setHasShownWelcome } = useAuth();
   const { addNotification } = useNotification();
   const { agreements, lists, loading, updateAgreementStatus, setAgreements, setLists } = useAgreements();
-  
+
   const [currentTab, setCurrentTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [isNewAgreementOpen, setIsNewAgreementOpen] = useState(false);
@@ -134,12 +134,13 @@ export const AgreementsPage: React.FC = () => {
     sjStatus: AgreementStatus;
     deliverable?: File | null;
     deliverableName?: string;
+    listId: string; // Añadido para recibir el listId seleccionado en el formulario
   }) => {
     const newId = (Math.max(...agreements.map(a => parseInt(a.id))) + 1).toString();
     const newAgreement: Agreement = {
       ...agreement,
       id: newId,
-      listId: lists[currentTab].id,
+      // Ya no asignamos listId aquí, viene del formulario
       requestDate: agreement.requestDate.format('YYYY-MM-DD'),
       deliveryDate: agreement.deliveryDate.format('YYYY-MM-DD'),
     };
@@ -426,27 +427,27 @@ export const AgreementsPage: React.FC = () => {
                 <Tab
                   key={list.id}
                   label={
-                    <Box 
-                      sx={{ 
-                        display: 'flex', 
-                        alignItems: 'center', 
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
                         height: '32px',
                         py: 0.5,
                         px: 1.5,
                         borderRadius: '16px',
                         // Inverted behavior: unselected is vibrant, selected is more subtle
-                        backgroundColor: currentTab === index 
+                        backgroundColor: currentTab === index
                           ? `${list.color}70` // 70% opacity when selected
                           : list.color, // Full opacity when not selected
                         color: '#fff', // White text for both states for better contrast
                         transition: 'all 0.2s ease',
-                        boxShadow: currentTab === index 
+                        boxShadow: currentTab === index
                           ? 'none' // No shadow when selected
                           : `0 2px 8px ${list.color}40`, // Shadow when not selected
                       }}
                     >
-                      <Typography 
-                        sx={{ 
+                      <Typography
+                        sx={{
                           fontSize: '0.875rem',
                           fontWeight: 600,
                           mr: 1,
@@ -509,7 +510,7 @@ export const AgreementsPage: React.FC = () => {
           onStatusChange={handleStatusChange}
           onEdit={handleEdit}
           onDelete={handleDelete}
-          onResponsibleChange={() => {}}
+          onResponsibleChange={() => { }}
           onNewAgreement={() => setIsNewAgreementOpen(true)}
         />
 
@@ -518,6 +519,8 @@ export const AgreementsPage: React.FC = () => {
           open={isNewAgreementOpen}
           onClose={() => setIsNewAgreementOpen(false)}
           onSubmit={handleNewAgreement}
+          lists={lists} // Pasamos todas las listas disponibles
+          currentListId={lists[currentTab]?.id} // Pasamos la lista actual como predeterminada
         />
 
         <EditAgreementDialog
