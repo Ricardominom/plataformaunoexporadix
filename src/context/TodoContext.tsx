@@ -29,6 +29,7 @@ import {
     updateList: (list: TodoList) => void;
     deleteList: (listId: string) => void;
     filteredTodos: Todo[];
+    setTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   }
   
   const TodoContext = createContext<TodoContextType | undefined>(undefined);
@@ -361,6 +362,7 @@ const toggleRecordatorio = useCallback(async (todoId: string) => {
           updateList,
           deleteList,
           filteredTodos,
+          setTodos,
         }}
       >
         {children}
