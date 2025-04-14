@@ -17,7 +17,7 @@ import {
 import { DatePicker } from '@mui/x-date-pickers';
 import { X } from 'lucide-react';
 import dayjs from 'dayjs';
-import { TodoPriority } from '../types/todo';
+import { TodoPriority } from '../../types/todo'; // Asegúrate de que la ruta sea correcta
 
 interface NewReminderDialogProps {
   open: boolean;

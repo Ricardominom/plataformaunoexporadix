@@ -6,7 +6,6 @@ import {
     createContext,
     useContext
   } from 'react';
-  import todosData from '../mocks/todos.json';
   import { Todo, TodoList, TodoPriority } from '../types/todo';
   import dayjs from 'dayjs';
   
@@ -45,73 +44,63 @@ import {
     // Carga de recordatorios desde la API
     useEffect(() => {
       const fetchRecordatorios = async () => {
-          const API_URL = 'http://localhost:8000/usuarios/recordatorios/';
-          const accessToken = localStorage.getItem('accessToken');
-          if (!accessToken) {
-              console.error('No se encontró token de autenticación.');
-              return;
-          }
-          try {
-              setLoading(true);
-              const response = await fetch(API_URL, {
-                  method: 'GET',
-                  headers: {
-                      Accept: 'application/json',
-                      'Content-Type': 'application/json',
-                      Authorization: `Bearer ${accessToken}`,
-                  },
-              });
-              if (!response.ok) {
-                  console.error('Error al obtener recordatorios:', response.statusText);
-                  return;
-              }
-              const data = await response.json();
-  
-              // Aquí es donde puedes inspeccionar las fechas
-              console.log('Recordatorios recibidos del backend:', data);
-  
-              const priorityMapBackendToTodo: Record<string, TodoPriority> = {
-                  alta: 'high',
-                  media: 'medium',
-                  baja: 'low',
-                  ninguna: 'none',
-              };
-  
-              const todosFromBackend: Todo[] = data.map((recordatorio: any) => {
-                  const title = recordatorio.nombre?.trim() || 'Sin título';
-  
-                  // Validar y procesar `fecha_vencimiento` recibido
-                  const dueDate = recordatorio.fecha_vencimiento
-                      ? dayjs(recordatorio.fecha_vencimiento, 'YYYY-MM-DD').isValid()
-                          ? dayjs(recordatorio.fecha_vencimiento).toISOString() // Convertir a formato ISO
-                          : null
-                      : null;
-  
-                  // Agregar log para inspeccionar cada fecha procesada
-                  console.log('Fecha procesada (dueDate):', dueDate);
-  
-                  return {
-                      id: recordatorio.id.toString(),
-                      title,
-                      priority: priorityMapBackendToTodo[recordatorio.prioridad] || 'none',
-                      completed: recordatorio.estado_recordatorio !== 'pendiente',
-                      listId: recordatorio.lista.toString(),
-                      dueDate, // Fecha convertida y validada
-                      notes: recordatorio.notas || '',
-                      createdAt: recordatorio.created_at || new Date().toISOString(),
-                      userId: recordatorio.usuario?.toString() || '1',
-                  };
-              });
-  
-              setTodos(todosFromBackend);
-              setError(null);
-          } catch (error: any) {
-              console.error('Error al conectar con la API de recordatorios:', error);
-              setError(error.message || 'Error fetching recordatorios');
-          } finally {
-              setLoading(false);
-          }
-      };
+        const API_URL = 'http://localhost:8000/usuarios/recordatorios/';
+        const accessToken = localStorage.getItem('accessToken');
+        if (!accessToken) {
+            console.error('No se encontró token de autenticación.');
+            return;
+        }
+        try {
+            setLoading(true);
+            const response = await fetch(API_URL, {
+                method: 'GET',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+            if (!response.ok) {
+                console.error('Error al obtener recordatorios:', response.statusText);
+                return;
+            }
+            const data = await response.json();
+    
+            const priorityMapBackendToTodo: Record<string, TodoPriority> = {
+                alta: 'high',
+                media: 'medium',
+                baja: 'low',
+                ninguna: 'none',
+            };
+    
+            const todosFromBackend: Todo[] = data.map((recordatorio: any) => {
+                const priority = priorityMapBackendToTodo[recordatorio.prioridad] || 'none';
+    
+                // Agregar logs para depurar las prioridades
+                console.log('Prioridad recibida:', recordatorio.prioridad);
+                console.log('Prioridad mapeada:', priority);
+    
+                return {
+                    id: recordatorio.id.toString(),
+                    title: recordatorio.nombre?.trim() || 'Sin título',
+                    priority, // Asignar prioridad mapeada
+                    completed: recordatorio.estado_recordatorio !== 'pendiente',
+                    listId: recordatorio.lista.toString(),
+                    dueDate: recordatorio.fecha_vencimiento || null,
+                    notes: recordatorio.notas || '',
+                    createdAt: recordatorio.created_at || null,
+                };
+            });
+    
+            setTodos(todosFromBackend);
+            setError(null);
+        } catch (error) {
+            console.error('Error al conectar con la API de recordatorios:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
   
       fetchRecordatorios();
   }, []);
@@ -271,7 +260,25 @@ import {
       setLists(prevLists => prevLists.filter(l => l.id !== listId));
       setTodos(prevTodos => prevTodos.filter(t => t.listId !== listId));
     }, []);
+
+    const priorityMapBackendToTodo: Record<string, TodoPriority> = {
+      alta: 'high',
+      media: 'medium',
+      baja: 'low',
+      ninguna: 'none',
+  };
   
+  const getTodoPriority = (backendPriority: string): TodoPriority => {
+    const priorityMapBackendToTodo: Record<string, TodoPriority> = {
+        alta: 'high',
+        media: 'medium',
+        baja: 'low',
+        ninguna: 'none',
+    };
+
+    return priorityMapBackendToTodo[backendPriority] || 'none'; // Default a 'none' si es un valor no reconocido
+};
+
     
     // Calculamos los todos filtrados (se puede ajustar según necesidad)
     const filteredTodos = useMemo(() => {

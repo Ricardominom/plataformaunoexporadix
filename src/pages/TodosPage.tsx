@@ -68,7 +68,7 @@ export const TodosPage: React.FC = () => {
     setIsNewListOpen(false);
   };
 
-  const handleNewReminder = (reminder: {
+  const handleNewReminder = async (reminder: {
     title: string;
     notes?: string;
     dueDate: string;
@@ -84,8 +84,51 @@ export const TodosPage: React.FC = () => {
       createdAt: new Date().toISOString(),
       userId: '1',
     });
+
+    // Recargar todos los recordatorios desde el backend
+    const API_URL = 'http://localhost:8000/usuarios/recordatorios/';
+    const accessToken = localStorage.getItem('accessToken');
+    if (!accessToken) {
+        console.error('No se encontró token de autenticación.');
+        return;
+    }
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'GET',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+            },
+        });
+
+        if (!response.ok) {
+            console.error('Error al obtener recordatorios:', response.statusText);
+            return;
+        }
+
+        const data = await response.json();
+        const todosFromBackend: Todo[] = data.map((recordatorio: any) => ({
+            id: recordatorio.id.toString(),
+            title: recordatorio.nombre?.trim() || 'Sin título',
+            priority: recordatorio.prioridad, // Asignar prioridad
+            completed: recordatorio.estado_recordatorio !== 'pendiente',
+            listId: recordatorio.lista.toString(),
+            dueDate: recordatorio.fecha_vencimiento || null,
+            notes: recordatorio.notas || '',
+            createdAt: recordatorio.created_at || null,
+        }));
+
+        // Actualizar el estado global
+        setTodos(todosFromBackend);
+    } catch (error) {
+        console.error('Error al conectar con la API de recordatorios:', error);
+    }
+
     setIsNewReminderOpen(false);
-  };
+};
+
 
   const filters = [
     { icon: <Calendar size={16} />, label: 'Hoy', filter: 'today', color: '#0071e3' },
@@ -106,16 +149,42 @@ export const TodosPage: React.FC = () => {
       todo.notes?.toLowerCase().includes(searchLower)
     );
   }, [filteredTodos, searchTerm]);
-
-  const getPriorityInfo = (priority: string) => {
-    const info = {
-      high: { color: '#ff2d55', icon: <AlertCircle size={12} />, label: 'Alta' },
-      medium: { color: '#ff9500', icon: <Clock size={12} />, label: 'Media' },
-      low: { color: '#30d158', icon: <CheckCircle2 size={12} />, label: 'Baja' },
-      none: { color: 'var(--text-secondary)', icon: <Circle size={12} />, label: 'Normal' }
+  const getPriorityInfo = (priority: TodoPriority) => {
+    const priorityMap = {
+        ninguna: { 
+            label: 'Sin prioridad', 
+            color: '#9E9E9E', // Gris neutro
+            background: '#E0E0E0' // Gris claro 
+        },
+        baja: { 
+            label: 'Baja', 
+            color: '#388E3C', // Verde vibrante 
+            background: '#C8E6C9' // Verde claro pastel
+        },
+        media: { 
+            label: 'Media', 
+            color: '#F57C00', // Naranja vibrante 
+            background: '#FFE0B2' // Naranja claro pastel 
+        },
+        alta: { 
+            label: 'Alta', 
+            color: '#D32F2F', // Rojo intenso 
+            background: '#FFCDD2' // Rojo claro pastel 
+        },
     };
-    return info[priority as keyof typeof info] || info.none;
-  };
+
+    // Agregar logs para depurar valores de prioridad
+    console.log('Prioridad:', priority, 'Info:', priorityMap[priority]);
+
+    return priorityMap[priority] || { 
+        label: 'Desconocida', 
+        color: '#757575', // Gris oscuro 
+        background: '#E0E0E0' // Gris claro
+    };
+};
+
+
+
   const handleToggleTodo = (todoId: string) => {
     setTodos(prevTodos =>
       prevTodos.map(todo =>
@@ -418,17 +487,18 @@ export const TodosPage: React.FC = () => {
                               {todo.title}
                             </Typography>
                             <Chip
-                              size="small"
-                              label={getPriorityInfo(todo.priority).label}
-                              icon={getPriorityInfo(todo.priority).icon}
-                              sx={{
-                                height: '20px',
-                                backgroundColor: `${getPriorityInfo(todo.priority).color}20`,
-                                color: getPriorityInfo(todo.priority).color,
-                                '& .MuiChip-icon': { color: 'inherit' },
-                                '& .MuiChip-label': { px: 1, fontSize: '0.7rem', fontWeight: 500 },
-                              }}
-                            />
+                            label={getPriorityInfo(todo.priority).label}
+                            sx={{
+                              backgroundColor: getPriorityInfo(todo.priority).background,
+                              color: getPriorityInfo(todo.priority).color,
+                              fontSize: '0.55rem', // Texto más pequeño
+                              padding: '0 4px', // Espaciado reducido
+                              borderRadius: '10px', // Bordes más ajustados
+                              height: '20px', // Altura compacta
+                              boxShadow: `0 1px 2px ${getPriorityInfo(todo.priority).color}80`, // Sombra ligera
+                              textTransform: 'uppercase', // Prioridad en mayúsculas
+                            }}
+                          />
                           </Box>
                         }
                         secondary={
