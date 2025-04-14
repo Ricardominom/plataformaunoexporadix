@@ -93,21 +93,81 @@ useEffect(() => {
   }, []);
   
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const priorityMapTodoToBackend: Record<TodoPriority, string> = {
+    high: 'alta',
+    medium: 'media',
+    low: 'baja',
+    none: 'ninguna',
+};
+
+const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({
-      ...formData,
-      dueDate: dayjs(formData.dueDate).toISOString(),
-    });
-    setFormData({
-      title: '',
-      notes: '',
-      dueDate: dayjs(),
-      priority: 'none',
-      listId: '',
-    });
-    onClose();
-  };
+
+    // Validaciones previas
+    if (!formData.listId) {
+        alert('Por favor selecciona una lista.');
+        return;
+    }
+    if (!formData.priority) {
+        alert('Por favor selecciona una prioridad.');
+        return;
+    }
+
+    const API_URL = 'http://localhost:8000/usuarios/recordatorios/';
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+        alert('No estás autenticado.');
+        return;
+    }
+
+    // Convertir `dueDate` al formato requerido por el backend
+    const formattedDate = dayjs(formData.dueDate).format('YYYY-MM-DD');
+
+    const payload = {
+        nombre: formData.title || 'Sin título', // Manejar valores vacíos
+        prioridad: priorityMapTodoToBackend[formData.priority],
+        estado_recordatorio: 'pendiente',
+        lista: Number(formData.listId), // Convertir lista a número
+        notas: formData.notes || '',
+        fecha_vencimiento: formattedDate, // Fecha en formato `YYYY-MM-DD`
+    };
+
+    try {
+        const response = await fetch(API_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${accessToken}`,
+            },
+            body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            console.error('Error al crear el recordatorio:', data);
+            alert(`Error: ${data.fecha_vencimiento || 'No se pudo crear el recordatorio.'}`);
+            return;
+        }
+
+        alert('Recordatorio creado con éxito.');
+
+        // Restablecer el formulario
+        setFormData({
+            title: '',
+            notes: '',
+            dueDate: dayjs(), // Restablecer como objeto `dayjs`
+            priority: 'none',
+            listId: '',
+        });
+        onClose();
+    } catch (error) {
+        console.error('Error al conectar con la API:', error);
+        alert('Hubo un problema al conectar con el servidor.');
+    }
+};
+
   return (
     <Dialog
         open={open}
@@ -255,37 +315,58 @@ useEffect(() => {
                     </FormControl>
 
                     <Box sx={{ display: 'flex', gap: 2 }}>
-                        <TextField
-                            label="Fecha de vencimiento"
-                            type="date"
-                            fullWidth
-                            value={formData.dueDate}
-                            onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
-                            size="small"
+                    <DatePicker
+                                label="Fecha de vencimiento"
+                                value={formData.dueDate} // Mantén esto como un objeto `dayjs`
+                                onChange={(date) => {
+                                    if (date) {
+                                        setFormData({ ...formData, dueDate: dayjs(date) }); // Mantén `dueDate` como objeto `dayjs`
+                                    }
+                                }}
+                                sx={{
+                                    flex: 1,
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: '8px',
+                                        backgroundColor: 'var(--surface-secondary)',
+                                    },
+                                    '& .MuiInputBase-input': {
+                                        color: 'var(--text-primary)',
+                                    },
+                                }}
+                            />
+                        </Box>
+                      {/* Dropdown para seleccionar prioridad */}
+                      <FormControl size="small" fullWidth>
+                        <InputLabel sx={{ color: 'var(--text-secondary)' }}>Prioridad</InputLabel>
+                        <Select
+                            value={formData.priority}
+                            label="Prioridad"
+                            onChange={(e) => setFormData({ ...formData, priority: e.target.value as TodoPriority })}
                             sx={{
-                                '& .MuiOutlinedInput-root': {
-                                    borderRadius: '8px',
+                                borderRadius: '8px',
+                                backgroundColor: 'var(--surface-secondary)',
+                                '&:hover': {
                                     backgroundColor: 'var(--surface-secondary)',
-                                    '&:hover': {
-                                        backgroundColor: 'var(--surface-secondary)',
-                                    },
-                                    '&.Mui-focused': {
-                                        backgroundColor: 'var(--surface-secondary)',
-                                        boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
-                                    },
                                 },
-                                '& .MuiInputLabel-root': {
-                                    color: 'var(--text-secondary)',
+                                '&.Mui-focused': {
+                                    backgroundColor: 'var(--surface-secondary)',
+                                    boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
                                 },
                                 '& .MuiOutlinedInput-notchedOutline': {
                                     borderColor: 'var(--border-color)',
                                 },
-                                '& .MuiInputBase-input': {
+                                '& .MuiSelect-select': {
                                     color: 'var(--text-primary)',
                                 },
                             }}
-                        />
-                    </Box>
+                        >
+                            {priorityOptions.map((option) => (
+                                <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
 
                     <TextField
                         label="Notas"

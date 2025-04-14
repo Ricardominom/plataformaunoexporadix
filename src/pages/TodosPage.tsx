@@ -53,9 +53,11 @@ export const TodosPage: React.FC = () => {
     setSelectedList, 
     getTodosCount, 
     toggleTodo, 
+    toggleRecordatorio,
     addTodo, 
     addList,
-    filteredTodos
+    filteredTodos,
+    setTodos
   } = useTodos();
 
   const handleNewList = (list: { name: string; color: string }) => {
@@ -114,6 +116,14 @@ export const TodosPage: React.FC = () => {
     };
     return info[priority as keyof typeof info] || info.none;
   };
+  const handleToggleTodo = (todoId: string) => {
+    setTodos(prevTodos =>
+      prevTodos.map(todo =>
+        todo.id === todoId ? { ...todo, completed: !todo.completed } : todo
+      )
+    );
+  };
+
 
   if (loading) {
     return (
@@ -203,7 +213,10 @@ export const TodosPage: React.FC = () => {
                 <ListItemButton
                   key={item.filter}
                   selected={selectedFilter === item.filter}
-                  onClick={() => setSelectedFilter(item.filter)}
+                  onClick={() => {
+                      setSelectedFilter(item.filter); // Cambiar el filtro activo
+                      setSelectedList(''); // Limpiar `selectedList` para evitar conflictos
+                  }}
                   sx={{
                     borderRadius: 1,
                     mx: 1,
@@ -267,8 +280,8 @@ export const TodosPage: React.FC = () => {
                   key={list.id}
                   selected={selectedList === list.id && selectedFilter === 'all'}
                   onClick={() => {
-                    setSelectedList(list.id);
-                    setSelectedFilter('all');
+                      setSelectedList(list.id);
+                      setSelectedFilter('all'); // Cambiar al filtro 'all' para que muestre tareas de esa lista
                   }}
                   sx={{
                     borderRadius: 1,
@@ -366,7 +379,7 @@ export const TodosPage: React.FC = () => {
                     transition={{ duration: 0.2, delay: index * 0.05 }}
                   >
                     <ListItemButton
-                      onClick={() => toggleTodo(todo.id)}
+                      onClick={() => handleToggleTodo(todo.id)}
                       sx={{
                         py: 2,
                         px: 2,
@@ -381,6 +394,7 @@ export const TodosPage: React.FC = () => {
                         <Checkbox
                           edge="start"
                           checked={todo.completed}
+                          onChange={() => toggleRecordatorio(todo.id)}
                           sx={{
                             color: 'var(--text-secondary)',
                             '&.Mui-checked': {
@@ -425,7 +439,7 @@ export const TodosPage: React.FC = () => {
                               mt: 0.5,
                             }}
                           >
-                            Vence el {dayjs(todo.dueDate).format('D [de] MMMM')}
+                          Vence el {todo.dueDate ? dayjs(todo.dueDate).format('DD/MM/YYYY') : 'Sin fecha'}
                           </Typography>
                         }
                       />
