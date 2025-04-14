@@ -25,6 +25,7 @@ interface EditAgreementDialogProps {
   onClose: () => void;
   onSubmit: (agreement: Agreement) => void;
   agreement: Agreement | null;
+  lists: { id: string; name: string; color: string }[]; // Añadido para recibir las listas disponibles
 }
 
 const statusOptions: { value: AgreementStatus; label: string }[] = [
@@ -53,6 +54,7 @@ export const EditAgreementDialog: React.FC<EditAgreementDialogProps> = ({
   onClose,
   onSubmit,
   agreement,
+  lists = [], // Parámetro nuevo para recibir las listas
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState<Agreement | null>(null);
@@ -156,6 +158,65 @@ export const EditAgreementDialog: React.FC<EditAgreementDialogProps> = ({
 
         <DialogContent sx={{ p: 2, pt: 3, backgroundColor: 'var(--surface-primary)' }}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            {/* Selector de Lista - NUEVO CAMPO */}
+            <FormControl
+              size="small"
+              required
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '8px',
+                  backgroundColor: 'var(--surface-secondary)',
+                  '&:hover': {
+                    backgroundColor: 'var(--surface-secondary)',
+                  },
+                  '&.Mui-focused': {
+                    backgroundColor: 'var(--surface-secondary)',
+                    boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'var(--text-secondary)',
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--border-color)',
+                },
+              }}
+            >
+              <InputLabel>Lista</InputLabel>
+              <Select
+                value={formData.listId}
+                label="Lista"
+                onChange={(e) => setFormData({ ...formData, listId: e.target.value })}
+                MenuProps={{
+                  PaperProps: {
+                    sx: {
+                      backgroundColor: 'var(--surface-primary)',
+                      backgroundImage: 'none',
+                      borderRadius: '8px',
+                      boxShadow: 'var(--shadow-lg)',
+                      border: '1px solid var(--border-color)',
+                    },
+                  },
+                }}
+              >
+                {lists.map((list) => (
+                  <MenuItem key={list.id} value={list.id}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Box
+                        sx={{
+                          width: 12,
+                          height: 12,
+                          borderRadius: '50%',
+                          backgroundColor: list.color
+                        }}
+                      />
+                      {list.name}
+                    </Box>
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
             <Box sx={{ display: 'flex', gap: 2 }}>
               <TextField
                 label="Elemento"
@@ -434,7 +495,7 @@ export const EditAgreementDialog: React.FC<EditAgreementDialogProps> = ({
                 sx={{ display: 'none' }}
                 inputRef={fileInputRef}
               />
-              
+
               {(formData.deliverable || formData.deliverableName) ? (
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   <FileText size={20} color="var(--text-secondary)" />

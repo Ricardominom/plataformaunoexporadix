@@ -528,6 +528,7 @@ export const AgreementsPage: React.FC = () => {
           onClose={() => setEditingAgreement(null)}
           onSubmit={handleEditSubmit}
           agreement={editingAgreement}
+          lists={lists} // Agregar esta línea para pasar la lista de listas
         />
 
         <NewListDialog
