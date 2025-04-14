@@ -16,4 +16,5 @@ export interface User {
   role: UserRole;
   email: string;
   isSuperuser: boolean;
+  isAuthenticated: boolean;
 }

@@ -55,10 +55,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       const userData = await userResponse.json();
+      console.log(userData.rol + "ROL")
+      // Actualizar el estado del usuario con los datos obtenidos
       setUser({
         id: userData.id.toString(), // Convertimos ID a string
         name: userData.username,
-        role: userData.rol as UserRole, // Cambiamos de 'role' a 'rol' según tu API
+        role: userData.role as UserRole, // Asegurar que el role coincida con los tipos permitidos
         email: userData.email,
         isSuperuser: userData.is_superuser,
       });
