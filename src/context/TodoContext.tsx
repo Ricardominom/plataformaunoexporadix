@@ -313,40 +313,41 @@ import {
   
   
     // Definición de toggleRecordatorio en tu contexto:
-const toggleRecordatorio = useCallback(async (todoId: string) => {
-    const API_URL = `http://localhost:8000/usuarios/recordatorios/${todoId}/toggle_estado/`;
-    const accessToken = localStorage.getItem('accessToken');
-    if (!accessToken) {
-      console.error("Token de autenticación no encontrado.");
-      return;
-    }
-    try {
-      const response = await fetch(API_URL, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
-        },
-      });
-      if (!response.ok) {
-        console.error("Error al cambiar el estado:", response.statusText);
+    const toggleRecordatorio = async (todoId: string) => {
+      const API_URL = `http://127.0.0.1:8000/usuarios/recordatorios/${todoId}/toggle/`;
+      const accessToken = localStorage.getItem('accessToken');
+    
+      if (!accessToken) {
+        console.error('No se encontró el token de autenticación.');
         return;
       }
-      const updatedRecordatorio = await response.json();
-      setTodos(prevTodos =>
-        prevTodos.map(todo =>
-          todo.id === updatedRecordatorio.id.toString()
-            ? {
-                ...todo,
-                completed: updatedRecordatorio.estado_recordatorio !== "pendiente",
-              }
-            : todo
-        )
-      );
-    } catch (error: any) {
-      console.error("Error al cambiar el estado del recordatorio:", error);
-    }
-  }, []);
+    
+      try {
+        // Realizar la solicitud al backend
+        const response = await fetch(API_URL, {
+          method: 'PATCH', // O utiliza el método que maneje tu backend (puede ser PATCH o PUT)
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+    
+        if (!response.ok) {
+          console.error('Error al actualizar el estado del recordatorio:', response.statusText);
+          return;
+        }
+    
+        // Actualizar el estado local después de una respuesta exitosa
+        setTodos((prevTodos) =>
+          prevTodos.map((todo) =>
+            todo.id === todoId ? { ...todo, completed: !todo.completed } : todo
+          )
+        );
+      } catch (error) {
+        console.error('Error al conectar con el backend:', error);
+      }
+    };
+    
   
     return (
       <TodoContext.Provider

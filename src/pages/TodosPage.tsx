@@ -448,7 +448,7 @@ export const TodosPage: React.FC = () => {
                     transition={{ duration: 0.2, delay: index * 0.05 }}
                   >
                     <ListItemButton
-                      onClick={() => handleToggleTodo(todo.id)}
+                      onClick={() => toggleRecordatorio(todo.id)}
                       sx={{
                         py: 2,
                         px: 2,
