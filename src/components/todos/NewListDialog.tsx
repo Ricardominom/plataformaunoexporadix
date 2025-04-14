@@ -44,15 +44,61 @@ export const NewListDialog: React.FC<NewListDialogProps> = ({
 }) => {
     const [formData, setFormData] = useState(initialFormData);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        onSubmit(formData);
-        setFormData(initialFormData); // Reset form to initial state
-        onClose();
+    
+        const API_URL = 'http://127.0.0.1:8000/usuarios/listas/';
+        const accessToken = localStorage.getItem('accessToken');
+    
+        if (!accessToken) {
+            alert('No estás autenticado.');
+            return;
+        }
+    
+        const payload = {
+            nombre: formData.name,
+            color: formData.color,
+        };
+    
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify(payload),
+            });
+    
+            const data = await response.json();
+    
+            if (!response.ok) {
+                console.error('Error al crear la lista:', data);
+                alert(`Error: ${data.detail || 'No se pudo crear la lista.'}`);
+                return;
+            }
+    
+            // Llamar a la función onSubmit con los datos de la nueva lista
+            onSubmit({
+                name: data.nombre,
+                color: data.color,
+            });
+    
+            // Limpiar el formulario
+            setFormData(initialFormData);
+    
+            alert('Lista creada con éxito.');
+            onClose();
+        } catch (error) {
+            console.error('Error al conectar con la API:', error);
+            alert('Error de conexión con el servidor.');
+        }
     };
+    
+    
 
     const handleClose = () => {
-        setFormData(initialFormData); // Reset form when closing
+        setFormData(initialFormData); // Resetear el formulario al cerrar
         onClose();
     };
 

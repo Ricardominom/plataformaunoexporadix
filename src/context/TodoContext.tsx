@@ -1,10 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Todo, TodoList, TodoPriority } from '../types/todo';
-import { useNotification } from './NotificationContext';
 import dayjs from 'dayjs';
-
-// Import mock data
-import todosData from '../mocks/todos.json';
 
 interface TodoContextType {
   todos: Todo[];
@@ -17,6 +13,7 @@ interface TodoContextType {
   setSelectedList: (listId: string) => void;
   getTodosCount: (filter: string) => number;
   toggleTodo: (todoId: string) => void;
+  toggleRecordatorio: (todoId: string) => Promise<void>;
   addTodo: (todo: Omit<Todo, 'id'>) => void;
   updateTodo: (todo: Todo) => void;
   deleteTodo: (todoId: string) => void;
@@ -29,172 +26,132 @@ interface TodoContextType {
 const TodoContext = createContext<TodoContextType | undefined>(undefined);
 
 export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [todos, setTodos] = useState<Todo[]>(todosData.todos);
-  const [lists, setLists] = useState<TodoList[]>(todosData.lists);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [lists, setLists] = useState<TodoList[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedFilter, setSelectedFilter] = useState('today');
   const [selectedList, setSelectedList] = useState('1');
-  
-  const { addNotification } = useNotification();
 
-  // Load todos from localStorage on mount
+  // Carga inicial desde la API para todos y listas
   useEffect(() => {
-    const loadTodos = () => {
+    const fetchData = async () => {
+      const TODOS_API_URL = 'http://localhost:8000/usuarios/recordatorios/';
+      const LISTS_API_URL = 'http://localhost:8000/usuarios/listas/';
+      const accessToken = localStorage.getItem('accessToken');
+
+      if (!accessToken) {
+        console.error("Token de autenticación no encontrado.");
+        setError('No se encontró token de autenticación.');
+        return;
+      }
+
       try {
         setLoading(true);
-        const savedTodos = localStorage.getItem('todos');
-        const savedLists = localStorage.getItem('todoLists');
-        
-        if (savedTodos) {
-          setTodos(JSON.parse(savedTodos));
+
+        // Fetch todos
+        const todosResponse = await fetch(TODOS_API_URL, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        if (!todosResponse.ok) {
+          throw new Error('Error al obtener recordatorios.');
         }
-        
-        if (savedLists) {
-          setLists(JSON.parse(savedLists));
+        const todosData = await todosResponse.json();
+
+        // Fetch lists
+        const listsResponse = await fetch(LISTS_API_URL, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+        });
+        if (!listsResponse.ok) {
+          throw new Error('Error al obtener listas.');
         }
-        
+        const listsData = await listsResponse.json();
+
+        // Mapear los datos de la API a nuestro formato
+        const priorityMapBackendToTodo: Record<string, TodoPriority> = {
+          alta: 'high',
+          media: 'medium',
+          baja: 'low',
+          ninguna: 'none',
+        };
+
+        const todosMapped = todosData.map((todo: any) => ({
+          id: todo.id.toString(),
+          title: todo.nombre || 'Sin título',
+          priority: priorityMapBackendToTodo[todo.prioridad] || 'none',
+          completed: todo.estado_recordatorio !== 'pendiente',
+          listId: todo.lista.toString(),
+          dueDate: todo.fecha_vencimiento,
+          notes: todo.notas || '',
+          createdAt: todo.created_at || new Date().toISOString(),
+        }));
+
+        const listsMapped = listsData.map((list: any) => ({
+          id: list.id.toString(),
+          name: list.nombre,
+          color: list.color,
+        }));
+
+        setTodos(todosMapped);
+        setLists(listsMapped);
+
         setError(null);
-      } catch (err) {
-        setError('Error loading todos');
-        console.error(err);
+      } catch (error: any) {
+        console.error('Error al cargar datos:', error.message);
+        setError(error.message || 'Error desconocido.');
       } finally {
         setLoading(false);
       }
     };
-    
-    loadTodos();
+
+    fetchData();
   }, []);
 
-  // Save todos to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('todos', JSON.stringify(todos));
-  }, [todos]);
+  const toggleRecordatorio = async (todoId: string) => {
+    const API_URL = `http://localhost:8000/usuarios/recordatorios/${todoId}/toggle_estado/`;
+    const accessToken = localStorage.getItem('accessToken');
 
-  // Save lists to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('todoLists', JSON.stringify(lists));
-  }, [lists]);
+    if (!accessToken) {
+      console.error("Token de autenticación no encontrado.");
+      return;
+    }
 
-  const getTodosCount = (filter: string): number => {
-    const today = dayjs().startOf('day');
+    try {
+      const response = await fetch(API_URL, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
 
-    return todos.filter(todo => {
-      switch (filter) {
-        case 'today':
-          return !todo.completed && dayjs(todo.dueDate).startOf('day').isSame(today);
-        case 'scheduled':
-          return !todo.completed && todo.dueDate;
-        case 'all':
-          return !todo.completed;
-        case 'completed':
-          return todo.completed;
-        default:
-          return false;
+      if (!response.ok) {
+        throw new Error('Error al cambiar el estado del recordatorio.');
       }
-    }).length;
-  };
 
-  const toggleTodo = (todoId: string) => {
-    const todo = todos.find(t => t.id === todoId);
-    if (todo) {
-      const updatedTodo = { ...todo, completed: !todo.completed };
-      setTodos(prevTodos =>
-        prevTodos.map(t => t.id === todoId ? updatedTodo : t)
+      const updatedTodo = await response.json();
+      setTodos((prevTodos) =>
+        prevTodos.map((todo) =>
+          todo.id === updatedTodo.id.toString()
+            ? {
+                ...todo,
+                completed: updatedTodo.estado_recordatorio !== 'pendiente',
+              }
+            : todo
+        )
       );
-      
-      if (updatedTodo.completed) {
-        addNotification('todo', 'updated', updatedTodo);
-      }
+    } catch (error: any) {
+      console.error('Error al cambiar estado:', error.message);
     }
   };
-
-  const addTodo = (todo: Omit<Todo, 'id'>) => {
-    const newTodo: Todo = {
-      ...todo,
-      id: (Math.max(...todos.map(t => parseInt(t.id)), 0) + 1).toString(),
-    };
-    
-    setTodos(prevTodos => [newTodo, ...prevTodos]);
-    addNotification('todo', 'created', newTodo);
-  };
-
-  const updateTodo = (todo: Todo) => {
-    setTodos(prevTodos =>
-      prevTodos.map(t => t.id === todo.id ? todo : t)
-    );
-    addNotification('todo', 'updated', todo);
-  };
-
-  const deleteTodo = (todoId: string) => {
-    const todoToDelete = todos.find(t => t.id === todoId);
-    if (todoToDelete) {
-      setTodos(prevTodos => prevTodos.filter(t => t.id !== todoId));
-      addNotification('todo', 'deleted', todoToDelete);
-    }
-  };
-
-  const addList = (list: Omit<TodoList, 'id'>) => {
-    const newList: TodoList = {
-      ...list,
-      id: (Math.max(...lists.map(l => parseInt(l.id)), 0) + 1).toString(),
-    };
-    
-    setLists(prevLists => [...prevLists, newList]);
-    addNotification('list', 'created', {
-      id: newList.id,
-      title: newList.name,
-      listId: newList.id,
-      completed: false,
-      createdAt: new Date().toISOString(),
-    });
-  };
-
-  const updateList = (list: TodoList) => {
-    setLists(prevLists =>
-      prevLists.map(l => l.id === list.id ? list : l)
-    );
-  };
-
-  const deleteList = (listId: string) => {
-    setLists(prevLists => prevLists.filter(l => l.id !== listId));
-    setTodos(prevTodos => prevTodos.filter(t => t.listId !== listId));
-  };
-
-  // Filtered todos based on current filter and search
-  const filteredTodos = React.useMemo(() => {
-    const today = dayjs().startOf('day');
-    let filtered = [...todos];
-
-    // Apply status filter
-    filtered = filtered.filter(todo => {
-      switch (selectedFilter) {
-        case 'today':
-          return !todo.completed && dayjs(todo.dueDate).startOf('day').isSame(today);
-        case 'all':
-          if (selectedList !== 'all') {
-            return !todo.completed && todo.listId === selectedList;
-          }
-          return !todo.completed;
-        case 'scheduled':
-          return !todo.completed && todo.dueDate;
-        case 'completed':
-          return todo.completed;
-        default:
-          return false;
-      }
-    });
-
-    // Sort todos
-    return filtered.sort((a, b) => {
-      if (a.completed !== b.completed) return a.completed ? 1 : -1;
-      const priorityOrder = { high: 0, medium: 1, low: 2, none: 3 };
-      if (a.priority !== b.priority) {
-        return priorityOrder[a.priority] - priorityOrder[b.priority];
-      }
-      return dayjs(a.dueDate).isBefore(dayjs(b.dueDate)) ? -1 : 1;
-    });
-  }, [todos, selectedFilter, selectedList]);
 
   return (
     <TodoContext.Provider
@@ -207,15 +164,77 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
         selectedList,
         setSelectedFilter,
         setSelectedList,
-        getTodosCount,
-        toggleTodo,
-        addTodo,
-        updateTodo,
-        deleteTodo,
-        addList,
-        updateList,
-        deleteList,
-        filteredTodos,
+        getTodosCount: (filter) => {
+          const today = dayjs().startOf('day');
+          return todos.filter((todo) => {
+            switch (filter) {
+              case 'today':
+                return !todo.completed && dayjs(todo.dueDate).startOf('day').isSame(today);
+              case 'scheduled':
+                return !todo.completed && todo.dueDate;
+              case 'completed':
+                return todo.completed;
+              default:
+                return true;
+            }
+          }).length;
+        },
+        toggleTodo: (todoId) => {
+          setTodos((prevTodos) =>
+            prevTodos.map((todo) =>
+              todo.id === todoId ? { ...todo, completed: !todo.completed } : todo
+            )
+          );
+        },
+        toggleRecordatorio,
+        addTodo: (todo) => {
+          setTodos((prevTodos) => [
+            {
+              ...todo,
+              id: (Math.max(...prevTodos.map((t) => parseInt(t.id)), 0) + 1).toString(),
+            },
+            ...prevTodos,
+          ]);
+        },
+        updateTodo: (todo) => {
+          setTodos((prevTodos) =>
+            prevTodos.map((t) => (t.id === todo.id ? todo : t))
+          );
+        },
+        deleteTodo: (todoId) => {
+          setTodos((prevTodos) => prevTodos.filter((t) => t.id !== todoId));
+        },
+        addList: (list) => {
+          setLists((prevLists) => [
+            {
+              ...list,
+              id: (Math.max(...prevLists.map((l) => parseInt(l.id)), 0) + 1).toString(),
+            },
+            ...prevLists,
+          ]);
+        },
+        updateList: (list) => {
+          setLists((prevLists) =>
+            prevLists.map((l) => (l.id === list.id ? list : l))
+          );
+        },
+        deleteList: (listId) => {
+          setLists((prevLists) => prevLists.filter((l) => l.id !== listId));
+          setTodos((prevTodos) => prevTodos.filter((t) => t.listId !== listId));
+        },
+        filteredTodos: todos.filter((todo) => {
+          const today = dayjs().startOf('day');
+          switch (selectedFilter) {
+            case 'today':
+              return !todo.completed && dayjs(todo.dueDate).startOf('day').isSame(today);
+            case 'scheduled':
+              return !todo.completed && todo.dueDate;
+            case 'completed':
+              return todo.completed;
+            default:
+              return true;
+          }
+        }),
       }}
     >
       {children}
@@ -225,7 +244,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
 export const useTodos = () => {
   const context = useContext(TodoContext);
-  if (context === undefined) {
+  if (!context) {
     throw new Error('useTodos must be used within a TodoProvider');
   }
   return context;

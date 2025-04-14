@@ -1,354 +1,373 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    TextField,
-    Box,
-    Typography,
-    IconButton,
-    FormControl,
-    InputLabel,
-    Select,
-    MenuItem,
-    Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  Box,
+  Typography,
+  IconButton,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
-import { X, AlertCircle, Clock, CheckCircle2, Circle } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { X } from 'lucide-react';
 import dayjs from 'dayjs';
-import { TodoPriority } from '../../types/todo';
+import { TodoPriority } from '../types/todo';
 
 interface NewReminderDialogProps {
-    open: boolean;
-    onClose: () => void;
-    onSubmit: (reminder: {
-        title: string;
-        notes?: string;
-        dueDate: string;
-        priority: TodoPriority;
-    }) => void;
+  open: boolean;
+  onClose: () => void;
+  onSubmit: (reminder: {
+    title: string;
+    notes?: string;
+    dueDate: string;
+    priority: TodoPriority;
+    listId: string; // Se agrega la lista seleccionada
+  }) => void;
 }
 
-const priorityOptions: { value: TodoPriority; label: string; icon: React.ReactNode; color: string }[] = [
-    { value: 'none', label: 'Ninguna', icon: <Circle size={16} />, color: 'var(--text-secondary)' },
-    { value: 'low', label: 'Baja', icon: <CheckCircle2 size={16} />, color: '#30d158' },
-    { value: 'medium', label: 'Media', icon: <Clock size={16} />, color: '#ff9500' },
-    { value: 'high', label: 'Alta', icon: <AlertCircle size={16} />, color: '#ff2d55' },
+const priorityOptions: { value: TodoPriority; label: string }[] = [
+  { value: 'none', label: 'Ninguna' },
+  { value: 'low', label: 'Baja' },
+  { value: 'medium', label: 'Media' },
+  { value: 'high', label: 'Alta' },
 ];
 
 export const NewReminderDialog: React.FC<NewReminderDialogProps> = ({
-    open,
-    onClose,
-    onSubmit,
+  open,
+  onClose,
+  onSubmit,
 }) => {
-    const [formData, setFormData] = useState({
-        title: '',
-        notes: '',
-        dueDate: dayjs(),
-        priority: 'none' as TodoPriority,
-    });
+  const [formData, setFormData] = useState({
+    title: '',
+    notes: '',
+    dueDate: dayjs(),
+    priority: 'none' as TodoPriority,
+    listId: '', // Estado para la lista seleccionada
+  });
+  const [lists, setLists] = useState<{ id: string; name: string }[]>([]); // Estado para las opciones de listas disponibles
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSubmit({
-            ...formData,
-            dueDate: formData.dueDate.toISOString(),
+  // Cargar las listas desde la API
+useEffect(() => {
+    const fetchLists = async () => {
+      const API_URL = 'http://127.0.0.1:8000/usuarios/listas/';
+      const accessToken = localStorage.getItem('accessToken');
+  
+      if (!accessToken) {
+        console.error('No estás autenticado.');
+        return;
+      }
+  
+      try {
+        const response = await fetch(API_URL, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
         });
-        setFormData({
-            title: '',
-            notes: '',
-            dueDate: dayjs(),
-            priority: 'none',
-        });
-        onClose();
+  
+        if (!response.ok) {
+          throw new Error('Error al obtener listas.');
+        }
+  
+        const data = await response.json();
+        const formattedLists = data.map((list: any) => ({
+          id: list.id.toString(),
+          name: list.nombre, // Mapeo del atributo `nombre`
+          color: list.color, // Agregar color desde la API
+        }));
+  
+        setLists(formattedLists); // Actualizar el estado con listas formateadas
+      } catch (error) {
+        console.error('Error al conectar con la API:', error);
+      }
     };
+  
+    fetchLists();
+  }, []);
+  
 
-    return (
-        <Dialog
-            open={open}
-            onClose={onClose}
-            maxWidth="sm"
-            fullWidth
-            PaperProps={{
-                elevation: 0,
-                component: motion.div,
-                initial: { opacity: 0, y: 20, scale: 0.95 },
-                animate: { opacity: 1, y: 0, scale: 1 },
-                exit: { opacity: 0, y: 20, scale: 0.95 },
-                transition: { duration: 0.2 },
-                sx: {
-                    borderRadius: '16px',
-                    backgroundColor: 'var(--surface-primary)',
-                    backdropFilter: 'blur(20px)',
-                    border: '1px solid var(--border-color)',
-                    overflow: 'hidden',
-                },
-            }}
-        >
-            <form onSubmit={handleSubmit}>
-                <DialogTitle
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSubmit({
+      ...formData,
+      dueDate: dayjs(formData.dueDate).toISOString(),
+    });
+    setFormData({
+      title: '',
+      notes: '',
+      dueDate: dayjs(),
+      priority: 'none',
+      listId: '',
+    });
+    onClose();
+  };
+  return (
+    <Dialog
+        open={open}
+        onClose={onClose}
+        maxWidth="sm"
+        fullWidth
+        PaperProps={{
+            elevation: 0,
+            sx: {
+                borderRadius: '12px',
+                backgroundColor: 'var(--surface-primary)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid var(--border-color)',
+                overflow: 'hidden',
+            },
+        }}
+    >
+        <form onSubmit={handleSubmit}>
+            <DialogTitle
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    p: 2,
+                    borderBottom: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--surface-secondary)',
+                }}
+            >
+                <Typography
+                    variant="h6"
                     sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        p: 3,
-                        borderBottom: '1px solid var(--border-color)',
-                        backgroundColor: 'var(--surface-secondary)',
+                        fontSize: '1.125rem',
+                        fontWeight: 600,
+                        color: 'var(--text-primary)',
+                        letterSpacing: '-0.025em',
                     }}
                 >
-                    <Typography
-                        variant="h6"
-                        sx={{
-                            fontSize: '1.25rem',
-                            fontWeight: 600,
+                    Nuevo Recordatorio
+                </Typography>
+                <IconButton
+                    onClick={onClose}
+                    size="small"
+                    sx={{
+                        color: 'var(--text-secondary)',
+                        '&:hover': {
+                            backgroundColor: 'var(--hover-bg)',
                             color: 'var(--text-primary)',
-                            letterSpacing: '-0.025em',
-                        }}
-                    >
-                        Nuevo Recordatorio
-                    </Typography>
-                    <IconButton
-                        onClick={onClose}
+                        },
+                    }}
+                >
+                    <X size={18} />
+                </IconButton>
+            </DialogTitle>
+
+            <DialogContent sx={{ p: 2, pt: 3, backgroundColor: 'var(--surface-primary)' }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <TextField
+                        label="Título"
+                        fullWidth
+                        value={formData.title}
+                        onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                        required
                         size="small"
                         sx={{
-                            color: 'var(--text-secondary)',
-                            '&:hover': {
-                                backgroundColor: 'var(--hover-bg)',
-                                color: 'var(--text-primary)',
-                                transform: 'rotate(90deg)',
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '8px',
+                                backgroundColor: 'var(--surface-secondary)',
+                                '&:hover': {
+                                    backgroundColor: 'var(--surface-secondary)',
+                                },
+                                '&.Mui-focused': {
+                                    backgroundColor: 'var(--surface-secondary)',
+                                    boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
+                                },
                             },
-                            transition: 'all 0.3s ease',
+                            '& .MuiInputLabel-root': {
+                                color: 'var(--text-secondary)',
+                            },
+                            '& .MuiOutlinedInput-notchedOutline': {
+                                borderColor: 'var(--border-color)',
+                            },
+                            '& .MuiInputBase-input': {
+                                color: 'var(--text-primary)',
+                            },
                         }}
-                    >
-                        <X size={20} />
-                    </IconButton>
-                </DialogTitle>
+                    />
 
-                <DialogContent sx={{ p: 3, backgroundColor: 'var(--surface-primary)' }}>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Título"
-                                fullWidth
-                                value={formData.title}
-                                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                                required
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: '10px',
-                                        backgroundColor: 'var(--surface-secondary)',
-                                        '&:hover': {
-                                            backgroundColor: 'var(--surface-secondary)',
-                                        },
-                                        '&.Mui-focused': {
-                                            backgroundColor: 'var(--surface-secondary)',
-                                            boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
-                                        },
-                                    },
-                                    '& .MuiInputLabel-root': {
-                                        color: 'var(--text-secondary)',
-                                    },
-                                    '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'var(--border-color)',
-                                    },
-                                    '& .MuiInputBase-input': {
-                                        color: 'var(--text-primary)',
-                                    },
-                                }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} md={6}>
-                            <DatePicker
-                                label="Fecha de vencimiento"
-                                value={formData.dueDate}
-                                onChange={(date) => setFormData({ ...formData, dueDate: date || dayjs() })}
-                                sx={{
-                                    width: '100%',
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: '10px',
-                                        backgroundColor: 'var(--surface-secondary)',
-                                        '&:hover': {
-                                            backgroundColor: 'var(--surface-secondary)',
-                                        },
-                                        '&.Mui-focused': {
-                                            backgroundColor: 'var(--surface-secondary)',
-                                            boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
-                                        },
-                                    },
-                                    '& .MuiInputLabel-root': {
-                                        color: 'var(--text-secondary)',
-                                    },
-                                    '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'var(--border-color)',
-                                    },
-                                    '& .MuiInputBase-input': {
-                                        color: 'var(--text-primary)',
-                                    },
-                                }}
-                            />
-                        </Grid>
-
-                        <Grid item xs={12} md={6}>
-                            <FormControl fullWidth>
-                                <InputLabel sx={{ color: 'var(--text-secondary)' }}>Prioridad</InputLabel>
-                                <Select
-                                    value={formData.priority}
-                                    label="Prioridad"
-                                    onChange={(e) => setFormData({ ...formData, priority: e.target.value as TodoPriority })}
+                    {/* Dropdown para seleccionar lista */}
+                    <FormControl size="small" fullWidth>
+                        <InputLabel sx={{ color: 'var(--text-secondary)' }}>Seleccionar Lista</InputLabel>
+                        <Select
+                            value={formData.listId}
+                            label="Seleccionar Lista"
+                            onChange={(e) => {
+                                const selectedList = lists.find((list) => list.id === e.target.value);
+                                if (selectedList) {
+                                    setFormData({
+                                        ...formData,
+                                        listId: selectedList.id,
+                                        color: selectedList.color, // Actualizar el color en el estado
+                                    });
+                                }
+                            }}
+                            sx={{
+                                borderRadius: '8px',
+                                backgroundColor: 'var(--surface-secondary)',
+                                '&:hover': {
+                                    backgroundColor: 'var(--surface-secondary)',
+                                },
+                                '&.Mui-focused': {
+                                    backgroundColor: 'var(--surface-secondary)',
+                                    boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
+                                },
+                                '& .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: 'var(--border-color)',
+                                },
+                                '& .MuiSelect-select': {
+                                    color: 'var(--text-primary)',
+                                },
+                            }}
+                        >
+                            {lists.map((list) => (
+                                <MenuItem
+                                    key={list.id}
+                                    value={list.id}
                                     sx={{
-                                        borderRadius: '10px',
-                                        backgroundColor: 'var(--surface-secondary)',
-                                        '&:hover': {
-                                            backgroundColor: 'var(--surface-secondary)',
-                                        },
-                                        '&.Mui-focused': {
-                                            backgroundColor: 'var(--surface-secondary)',
-                                            boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
-                                        },
-                                        '& .MuiOutlinedInput-notchedOutline': {
-                                            borderColor: 'var(--border-color)',
-                                        },
-                                        '& .MuiSelect-select': {
-                                            color: 'var(--text-primary)',
-                                            display: 'flex',
-                                            alignItems: 'center',
-                                            gap: 1,
-                                        },
-                                    }}
-                                    MenuProps={{
-                                        PaperProps: {
-                                            sx: {
-                                                backgroundColor: 'var(--surface-primary)',
-                                                backgroundImage: 'none',
-                                                borderRadius: '12px',
-                                                boxShadow: 'var(--shadow-lg)',
-                                                border: '1px solid var(--border-color)',
-                                                mt: 1,
-                                                '& .MuiMenuItem-root': {
-                                                    fontSize: '0.875rem',
-                                                    py: 1,
-                                                    px: 2,
-                                                    '&:hover': {
-                                                        backgroundColor: 'var(--hover-bg)',
-                                                    },
-                                                },
-                                            },
-                                        },
-                                    }}
-                                    renderValue={(selected) => {
-                                        const option = priorityOptions.find(opt => opt.value === selected);
-                                        return (
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                <Box sx={{ color: option?.color }}>{option?.icon}</Box>
-                                                {option?.label}
-                                            </Box>
-                                        );
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        gap: 1,
                                     }}
                                 >
-                                    {priorityOptions.map((option) => (
-                                        <MenuItem key={option.value} value={option.value}>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                <Box sx={{ color: option.color }}>{option.icon}</Box>
-                                                {option.label}
-                                            </Box>
-                                        </MenuItem>
-                                    ))}
-                                </Select>
-                            </FormControl>
-                        </Grid>
+                                    <Box
+                                        sx={{
+                                            width: 16,
+                                            height: 16,
+                                            borderRadius: '50%',
+                                            backgroundColor: list.color, // Renderiza el color
+                                            border: '1px solid var(--border-color)',
+                                        }}
+                                    />
+                                    {list.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </FormControl>
 
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Notas"
-                                fullWidth
-                                multiline
-                                rows={4}
-                                value={formData.notes}
-                                onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: '10px',
+                    <Box sx={{ display: 'flex', gap: 2 }}>
+                        <TextField
+                            label="Fecha de vencimiento"
+                            type="date"
+                            fullWidth
+                            value={formData.dueDate}
+                            onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
+                            size="small"
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    borderRadius: '8px',
+                                    backgroundColor: 'var(--surface-secondary)',
+                                    '&:hover': {
                                         backgroundColor: 'var(--surface-secondary)',
-                                        '&:hover': {
-                                            backgroundColor: 'var(--surface-secondary)',
-                                        },
-                                        '&.Mui-focused': {
-                                            backgroundColor: 'var(--surface-secondary)',
-                                            boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
-                                        },
                                     },
-                                    '& .MuiInputLabel-root': {
-                                        color: 'var(--text-secondary)',
+                                    '&.Mui-focused': {
+                                        backgroundColor: 'var(--surface-secondary)',
+                                        boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
                                     },
-                                    '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'var(--border-color)',
-                                    },
-                                    '& .MuiInputBase-input': {
-                                        color: 'var(--text-primary)',
-                                    },
-                                }}
-                            />
-                        </Grid>
-                    </Grid>
-                </DialogContent>
+                                },
+                                '& .MuiInputLabel-root': {
+                                    color: 'var(--text-secondary)',
+                                },
+                                '& .MuiOutlinedInput-notchedOutline': {
+                                    borderColor: 'var(--border-color)',
+                                },
+                                '& .MuiInputBase-input': {
+                                    color: 'var(--text-primary)',
+                                },
+                            }}
+                        />
+                    </Box>
 
-                <DialogActions
-                    sx={{
-                        p: 3,
-                        borderTop: '1px solid var(--border-color)',
-                        backgroundColor: 'var(--surface-secondary)',
-                        gap: 1,
-                    }}
-                >
-                    <Button
-                        onClick={onClose}
+                    <TextField
+                        label="Notas"
+                        fullWidth
+                        multiline
+                        rows={3}
+                        value={formData.notes}
+                        onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                        size="small"
                         sx={{
-                            color: 'var(--text-secondary)',
-                            fontSize: '0.9375rem',
-                            fontWeight: 500,
-                            textTransform: 'none',
-                            px: 3,
-                            py: 1,
-                            borderRadius: '8px',
-                            '&:hover': {
-                                backgroundColor: 'var(--hover-bg)',
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: '8px',
+                                backgroundColor: 'var(--surface-secondary)',
+                                '&:hover': {
+                                    backgroundColor: 'var(--surface-secondary)',
+                                },
+                                '&.Mui-focused': {
+                                    backgroundColor: 'var(--surface-secondary)',
+                                    boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
+                                },
+                            },
+                            '& .MuiInputLabel-root': {
+                                color: 'var(--text-secondary)',
+                            },
+                            '& .MuiOutlinedInput-notchedOutline': {
+                                borderColor: 'var(--border-color)',
+                            },
+                            '& .MuiInputBase-input': {
                                 color: 'var(--text-primary)',
                             },
                         }}
-                    >
-                        Cancelar
-                    </Button>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        sx={{
-                            backgroundColor: '#0071e3',
-                            color: '#fff',
-                            fontSize: '0.9375rem',
-                            fontWeight: 500,
-                            textTransform: 'none',
-                            px: 3,
-                            py: 1,
-                            borderRadius: '8px',
+                    />
+                </Box>
+            </DialogContent>
+
+            <DialogActions
+                sx={{
+                    p: 2,
+                    borderTop: '1px solid var(--border-color)',
+                    backgroundColor: 'var(--surface-secondary)',
+                    gap: 1,
+                }}
+            >
+                <Button
+                    onClick={onClose}
+                    sx={{
+                        color: 'var(--text-secondary)',
+                        fontSize: '0.875rem',
+                        fontWeight: 500,
+                        textTransform: 'none',
+                        px: 2.5,
+                        borderRadius: '6px',
+                        '&:hover': {
+                            backgroundColor: 'var(--hover-bg)',
+                            color: 'var(--text-primary)',
+                        },
+                    }}
+                >
+                    Cancelar
+                </Button>
+                <Button
+                    type="submit"
+                    variant="contained"
+                    sx={{
+                        backgroundColor: '#0071e3',
+                        color: '#fff',
+                        fontSize: '0.875rem',
+                        fontWeight: 500,
+                        textTransform: 'none',
+                        px: 2.5,
+                        borderRadius: '6px',
+                        boxShadow: 'none',
+                        '&:hover': {
+                            backgroundColor: '#0077ED',
                             boxShadow: 'none',
-                            '&:hover': {
-                                backgroundColor: '#0077ED',
-                                boxShadow: '0 2px 8px rgba(0, 113, 227, 0.3)',
-                                transform: 'translateY(-2px)',
-                            },
-                            '&:active': {
-                                transform: 'translateY(0)',
-                            },
-                        }}
-                    >
-                        Crear Recordatorio
-                    </Button>
-                </DialogActions>
-            </form>
-        </Dialog>
-    );
+                        },
+                    }}
+                >
+                    Crear Recordatorio
+                </Button>
+            </DialogActions>
+        </form>
+    </Dialog>
+);
 };

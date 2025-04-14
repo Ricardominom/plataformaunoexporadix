@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User } from '../types/user';
+import { User, UserRole } from '../types/user';
 
 interface AuthContextType {
   user: User | null;
@@ -56,9 +56,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const userData = await userResponse.json();
       setUser({
-        id: userData.id.toString(),
+        id: userData.id.toString(), // Convertimos ID a string
         name: userData.username,
+        role: userData.rol as UserRole, // Cambiamos de 'role' a 'rol' según tu API
         email: userData.email,
+        isSuperuser: userData.is_superuser,
       });
 
       setHasShownWelcome(false); // Reinicia el mensaje de bienvenida
