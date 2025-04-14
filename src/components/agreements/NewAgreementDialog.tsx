@@ -50,12 +50,12 @@ const responsibleOptions = [
   'Research and Development',
 ];
 
-// Estilos comunes para campos más compactos
+// Estilos comunes para campos más compactos - CORREGIDOS
 const inputStyles = {
   '& .MuiOutlinedInput-root': {
     borderRadius: '8px',
     backgroundColor: 'var(--surface-secondary)',
-    height: '40px',
+    minHeight: '44px', // Incrementada para evitar cortes
     '&:hover': {
       backgroundColor: 'var(--surface-secondary)',
     },
@@ -66,10 +66,10 @@ const inputStyles = {
   },
   '& .MuiInputLabel-root': {
     color: 'var(--text-secondary)',
-    fontSize: '0.8rem',
-    transform: 'translate(14px, 12px) scale(1)',
+    fontSize: '0.85rem', // Ligeramente más grande
+    transform: 'translate(14px, 14px) scale(1)',
     '&.MuiInputLabel-shrink': {
-      transform: 'translate(14px, -6px) scale(0.75)',
+      transform: 'translate(14px, -8px) scale(0.75)',
     },
   },
   '& .MuiOutlinedInput-notchedOutline': {
@@ -77,20 +77,46 @@ const inputStyles = {
   },
   '& .MuiInputBase-input': {
     color: 'var(--text-primary)',
-    fontSize: '0.8rem',
-    padding: '8px 14px',
+    fontSize: '0.85rem', // Ligeramente más grande
+    padding: '10px 14px', // Padding ajustado
   },
+  '& .MuiSelect-select': {
+    paddingTop: '10px',    // Corrección para los selects
+    paddingBottom: '10px', // Corrección para los selects
+    minHeight: '24px',     // Altura mínima para el texto en selects
+  }
 };
 
-// Estilos para campos multilinea
+// Estilos para campos multilinea - CORREGIDOS
 const multilineStyles = {
   ...inputStyles,
   '& .MuiOutlinedInput-root': {
     ...inputStyles['& .MuiOutlinedInput-root'],
     height: 'auto',
+    minHeight: '48px',
   },
   '& .MuiInputBase-inputMultiline': {
-    padding: '8px 14px',
+    padding: '10px 14px',
+  },
+};
+
+// Estilos para el select
+const selectMenuStyles = {
+  PaperProps: {
+    sx: {
+      backgroundColor: 'var(--surface-primary)',
+      backgroundImage: 'none',
+      borderRadius: '8px',
+      boxShadow: 'var(--shadow-lg)',
+      border: '1px solid var(--border-color)',
+      mt: 1,
+      '& .MuiMenuItem-root': {
+        fontSize: '0.85rem',
+        py: 1,
+        px: 2,
+        minHeight: '36px', // Altura mínima para evitar que se corte
+      },
+    },
   },
 };
 
@@ -221,7 +247,7 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
         </DialogTitle>
 
         <DialogContent sx={{ p: 2, backgroundColor: 'var(--surface-primary)' }}>
-          <Grid container spacing={2}>
+          <Grid container spacing={2} sx={{ mt: 0 }}>
             {/* Selector de Lista - NUEVO CAMPO */}
             <Grid item xs={12}>
               <FormControl fullWidth required sx={inputStyles}>
@@ -231,25 +257,9 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                   label="Lista"
                   onChange={(e) => setFormData({ ...formData, listId: e.target.value })}
                   sx={{
-                    fontSize: '0.8rem',
+                    fontSize: '0.85rem',
                   }}
-                  MenuProps={{
-                    PaperProps: {
-                      sx: {
-                        backgroundColor: 'var(--surface-primary)',
-                        backgroundImage: 'none',
-                        borderRadius: '8px',
-                        boxShadow: 'var(--shadow-lg)',
-                        border: '1px solid var(--border-color)',
-                        mt: 1,
-                        '& .MuiMenuItem-root': {
-                          fontSize: '0.8rem',
-                          py: 0.75,
-                          px: 2,
-                        },
-                      },
-                    },
-                  }}
+                  MenuProps={selectMenuStyles}
                 >
                   {lists.map((list) => (
                     <MenuItem key={list.id} value={list.id}>
@@ -259,10 +269,13 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                             width: 12,
                             height: 12,
                             borderRadius: '50%',
-                            backgroundColor: list.color
+                            backgroundColor: list.color,
+                            flexShrink: 0
                           }}
                         />
-                        {list.name}
+                        <Typography sx={{ fontSize: '0.85rem' }}>
+                          {list.name}
+                        </Typography>
                       </Box>
                     </MenuItem>
                   ))}
@@ -289,25 +302,9 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                   onChange={(e) => setFormData({ ...formData, responsible: e.target.value })}
                   required
                   sx={{
-                    fontSize: '0.8rem',
+                    fontSize: '0.85rem',
                   }}
-                  MenuProps={{
-                    PaperProps: {
-                      sx: {
-                        backgroundColor: 'var(--surface-primary)',
-                        backgroundImage: 'none',
-                        borderRadius: '8px',
-                        boxShadow: 'var(--shadow-lg)',
-                        border: '1px solid var(--border-color)',
-                        mt: 1,
-                        '& .MuiMenuItem-root': {
-                          fontSize: '0.8rem',
-                          py: 0.75,
-                          px: 2,
-                        },
-                      },
-                    },
-                  }}
+                  MenuProps={selectMenuStyles}
                 >
                   {responsibleOptions.map((option) => (
                     <MenuItem key={option} value={option}>
@@ -326,25 +323,9 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                   label="Estado"
                   onChange={(e) => setFormData({ ...formData, status: e.target.value as AgreementStatus })}
                   sx={{
-                    fontSize: '0.8rem',
+                    fontSize: '0.85rem',
                   }}
-                  MenuProps={{
-                    PaperProps: {
-                      sx: {
-                        backgroundColor: 'var(--surface-primary)',
-                        backgroundImage: 'none',
-                        borderRadius: '8px',
-                        boxShadow: 'var(--shadow-lg)',
-                        border: '1px solid var(--border-color)',
-                        mt: 1,
-                        '& .MuiMenuItem-root': {
-                          fontSize: '0.8rem',
-                          py: 0.75,
-                          px: 2,
-                        },
-                      },
-                    },
-                  }}
+                  MenuProps={selectMenuStyles}
                 >
                   {statusOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
@@ -363,25 +344,9 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                   label="Estado SJ"
                   onChange={(e) => setFormData({ ...formData, sjStatus: e.target.value as AgreementStatus })}
                   sx={{
-                    fontSize: '0.8rem',
+                    fontSize: '0.85rem',
                   }}
-                  MenuProps={{
-                    PaperProps: {
-                      sx: {
-                        backgroundColor: 'var(--surface-primary)',
-                        backgroundImage: 'none',
-                        borderRadius: '8px',
-                        boxShadow: 'var(--shadow-lg)',
-                        border: '1px solid var(--border-color)',
-                        mt: 1,
-                        '& .MuiMenuItem-root': {
-                          fontSize: '0.8rem',
-                          py: 0.75,
-                          px: 2,
-                        },
-                      },
-                    },
-                  }}
+                  MenuProps={selectMenuStyles}
                 >
                   {statusOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
@@ -475,6 +440,7 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
+                        flexShrink: 0
                       }}
                     >
                       <FileText size={16} color="#0071e3" />
@@ -482,16 +448,17 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                     <Box sx={{ flex: 1 }}>
                       <Typography
                         sx={{
-                          fontSize: '0.8rem',
+                          fontSize: '0.85rem',
                           color: 'var(--text-primary)',
                           fontWeight: 500,
+                          wordBreak: 'break-word'
                         }}
                       >
                         {formData.deliverableName}
                       </Typography>
                       <Typography
                         sx={{
-                          fontSize: '0.7rem',
+                          fontSize: '0.75rem',
                           color: 'var(--text-secondary)',
                         }}
                       >
@@ -504,6 +471,7 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                       sx={{
                         padding: '4px',
                         color: 'var(--text-secondary)',
+                        flexShrink: 0
                       }}
                     >
                       <Trash2 size={16} />
@@ -528,6 +496,7 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
+                        flexShrink: 0
                       }}
                     >
                       <Upload size={20} color="#0071e3" />
@@ -535,7 +504,7 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                     <Box>
                       <Typography
                         sx={{
-                          fontSize: '0.8rem',
+                          fontSize: '0.85rem',
                           color: 'var(--text-primary)',
                           fontWeight: 500,
                         }}
@@ -544,7 +513,7 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
                       </Typography>
                       <Typography
                         sx={{
-                          fontSize: '0.7rem',
+                          fontSize: '0.75rem',
                           color: 'var(--text-secondary)',
                         }}
                       >
@@ -570,13 +539,13 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
             onClick={handleClose}
             sx={{
               color: 'var(--text-secondary)',
-              fontSize: '0.8rem',
+              fontSize: '0.85rem',
               fontWeight: 500,
               textTransform: 'none',
               px: 2,
               py: 0.75,
               borderRadius: '6px',
-              minHeight: '32px',
+              minHeight: '36px', // Aumentado para mejor visualización
             }}
           >
             Cancelar
@@ -587,13 +556,13 @@ export const NewAgreementDialog: React.FC<NewAgreementDialogProps> = ({
             sx={{
               backgroundColor: '#0071e3',
               color: '#fff',
-              fontSize: '0.8rem',
+              fontSize: '0.85rem',
               fontWeight: 500,
               textTransform: 'none',
               px: 2,
               py: 0.75,
               borderRadius: '6px',
-              minHeight: '32px',
+              minHeight: '36px', // Aumentado para mejor visualización
               boxShadow: 'none',
             }}
           >
