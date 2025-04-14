@@ -41,7 +41,7 @@ const responsibleOptions = [
   'Asistente',
   'PMO',
   'Directora SSC',
-  'Director comercial',
+  'Director Comercial',
   'Director General de Espora',
   'Director de Mapa',
   'Gerente de Interlogis',
