@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paper, Typography, Box, Grid, Tooltip, LinearProgress } from '@mui/material';
+import { Paper, Typography, Box, Grid, Tooltip } from '@mui/material';
 import { motion } from 'framer-motion';
 import { TrendingUp } from 'lucide-react';
 
@@ -58,6 +58,74 @@ export const AccountProgress: React.FC<AccountProgressProps> = ({ accounts }) =>
         });
     };
 
+    // Function to render doughnut chart
+    const renderDoughnutChart = (percentage: number, size: number = 100, color: string = '#00CC88', trackColor: string = 'rgba(255, 255, 255, 0.1)') => {
+        const strokeWidth = size * 0.1;
+        const radius = (size - strokeWidth) / 2;
+        const circumference = 2 * Math.PI * radius;
+        const strokeDashoffset = circumference - (percentage / 100) * circumference;
+        
+        return (
+            <Box sx={{ position: 'relative', width: size, height: size }}>
+                {/* Background circle */}
+                <svg width={size} height={size} style={{ transform: 'rotate(-90deg)' }}>
+                    <circle
+                        cx={size / 2}
+                        cy={size / 2}
+                        r={radius}
+                        fill="transparent"
+                        stroke={trackColor}
+                        strokeWidth={strokeWidth}
+                    />
+                    {/* Progress circle */}
+                    <motion.circle
+                        cx={size / 2}
+                        cy={size / 2}
+                        r={radius}
+                        fill="transparent"
+                        stroke={color}
+                        strokeWidth={strokeWidth}
+                        strokeDasharray={circumference}
+                        initial={{ strokeDashoffset: circumference }}
+                        animate={{ strokeDashoffset }}
+                        transition={{ duration: 1.5, ease: "easeInOut" }}
+                        strokeLinecap="round"
+                        filter="drop-shadow(0 0 8px rgba(0, 204, 136, 0.5))"
+                    />
+                </svg>
+                {/* Percentage text in the middle */}
+                <Box sx={{ 
+                    position: 'absolute', 
+                    top: 0, 
+                    left: 0, 
+                    right: 0, 
+                    bottom: 0, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    flexDirection: 'column'
+                }}>
+                    <motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        transition={{ delay: 0.5, duration: 0.5 }}
+                    >
+                        <Typography sx={{ 
+                            fontSize: size * 0.22, 
+                            fontWeight: 700, 
+                            background: 'linear-gradient(135deg, #00FFAA 0%, #00CC88 100%)',
+                            WebkitBackgroundClip: 'text',
+                            WebkitTextFillColor: 'transparent',
+                            textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+                        }}>
+                            {percentage}%
+                        </Typography>
+                    </motion.div>
+                </Box>
+            </Box>
+        );
+    };
+
     return (
         <Paper
             component={motion.div}
@@ -87,9 +155,6 @@ export const AccountProgress: React.FC<AccountProgressProps> = ({ accounts }) =>
                 },
                 '&:hover': {
                     boxShadow: '0 12px 30px rgba(0, 204, 136, 0.25)',
-                    '& .progress-bar': {
-                        boxShadow: '0 0 15px rgba(0, 204, 136, 0.7)',
-                    }
                 }
             }}
         >
@@ -150,81 +215,52 @@ export const AccountProgress: React.FC<AccountProgressProps> = ({ accounts }) =>
                                         </Box>
                                     </Box>
                                     
-                                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                                    <Grid container spacing={2}>
                                         {getProgressDetails(account).map((detail, i) => (
-                                            <Tooltip 
-                                                key={i} 
-                                                title={`${detail.label}: ${detail.value}%`} 
-                                                arrow 
-                                                placement="right"
-                                            >
-                                                <Box sx={{ cursor: 'pointer' }}>
-                                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                                            <Grid item xs={6} sm={4} md={2} key={i}>
+                                                <Tooltip 
+                                                    title={`${detail.label}: ${detail.value}%`} 
+                                                    arrow 
+                                                    placement="top"
+                                                >
+                                                    <Box 
+                                                        component={motion.div}
+                                                        whileHover={{ scale: 1.05 }}
+                                                        sx={{ 
+                                                            display: 'flex', 
+                                                            flexDirection: 'column', 
+                                                            alignItems: 'center',
+                                                            cursor: 'pointer',
+                                                            p: 1,
+                                                            borderRadius: '8px',
+                                                            transition: 'all 0.2s ease',
+                                                            '&:hover': {
+                                                                background: 'rgba(0, 204, 136, 0.1)',
+                                                            }
+                                                        }}
+                                                    >
+                                                        {renderDoughnutChart(
+                                                            detail.value, 
+                                                            80, 
+                                                            `hsl(${(i * 30) % 360}, 100%, 70%)`,
+                                                            'rgba(255, 255, 255, 0.1)'
+                                                        )}
                                                         <Typography
                                                             sx={{
-                                                                fontSize: '0.85rem',
+                                                                fontSize: '0.8rem',
                                                                 color: '#FFFFFF',
-                                                                display: 'flex',
-                                                                alignItems: 'center',
-                                                                gap: 1,
-                                                                fontWeight: 500
+                                                                mt: 1,
+                                                                fontWeight: 500,
+                                                                textAlign: 'center'
                                                             }}
                                                         >
-                                                            <Box
-                                                                sx={{
-                                                                    width: 8,
-                                                                    height: 8,
-                                                                    borderRadius: '50%',
-                                                                    background: 'linear-gradient(135deg, #00FFAA 0%, #00CCAA 100%)',
-                                                                    boxShadow: '0 0 5px rgba(0, 204, 170, 0.7)',
-                                                                }}
-                                                            />
                                                             {detail.label}
                                                         </Typography>
-                                                        <Typography
-                                                            sx={{
-                                                                fontSize: '0.85rem',
-                                                                fontWeight: 700,
-                                                                background: 'linear-gradient(135deg, #00FFAA 0%, #00CCAA 100%)',
-                                                                WebkitBackgroundClip: 'text',
-                                                                WebkitTextFillColor: 'transparent',
-                                                                textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
-                                                            }}
-                                                        >
-                                                            {detail.value}%
-                                                        </Typography>
                                                     </Box>
-                                                    <LinearProgress
-                                                        className="progress-bar"
-                                                        variant="determinate"
-                                                        value={detail.value}
-                                                        sx={{
-                                                            height: 10,
-                                                            borderRadius: 5,
-                                                            backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                                                            '& .MuiLinearProgress-bar': {
-                                                                borderRadius: 5,
-                                                                background: 'linear-gradient(90deg, #00CC88 0%, #00CCAA 100%)',
-                                                                boxShadow: '0 0 10px rgba(0, 204, 170, 0.5)',
-                                                                '&::after': {
-                                                                    content: '""',
-                                                                    position: 'absolute',
-                                                                    top: 0,
-                                                                    right: 0,
-                                                                    width: '10px',
-                                                                    height: '100%',
-                                                                    background: 'rgba(255, 255, 255, 0.7)',
-                                                                    borderRadius: '0 5px 5px 0',
-                                                                    filter: 'blur(3px)',
-                                                                }
-                                                            },
-                                                            transition: 'all 0.3s ease',
-                                                        }}
-                                                    />
-                                                </Box>
-                                            </Tooltip>
+                                                </Tooltip>
+                                            </Grid>
                                         ))}
-                                    </Box>
+                                    </Grid>
                                 </Box>
                                 
                                 {index < accounts.length - 1 && (
@@ -276,26 +312,33 @@ export const AccountProgress: React.FC<AccountProgressProps> = ({ accounts }) =>
                                     background: 'linear-gradient(135deg, rgba(0, 204, 136, 0.2) 0%, rgba(0, 204, 170, 0.2) 100%)',
                                     borderRadius: '8px',
                                     display: 'flex',
-                                    flexDirection: 'column',
                                     alignItems: 'center',
+                                    gap: 2,
                                     boxShadow: '0 4px 15px rgba(0, 204, 136, 0.2)',
                                     border: '1px solid rgba(0, 204, 136, 0.3)',
                                     transition: 'all 0.3s ease',
                                 }}
                             >
-                                <Typography sx={{ 
-                                    fontSize: '1.5rem', 
-                                    fontWeight: 800, 
-                                    background: 'linear-gradient(135deg, #00FFAA 0%, #00CCAA 100%)',
-                                    WebkitBackgroundClip: 'text',
-                                    WebkitTextFillColor: 'transparent',
-                                    textShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                                }}>
-                                    {calculateTotalProgress(account.progress)}%
-                                </Typography>
-                                <Typography sx={{ fontSize: '0.8rem', color: '#FFFFFF', textAlign: 'center', fontWeight: 500 }}>
-                                    {account.name}
-                                </Typography>
+                                {renderDoughnutChart(calculateTotalProgress(account.progress), 60)}
+                                <Box>
+                                    <Typography sx={{ 
+                                        fontSize: '0.8rem', 
+                                        color: '#FFFFFF', 
+                                        fontWeight: 500 
+                                    }}>
+                                        {account.name}
+                                    </Typography>
+                                    <Typography sx={{ 
+                                        fontSize: '1.2rem', 
+                                        fontWeight: 800, 
+                                        background: 'linear-gradient(135deg, #00FFAA 0%, #00CCAA 100%)',
+                                        WebkitBackgroundClip: 'text',
+                                        WebkitTextFillColor: 'transparent',
+                                        textShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                    }}>
+                                        {calculateTotalProgress(account.progress)}%
+                                    </Typography>
+                                </Box>
                             </Box>
                         </Grid>
                     ))}
