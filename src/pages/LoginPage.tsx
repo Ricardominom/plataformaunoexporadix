@@ -94,7 +94,7 @@ export function Login() {
         transition={{ duration: 0.5 }}
         elevation={0}
         sx={{
-          maxWidth: '400px',
+          maxWidth: '450px',
           width: '100%',
           backgroundColor: isDark ? 'rgba(30, 30, 30, 0.8)' : 'rgba(255, 255, 255, 0.8)',
           backdropFilter: 'blur(10px)',
@@ -126,7 +126,7 @@ export function Login() {
               alt="Alpha Office Logo"
               style={{
                 height: '70px',
-                marginBottom: '10px',
+                marginBottom: '12px',
                 objectFit: 'contain'
               }}
             />
@@ -138,7 +138,7 @@ export function Login() {
             align="center"
             sx={{
               fontWeight: 700,
-              fontSize: '1.2rem',
+              fontSize: '1.25rem',
               textAlign: 'center',
               mb: 0.5,
               background: isDark
@@ -162,7 +162,7 @@ export function Login() {
         </Box>
 
         <form onSubmit={handleSubmit}>
-          <Box sx={{ mb: 3 }}>
+          <Box sx={{ mb: 2 }}>
             <Typography
               variant="subtitle2"
               sx={{ mb: 0.25, fontWeight: 500, color: isDark ? 'rgba(255, 255, 255, 0.7)' : '#475569', fontSize: '0.75rem' }}
@@ -187,7 +187,6 @@ export function Login() {
                   color: isDark ? '#fff' : '#1e293b',
                   backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.5)',
                   borderRadius: '8px',
-                  height: '40px',
                   '& .MuiOutlinedInput-notchedOutline': {
                     borderColor: 'transparent',
                   },
@@ -205,7 +204,7 @@ export function Login() {
             />
           </Box>
 
-          <Box sx={{ mb: 3 }}>
+          <Box sx={{ mb: 2 }}>
             <Typography
               variant="subtitle2"
               sx={{ mb: 0.25, fontWeight: 500, color: isDark ? 'rgba(255, 255, 255, 0.7)' : '#475569', fontSize: '0.75rem' }}
@@ -244,7 +243,6 @@ export function Login() {
                   color: isDark ? '#fff' : '#1e293b',
                   backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.5)',
                   borderRadius: '8px',
-                  height: '40px',
                   '& .MuiOutlinedInput-notchedOutline': {
                     borderColor: 'transparent',
                   },
@@ -270,14 +268,14 @@ export function Login() {
             >
               <Box
                 sx={{
-                  p: 1.5,
-                  mb: 1.5,
+                  p: 2,
+                  mb: 2,
                   borderRadius: 2,
                   backgroundColor: isDark ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.1)',
                   borderLeft: '4px solid #ef4444',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: 1
+                  gap: 0.75
                 }}
               >
                 <Box
@@ -290,7 +288,7 @@ export function Login() {
                     justifyContent: 'center',
                     backgroundColor: '#ef4444',
                     color: 'white',
-                    fontSize: '0.75rem',
+                    fontSize: '0.875rem',
                     fontWeight: 'bold'
                   }}
                 >
@@ -318,7 +316,7 @@ export function Login() {
               type="submit"
               fullWidth
               variant="contained"
-              disabled={isLoading}
+              disabled={isLoading} 
               sx={{
                 py: 1,
                 backgroundColor: isDark ? '#ffffff' : '#1e293b',
@@ -326,7 +324,7 @@ export function Login() {
                 borderRadius: '8px',
                 textTransform: 'none',
                 fontWeight: 600,
-                fontSize: '0.85rem',
+                fontSize: '0.9rem',
                 boxShadow: 'none',
                 '&:hover': {
                   backgroundColor: isDark ? '#f0f0f0' : '#334155',
@@ -364,7 +362,7 @@ export function Login() {
         {/* Demo Credentials Section */}
         <Box
           sx={{
-            pt: 0.5,
+            pt: 1,
             borderTop: isDark
               ? '1px solid rgba(255, 255, 255, 0.1)'
               : '1px solid rgba(0, 0, 0, 0.1)'
@@ -377,7 +375,7 @@ export function Login() {
                 fontWeight: 600,
                 color: isDark ? 'rgba(255, 255, 255, 0.7)' : '#475569',
                 fontSize: '0.7rem',
-                mb: 0
+                mb: 0.2
               }}
             >
               Demo Credentials
@@ -387,7 +385,7 @@ export function Login() {
               sx={{
                 color: isDark ? 'rgba(255, 255, 255, 0.5)' : '#64748b',
                 fontSize: '0.65rem',
-                mb: 0
+                mb: 0.2
               }}
             >
               Contraseña: <span style={{ fontWeight: 600 }}>nombre123</span>
@@ -397,7 +395,7 @@ export function Login() {
               sx={{
                 color: isDark ? 'rgba(255, 255, 255, 0.5)' : '#64748b',
                 fontSize: '0.65rem',
-                mb: 0
+                mb: 0.2
               }}
             >
               Usuarios:
@@ -407,9 +405,9 @@ export function Login() {
           <Box
             sx={{
               display: 'flex',
-              flexWrap: 'wrap',
+              flexWrap: 'wrap', 
               justifyContent: 'center',
-              gap: 0.5,
+              gap: 0.75,
               mx: 'auto',
               maxWidth: '320px'
             }}
@@ -426,8 +424,8 @@ export function Login() {
                 component={motion.div}
                 whileHover={{ scale: 1.05 }}
                 sx={{
-                  px: 0.75,
-                  py: 0.15,
+                  px: 1,
+                  py: 0.2,
                   backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)',
                   borderRadius: '6px',
                   fontSize: '0.65rem',
@@ -451,12 +449,12 @@ export function Login() {
             ))}
           </Box>
 
-          <Box sx={{ textAlign: 'center', mt: 0.5 }}>
+          <Box sx={{ textAlign: 'center', mt: 0.75 }}>
             <Typography
               variant="caption"
               sx={{
                 color: isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-                fontSize: '0.6rem'
+                fontSize: '0.65rem'
               }}
             >
               © 2025 Alpha Office. All rights reserved.
