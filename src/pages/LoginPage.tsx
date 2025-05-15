@@ -94,11 +94,11 @@ export function Login() {
         transition={{ duration: 0.5 }}
         elevation={0}
         sx={{
-          maxWidth: '450px',
+          maxWidth: '400px',
           width: '100%',
           backgroundColor: isDark ? 'rgba(30, 30, 30, 0.8)' : 'rgba(255, 255, 255, 0.8)',
           backdropFilter: 'blur(10px)',
-          p: { xs: 3, sm: 4 },
+          p: { xs: 2.5, sm: 3 },
           borderRadius: '16px',
           boxShadow: isDark
             ? '0 10px 25px rgba(0, 0, 0, 0.3)'
@@ -125,8 +125,8 @@ export function Login() {
               src="https://raw.githubusercontent.com/Ricardominom/plataformaunoexporadix/refs/heads/main/logoalpha.png"
               alt="Alpha Office Logo"
               style={{
-                height: '80px',
-                marginBottom: '16px',
+                height: '70px',
+                marginBottom: '10px',
                 objectFit: 'contain'
               }}
             />
@@ -138,9 +138,9 @@ export function Login() {
             align="center"
             sx={{
               fontWeight: 700,
-              fontSize: '1.4rem',
+              fontSize: '1.2rem',
               textAlign: 'center',
-              mb: 1,
+              mb: 0.5,
               background: isDark
                 ? 'linear-gradient(to right, #ffffff, #cccccc)'
                 : 'linear-gradient(to right, #1e293b, #475569)',
@@ -155,13 +155,7 @@ export function Login() {
           <Typography
             variant="body2"
             align="center"
-            sx={{
-              color: isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)',
-              textAlign: 'center',
-              maxWidth: '400px',
-              mx: 'auto',
-              fontSize: '0.8rem'
-            }}
+            sx={{ color: isDark ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.6)', fontSize: '0.7rem', mb: 0.5 }}
           >
             Escribe tus usuario y contraseña para acceder al dashboard
           </Typography>
@@ -171,12 +165,7 @@ export function Login() {
           <Box sx={{ mb: 3 }}>
             <Typography
               variant="subtitle2"
-              sx={{
-                mb: 1,
-                fontWeight: 500,
-                color: isDark ? 'rgba(255, 255, 255, 0.7)' : '#475569',
-                fontSize: '0.875rem'
-              }}
+              sx={{ mb: 0.25, fontWeight: 500, color: isDark ? 'rgba(255, 255, 255, 0.7)' : '#475569', fontSize: '0.75rem' }}
             >
               Usuario
             </Typography>
@@ -198,6 +187,7 @@ export function Login() {
                   color: isDark ? '#fff' : '#1e293b',
                   backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.5)',
                   borderRadius: '8px',
+                  height: '40px',
                   '& .MuiOutlinedInput-notchedOutline': {
                     borderColor: 'transparent',
                   },
@@ -218,12 +208,7 @@ export function Login() {
           <Box sx={{ mb: 3 }}>
             <Typography
               variant="subtitle2"
-              sx={{
-                mb: 1,
-                fontWeight: 500,
-                color: isDark ? 'rgba(255, 255, 255, 0.7)' : '#475569',
-                fontSize: '0.875rem'
-              }}
+              sx={{ mb: 0.25, fontWeight: 500, color: isDark ? 'rgba(255, 255, 255, 0.7)' : '#475569', fontSize: '0.75rem' }}
             >
               Contraseña
             </Typography>
@@ -259,6 +244,7 @@ export function Login() {
                   color: isDark ? '#fff' : '#1e293b',
                   backgroundColor: isDark ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.5)',
                   borderRadius: '8px',
+                  height: '40px',
                   '& .MuiOutlinedInput-notchedOutline': {
                     borderColor: 'transparent',
                   },
@@ -284,8 +270,8 @@ export function Login() {
             >
               <Box
                 sx={{
-                  p: 2,
-                  mb: 3,
+                  p: 1.5,
+                  mb: 1.5,
                   borderRadius: 2,
                   backgroundColor: isDark ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.1)',
                   borderLeft: '4px solid #ef4444',
@@ -296,15 +282,15 @@ export function Login() {
               >
                 <Box
                   sx={{
-                    width: 24,
-                    height: 24,
+                    width: 20,
+                    height: 20,
                     borderRadius: '50%',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     backgroundColor: '#ef4444',
                     color: 'white',
-                    fontSize: '0.875rem',
+                    fontSize: '0.75rem',
                     fontWeight: 'bold'
                   }}
                 >
@@ -314,7 +300,7 @@ export function Login() {
                   variant="body2"
                   sx={{
                     color: isDark ? '#fca5a5' : '#ef4444',
-                    fontSize: '0.875rem',
+                    fontSize: '0.75rem',
                     fontWeight: 500
                   }}
                 >
@@ -334,18 +320,18 @@ export function Login() {
               variant="contained"
               disabled={isLoading}
               sx={{
-                py: 1.5,
+                py: 1,
                 backgroundColor: isDark ? '#ffffff' : '#1e293b',
                 color: isDark ? '#1e1e1e' : '#fff',
                 borderRadius: '8px',
                 textTransform: 'none',
                 fontWeight: 600,
-                fontSize: '0.95rem',
+                fontSize: '0.85rem',
                 boxShadow: 'none',
                 '&:hover': {
                   backgroundColor: isDark ? '#f0f0f0' : '#334155',
                 },
-                mb: 3
+                mb: 1.5
               }}
             >
               {isLoading ? (
@@ -378,21 +364,20 @@ export function Login() {
         {/* Demo Credentials Section */}
         <Box
           sx={{
-            pt: 2,
-            mt: 1,
+            pt: 0.5,
             borderTop: isDark
               ? '1px solid rgba(255, 255, 255, 0.1)'
               : '1px solid rgba(0, 0, 0, 0.1)'
           }}
         >
-          <Box sx={{ textAlign: 'center', mb: 1.5 }}>
+          <Box sx={{ textAlign: 'center', mb: 0.5 }}>
             <Typography
               variant="subtitle2"
               sx={{
                 fontWeight: 600,
                 color: isDark ? 'rgba(255, 255, 255, 0.7)' : '#475569',
-                fontSize: '0.85rem',
-                mb: 0.5
+                fontSize: '0.7rem',
+                mb: 0
               }}
             >
               Demo Credentials
@@ -401,18 +386,18 @@ export function Login() {
               variant="body2"
               sx={{
                 color: isDark ? 'rgba(255, 255, 255, 0.5)' : '#64748b',
-                fontSize: '0.8rem',
-                mb: 0.5
+                fontSize: '0.65rem',
+                mb: 0
               }}
             >
-              Contraseña: <span style={{ fontWeight: 600 }}>usuario123</span>
+              Contraseña: <span style={{ fontWeight: 600 }}>nombre123</span>
             </Typography>
             <Typography
               variant="body2"
               sx={{
                 color: isDark ? 'rgba(255, 255, 255, 0.5)' : '#64748b',
-                fontSize: '0.8rem',
-                mb: 0.5
+                fontSize: '0.65rem',
+                mb: 0
               }}
             >
               Usuarios:
@@ -424,9 +409,9 @@ export function Login() {
               display: 'flex',
               flexWrap: 'wrap',
               justifyContent: 'center',
-              gap: 1.5,
+              gap: 0.5,
               mx: 'auto',
-              maxWidth: '400px'
+              maxWidth: '320px'
             }}
           >
             {[
@@ -441,11 +426,11 @@ export function Login() {
                 component={motion.div}
                 whileHover={{ scale: 1.05 }}
                 sx={{
-                  px: 1.5,
-                  py: 0.5,
+                  px: 0.75,
+                  py: 0.15,
                   backgroundColor: isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)',
                   borderRadius: '6px',
-                  fontSize: '0.75rem',
+                  fontSize: '0.65rem',
                   fontWeight: 500,
                   color: isDark ? 'rgba(255, 255, 255, 0.8)' : '#475569',
                   border: isDark
@@ -466,12 +451,12 @@ export function Login() {
             ))}
           </Box>
 
-          <Box sx={{ textAlign: 'center', mt: 2 }}>
+          <Box sx={{ textAlign: 'center', mt: 0.5 }}>
             <Typography
               variant="caption"
               sx={{
                 color: isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
-                fontSize: '0.75rem'
+                fontSize: '0.6rem'
               }}
             >
               © 2025 Alpha Office. All rights reserved.
