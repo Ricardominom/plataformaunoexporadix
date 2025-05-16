@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Box, Chip, LinearProgress, Tabs, Tab, Divider } from '@mui/material';
 import { CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTheme } from '../../../context/ThemeContext';
 
 interface Agreement {
     title: string;
@@ -16,6 +17,16 @@ interface RecentAgreementsProps {
 }
 
 export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements = [] }) => {
+    const { theme } = useTheme();
+    const isDarkMode = theme === 'dark';
+    
+    // Define theme-dependent colors
+    const accentColor = isDarkMode ? '#00CC88' : '#0071e3';
+    const bgColor = isDarkMode ? '#1E1E1E' : '#FFFFFF';
+    const borderColor = isDarkMode ? '#333333' : 'rgba(0, 0, 0, 0.1)';
+    const textPrimary = isDarkMode ? '#FFFFFF' : '#1d1d1f';
+    const textSecondary = isDarkMode ? '#BBBBBB' : '#86868b';
+
     // If no agreements are provided, use these default agreements
     const defaultAgreements: Agreement[] = [
         {
@@ -117,28 +128,31 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
         <Paper
             sx={{
                 borderRadius: '12px',
-                backgroundColor: '#1E1E1E',
-                border: '1px solid #333333',
+                backgroundColor: bgColor,
+                border: `1px solid ${borderColor}`,
                 overflow: 'hidden',
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
+                transition: 'background-color 0.3s ease, border-color 0.3s ease',
             }}
         >
             {/* Header with title */}
             <Box sx={{
                 p: 2,
-                borderBottom: '1px solid #333333',
+                borderBottom: `1px solid ${borderColor}`,
                 display: 'flex',
                 alignItems: 'center',
-                justifyContent: 'space-between'
+                justifyContent: 'space-between',
+                transition: 'border-color 0.3s ease',
             }}>
                 <Typography
                     variant="h6"
                     sx={{
                         fontSize: '1.125rem',
                         fontWeight: 600,
-                        color: '#00CC88',
+                        color: accentColor,
+                        transition: 'color 0.3s ease',
                     }}
                 >
                     ACUERDOS
@@ -149,16 +163,17 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
                     label={`${filteredAgreements.length} acuerdos`}
                     size="small"
                     sx={{
-                        backgroundColor: 'rgba(0, 204, 136, 0.2)',
-                        color: '#00CC88',
+                        backgroundColor: `${accentColor}20`,
+                        color: accentColor,
                         height: '24px',
                         fontSize: '0.75rem',
+                        transition: 'background-color 0.3s ease, color 0.3s ease',
                     }}
                 />
             </Box>
 
             {/* Company Tabs - Now below the title with a divider */}
-            <Box sx={{ borderBottom: '1px solid #333333' }}>
+            <Box sx={{ borderBottom: `1px solid ${borderColor}`, transition: 'border-color 0.3s ease' }}>
                 <Tabs
                     value={selectedCompany}
                     onChange={handleTabChange}
@@ -167,20 +182,22 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
                     sx={{
                         minHeight: '40px', // Slightly taller tabs
                         '& .MuiTabs-indicator': {
-                            backgroundColor: '#00CC88',
+                            backgroundColor: accentColor,
                             height: '2px',
+                            transition: 'background-color 0.3s ease',
                         },
                         '& .MuiTab-root': {
                             minHeight: '40px', // Slightly taller tabs
                             fontSize: '0.8rem', // Slightly larger font
                             fontWeight: 500,
-                            color: '#BBBBBB',
+                            color: textSecondary,
                             textTransform: 'none',
                             padding: '6px 16px', // More padding
                             '&.Mui-selected': {
-                                color: '#00CC88',
+                                color: accentColor,
                                 fontWeight: 600,
                             },
+                            transition: 'color 0.3s ease',
                         },
                     }}
                 >
@@ -199,22 +216,22 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
                     <TableHead>
                         <TableRow>
                             <TableCell>
-                                <Typography sx={{ color: '#BBBBBB', fontSize: '0.8rem' }}> {/* Smaller font */}
+                                <Typography sx={{ color: textSecondary, fontSize: '0.8rem', transition: 'color 0.3s ease' }}> {/* Smaller font */}
                                     Acuerdo
                                 </Typography>
                             </TableCell>
                             <TableCell>
-                                <Typography sx={{ color: '#BBBBBB', fontSize: '0.8rem' }}> {/* Smaller font */}
+                                <Typography sx={{ color: textSecondary, fontSize: '0.8rem', transition: 'color 0.3s ease' }}> {/* Smaller font */}
                                     Responsable
                                 </Typography>
                             </TableCell>
                             <TableCell>
-                                <Typography sx={{ color: '#BBBBBB', fontSize: '0.8rem' }}> {/* Smaller font */}
+                                <Typography sx={{ color: textSecondary, fontSize: '0.8rem', transition: 'color 0.3s ease' }}> {/* Smaller font */}
                                     Progreso
                                 </Typography>
                             </TableCell>
                             <TableCell>
-                                <Typography sx={{ color: '#BBBBBB', fontSize: '0.8rem' }}> {/* Smaller font */}
+                                <Typography sx={{ color: textSecondary, fontSize: '0.8rem', transition: 'color 0.3s ease' }}> {/* Smaller font */}
                                     Estado
                                 </Typography>
                             </TableCell>
@@ -232,9 +249,10 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
                                 <TableCell>
                                     <Typography
                                         sx={{
-                                            color: '#FFFFFF',
+                                            color: textPrimary,
                                             fontWeight: 500,
                                             fontSize: '0.8rem', // Smaller font
+                                            transition: 'color 0.3s ease',
                                         }}
                                     >
                                         {agreement.title}
@@ -243,8 +261,9 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
                                 <TableCell>
                                     <Typography
                                         sx={{
-                                            color: '#BBBBBB',
+                                            color: textSecondary,
                                             fontSize: '0.8rem', // Smaller font
+                                            transition: 'color 0.3s ease',
                                         }}
                                     >
                                         {agreement.owner}
@@ -259,19 +278,21 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
                                                 sx={{
                                                     height: 4, // Thinner progress bar
                                                     borderRadius: 3,
-                                                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                                    backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
                                                     '& .MuiLinearProgress-bar': {
-                                                        backgroundColor: '#00CC88',
+                                                        backgroundColor: accentColor,
                                                         borderRadius: 3,
                                                     },
+                                                    transition: 'background-color 0.3s ease',
                                                 }}
                                             />
                                         </Box>
                                         <Typography
                                             sx={{
-                                                color: '#BBBBBB',
+                                                color: textSecondary,
                                                 fontSize: '0.7rem', // Smaller font
                                                 minWidth: 24, // Smaller width
+                                                transition: 'color 0.3s ease',
                                             }}
                                         >
                                             {agreement.progress}%
@@ -284,8 +305,8 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
                                         label={getStatusLabel(agreement.status)}
                                         size="small"
                                         sx={{
-                                            backgroundColor: getStatusColor(agreement.status).bg,
-                                            color: getStatusColor(agreement.status).text,
+                                            backgroundColor: `${accentColor}20`,
+                                            color: accentColor,
                                             '& .MuiChip-icon': {
                                                 color: 'inherit',
                                             },
@@ -294,6 +315,7 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
                                                 fontSize: '0.7rem', // Smaller font
                                             },
                                             height: '20px', // Reduced height
+                                            transition: 'background-color 0.3s ease, color 0.3s ease',
                                         }}
                                     />
                                 </TableCell>
@@ -302,7 +324,7 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
                         {filteredAgreements.length === 0 && (
                             <TableRow>
                                 <TableCell colSpan={4} align="center" sx={{ py: 3 }}>
-                                    <Typography sx={{ color: '#BBBBBB' }}>
+                                    <Typography sx={{ color: textSecondary, transition: 'color 0.3s ease' }}>
                                         No hay acuerdos para mostrar
                                     </Typography>
                                 </TableCell>
@@ -313,29 +335,29 @@ export const RecentAgreements: React.FC<RecentAgreementsProps> = ({ agreements =
             </TableContainer>
 
             {/* Summary section */}
-            <Box sx={{ p: 2, borderTop: '1px solid #333333' }}>
+            <Box sx={{ p: 2, borderTop: `1px solid ${borderColor}`, transition: 'border-color 0.3s ease' }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                     <Box>
-                        <Typography sx={{ fontSize: '0.7rem', color: '#BBBBBB', mb: 0.5 }}>
+                        <Typography sx={{ fontSize: '0.7rem', color: textSecondary, mb: 0.5, transition: 'color 0.3s ease' }}>
                             Total acuerdos
                         </Typography>
-                        <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#FFFFFF' }}>
+                        <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: textPrimary, transition: 'color 0.3s ease' }}>
                             {filteredAgreements.length}
                         </Typography>
                     </Box>
                     <Box>
-                        <Typography sx={{ fontSize: '0.7rem', color: '#BBBBBB', mb: 0.5 }}>
+                        <Typography sx={{ fontSize: '0.7rem', color: textSecondary, mb: 0.5, transition: 'color 0.3s ease' }}>
                             En proceso
                         </Typography>
-                        <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#00CC88' }}>
+                        <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: accentColor, transition: 'color 0.3s ease' }}>
                             {filteredAgreements.filter(a => a.status === 'in_progress').length}
                         </Typography>
                     </Box>
                     <Box>
-                        <Typography sx={{ fontSize: '0.7rem', color: '#BBBBBB', mb: 0.5 }}>
+                        <Typography sx={{ fontSize: '0.7rem', color: textSecondary, mb: 0.5, transition: 'color 0.3s ease' }}>
                             Completados
                         </Typography>
-                        <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: '#00CC88' }}>
+                        <Typography sx={{ fontSize: '1rem', fontWeight: 600, color: accentColor, transition: 'color 0.3s ease' }}>
                             {filteredAgreements.filter(a => a.status === 'completed').length}
                         </Typography>
                     </Box>

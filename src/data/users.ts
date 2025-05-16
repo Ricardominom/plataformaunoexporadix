@@ -4,70 +4,70 @@ import { User, UserRole } from '../types/user';
 export const users: (User & { email: string; password: string })[] = [
     {
         id: '1',
-        name: 'Sergio José',
+        name: 'Juan Pérez',
         role: 'Presidente',
         email: 'presidente@empresa.com',
         password: 'presidente123'
     },
     {
         id: '2',
-        name: 'Sebastián',
+        name: 'María González',
         role: 'Asistente',
         email: 'asistente@empresa.com',
         password: 'asistente123'
     },
     {
         id: '3',
-        name: 'PMO',
+        name: 'Carlos Rodríguez',
         role: 'PMO',
         email: 'pmo@empresa.com',
         password: 'pmo123'
     },
     {
         id: '4',
-        name: 'Viri',
+        name: 'Ana Martínez',
         role: 'Directora SSC',
         email: 'ssc@empresa.com',
         password: 'ssc123'
     },
     {
         id: '5',
-        name: 'Director Comercial',
+        name: 'Roberto Sánchez',
         role: 'Director comercial',
         email: 'comercial@empresa.com',
         password: 'comercial123'
     },
     {
         id: '6',
-        name: 'Pablo Garza',
+        name: 'Luis Torres',
         role: 'Director General de Espora',
         email: 'espora@empresa.com',
         password: 'espora123'
     },
     {
         id: '7',
-        name: 'Director de Mapa',
+        name: 'Patricia Díaz',
         role: 'Director de Mapa',
         email: 'mapa@empresa.com',
         password: 'mapa123'
     },
     {
         id: '8',
-        name: 'Gerente de Interlogis',
+        name: 'Miguel Ángel Ruiz',
         role: 'Gerente de Interlogis',
         email: 'interlogis@empresa.com',
         password: 'interlogis123'
     },
     {
         id: '9',
-        name: 'Administrador de Interlogis',
+        name: 'Fernando López',
         role: 'Administrador de Interlogis',
         email: 'admin.interlogis@empresa.com',
         password: 'admininterlogis123'
     },
     {
         id: '10',
-        name: 'Research and Development',
+        name: 'Diana Morales',
         role: 'Research and Development',
         email: 'rd@empresa.com',
         password: 'rd123'

@@ -1,250 +1,218 @@
 import React, { useState } from 'react';
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Button,
-    TextField,
-    Box,
-    Typography,
-    IconButton,
-    Grid,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+  Box,
+  Typography,
+  IconButton,
 } from '@mui/material';
 import { CirclePicker } from 'react-color';
-import { X, Circle } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { X } from 'lucide-react';
+import { useTodos } from '../../context/TodoContext';
 
 interface NewListDialogProps {
-    open: boolean;
-    onClose: () => void;
-    onSubmit: (list: { name: string; color: string }) => void;
+  open: boolean;
+  onClose: () => void;
 }
 
 const colorOptions = [
-    '#ff9500', // orange
-    '#ff2d55', // red
-    '#5856d6', // purple
-    '#007aff', // blue
-    '#4cd964', // green
-    '#5ac8fa', // light blue
-    '#ffcc00', // yellow
-    '#ff3b30', // coral
+  '#ff9500', // orange
+  '#ff2d55', // red
+  '#5856d6', // purple
+  '#007aff', // blue
+  '#4cd964', // green
+  '#5ac8fa', // light blue
+  '#ffcc00', // yellow
+  '#ff3b30', // coral
 ];
 
-const initialFormData = {
+export const NewListDialog: React.FC<NewListDialogProps> = ({
+  open,
+  onClose,
+}) => {
+  const [formData, setFormData] = useState({
     name: '',
     color: '#ff9500',
-};
+  });
+  const [loading, setLoading] = useState(false);
+  const { addList } = useTodos();
 
-export const NewListDialog: React.FC<NewListDialogProps> = ({
-    open,
-    onClose,
-    onSubmit,
-}) => {
-    const [formData, setFormData] = useState(initialFormData);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await addList({
+        name: formData.name,
+        color: formData.color,
+      });
+      setFormData({ name: '', color: '#ff9500' });
+      onClose();
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSubmit(formData);
-        setFormData(initialFormData); // Reset form to initial state
-        onClose();
-    };
-
-    const handleClose = () => {
-        setFormData(initialFormData); // Reset form when closing
-        onClose();
-    };
-
-    return (
-        <Dialog
-            open={open}
-            onClose={handleClose}
-            maxWidth="sm"
-            fullWidth
-            PaperProps={{
-                elevation: 0,
-                component: motion.div,
-                initial: { opacity: 0, y: 20, scale: 0.95 },
-                animate: { opacity: 1, y: 0, scale: 1 },
-                exit: { opacity: 0, y: 20, scale: 0.95 },
-                transition: { duration: 0.2 },
-                sx: {
-                    borderRadius: '16px',
-                    backgroundColor: 'var(--surface-primary)',
-                    backdropFilter: 'blur(20px)',
-                    border: '1px solid var(--border-color)',
-                    overflow: 'hidden',
-                    maxWidth: '450px',
-                },
-            }}
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="xs"
+      fullWidth
+      PaperProps={{
+        elevation: 0,
+        sx: {
+          borderRadius: '12px',
+          backgroundColor: 'var(--surface-primary)',
+          backdropFilter: 'blur(20px)',
+          border: '1px solid var(--border-color)',
+          overflow: 'hidden',
+        },
+      }}
+    >
+      <form onSubmit={handleSubmit}>
+        <DialogTitle
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            p: 2,
+            borderBottom: '1px solid var(--border-color)',
+            backgroundColor: 'var(--surface-secondary)',
+          }}
         >
-            <form onSubmit={handleSubmit}>
-                <DialogTitle
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        p: 3,
-                        borderBottom: '1px solid var(--border-color)',
-                        backgroundColor: 'var(--surface-secondary)',
-                    }}
-                >
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <Box
-                            sx={{
-                                width: 32,
-                                height: 32,
-                                borderRadius: '8px',
-                                backgroundColor: `${formData.color}20`,
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}
-                        >
-                            <Circle size={16} color={formData.color} fill={formData.color} />
-                        </Box>
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                fontSize: '1.25rem',
-                                fontWeight: 600,
-                                color: 'var(--text-primary)',
-                                letterSpacing: '-0.025em',
-                            }}
-                        >
-                            Nueva Lista
-                        </Typography>
-                    </Box>
-                    <IconButton
-                        onClick={handleClose}
-                        size="small"
-                        sx={{
-                            color: 'var(--text-secondary)',
-                            '&:hover': {
-                                backgroundColor: 'var(--hover-bg)',
-                                color: 'var(--text-primary)',
-                                transform: 'rotate(90deg)',
-                            },
-                            transition: 'all 0.3s ease',
-                        }}
-                    >
-                        <X size={20} />
-                    </IconButton>
-                </DialogTitle>
+          <Typography
+            variant="h6"
+            sx={{
+              fontSize: '1.125rem',
+              fontWeight: 600,
+              color: 'var(--text-primary)',
+              letterSpacing: '-0.025em',
+            }}
+          >
+            Nueva Lista
+          </Typography>
+          <IconButton
+            onClick={onClose}
+            size="small"
+            sx={{
+              color: 'var(--text-secondary)',
+              '&:hover': {
+                backgroundColor: 'var(--hover-bg)',
+                color: 'var(--text-primary)',
+              },
+            }}
+          >
+            <X size={18} />
+          </IconButton>
+        </DialogTitle>
 
-                <DialogContent sx={{ p: 3, backgroundColor: 'var(--surface-primary)' }}>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12}>
-                            <TextField
-                                label="Nombre de la lista"
-                                fullWidth
-                                value={formData.name}
-                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                required
-                                sx={{
-                                    '& .MuiOutlinedInput-root': {
-                                        borderRadius: '10px',
-                                        backgroundColor: 'var(--surface-secondary)',
-                                        '&:hover': {
-                                            backgroundColor: 'var(--surface-secondary)',
-                                        },
-                                        '&.Mui-focused': {
-                                            backgroundColor: 'var(--surface-secondary)',
-                                            boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
-                                        },
-                                    },
-                                    '& .MuiInputLabel-root': {
-                                        color: 'var(--text-secondary)',
-                                    },
-                                    '& .MuiOutlinedInput-notchedOutline': {
-                                        borderColor: 'var(--border-color)',
-                                    },
-                                    '& .MuiInputBase-input': {
-                                        color: 'var(--text-primary)',
-                                    },
-                                }}
-                            />
-                        </Grid>
+        <DialogContent sx={{ p: 2, pt: 3, backgroundColor: 'var(--surface-primary)' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+            <TextField
+              label="Nombre de la lista"
+              fullWidth
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+              size="small"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  borderRadius: '8px',
+                  backgroundColor: 'var(--surface-secondary)',
+                  '&:hover': {
+                    backgroundColor: 'var(--surface-secondary)',
+                  },
+                  '&.Mui-focused': {
+                    backgroundColor: 'var(--surface-secondary)',
+                    boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'var(--text-secondary)',
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'var(--border-color)',
+                },
+                '& .MuiInputBase-input': {
+                  color: 'var(--text-primary)',
+                },
+              }}
+            />
 
-                        <Grid item xs={12}>
-                            <Typography
-                                sx={{
-                                    fontSize: '0.875rem',
-                                    color: 'var(--text-secondary)',
-                                    mb: 2,
-                                    fontWeight: 500,
-                                }}
-                            >
-                                Color
-                            </Typography>
-                            <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                                <CirclePicker
-                                    color={formData.color}
-                                    colors={colorOptions}
-                                    onChange={(color) => setFormData({ ...formData, color: color.hex })}
-                                    circleSize={36}
-                                    circleSpacing={16}
-                                />
-                            </Box>
-                        </Grid>
-                    </Grid>
-                </DialogContent>
+            <Box>
+              <Typography
+                sx={{
+                  fontSize: '0.875rem',
+                  color: 'var(--text-secondary)',
+                  mb: 1.5,
+                  fontWeight: 500,
+                }}
+              >
+                Color
+              </Typography>
+              <CirclePicker
+                color={formData.color}
+                colors={colorOptions}
+                onChange={(color) => setFormData({ ...formData, color: color.hex })}
+                circleSize={28}
+                circleSpacing={12}
+              />
+            </Box>
+          </Box>
+        </DialogContent>
 
-                <DialogActions
-                    sx={{
-                        p: 3,
-                        borderTop: '1px solid var(--border-color)',
-                        backgroundColor: 'var(--surface-secondary)',
-                        gap: 1,
-                    }}
-                >
-                    <Button
-                        onClick={handleClose}
-                        sx={{
-                            color: 'var(--text-secondary)',
-                            fontSize: '0.9375rem',
-                            fontWeight: 500,
-                            textTransform: 'none',
-                            px: 3,
-                            py: 1,
-                            borderRadius: '8px',
-                            '&:hover': {
-                                backgroundColor: 'var(--hover-bg)',
-                                color: 'var(--text-primary)',
-                            },
-                        }}
-                    >
-                        Cancelar
-                    </Button>
-                    <Button
-                        type="submit"
-                        variant="contained"
-                        sx={{
-                            backgroundColor: formData.color,
-                            color: '#fff',
-                            fontSize: '0.9375rem',
-                            fontWeight: 500,
-                            textTransform: 'none',
-                            px: 3,
-                            py: 1,
-                            borderRadius: '8px',
-                            boxShadow: 'none',
-                            '&:hover': {
-                                backgroundColor: formData.color,
-                                opacity: 0.9,
-                                boxShadow: `0 2px 8px ${formData.color}40`,
-                                transform: 'translateY(-2px)',
-                            },
-                            '&:active': {
-                                transform: 'translateY(0)',
-                            },
-                        }}
-                    >
-                        Crear Lista
-                    </Button>
-                </DialogActions>
-            </form>
-        </Dialog>
-    );
+        <DialogActions
+          sx={{
+            p: 2,
+            borderTop: '1px solid var(--border-color)',
+            backgroundColor: 'var(--surface-secondary)',
+            gap: 1,
+          }}
+        >
+          <Button
+            onClick={onClose}
+            sx={{
+              color: 'var(--text-secondary)',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              textTransform: 'none',
+              px: 2.5,
+              borderRadius: '6px',
+              '&:hover': {
+                backgroundColor: 'var(--hover-bg)',
+                color: 'var(--text-primary)',
+              },
+            }}
+          >
+            Cancelar
+          </Button>
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={loading}
+            sx={{
+              backgroundColor: '#0071e3',
+              color: '#fff',
+              fontSize: '0.875rem',
+              fontWeight: 500,
+              textTransform: 'none',
+              px: 2.5,
+              borderRadius: '6px',
+              boxShadow: 'none',
+              '&:hover': {
+                backgroundColor: '#0077ED',
+                boxShadow: 'none',
+              },
+            }}
+          >
+            Crear Lista
+          </Button>
+        </DialogActions>
+      </form>
+    </Dialog>
+  );
 };

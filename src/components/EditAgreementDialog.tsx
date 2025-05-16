@@ -18,12 +18,14 @@ import { DatePicker } from '@mui/x-date-pickers';
 import { X } from 'lucide-react';
 import dayjs from 'dayjs';
 import { Agreement, AgreementStatus } from '../types/agreement';
+import { updateAgreementApi } from '../services/api';
 
 interface EditAgreementDialogProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (agreement: Agreement) => void;
+  onSubmit?: (agreement: Agreement) => void; // Ahora es opcional, la API se encarga
   agreement: Agreement | null;
+  lists?: { id: string; name: string; color: string }[]; // Para cambiar de lista si es necesario
 }
 
 const statusOptions: { value: AgreementStatus; label: string }[] = [
@@ -39,22 +41,41 @@ export const EditAgreementDialog: React.FC<EditAgreementDialogProps> = ({
   onClose,
   onSubmit,
   agreement,
+  lists = [],
 }) => {
   const [formData, setFormData] = useState<Agreement | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (agreement) {
       setFormData({
         ...agreement,
+        requestDate: agreement.requestDate ? dayjs(agreement.requestDate) : dayjs(),
+        deliveryDate: agreement.deliveryDate ? dayjs(agreement.deliveryDate) : dayjs(),
       });
     }
   }, [agreement]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (formData) {
-      onSubmit(formData);
+    if (!formData) return;
+    setLoading(true);
+    try {
+      // Prepara el payload para la API
+      const payload = {
+        ...formData,
+        requestDate: (formData.requestDate as any)?.format
+          ? (formData.requestDate as any).format('YYYY-MM-DD')
+          : formData.requestDate,
+        deliveryDate: (formData.deliveryDate as any)?.format
+          ? (formData.deliveryDate as any).format('YYYY-MM-DD')
+          : formData.deliveryDate,
+      };
+      await updateAgreementApi(formData.id, payload);
+      if (onSubmit) onSubmit({ ...formData, ...payload });
       onClose();
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -250,8 +271,8 @@ export const EditAgreementDialog: React.FC<EditAgreementDialogProps> = ({
             <Box sx={{ display: 'flex', gap: 2 }}>
               <DatePicker
                 label="Fecha solicitud"
-                value={dayjs(formData.requestDate)}
-                onChange={(date) => setFormData({ ...formData, requestDate: date?.toISOString() || '' })}
+                value={formData.requestDate}
+                onChange={(date) => setFormData({ ...formData, requestDate: date })}
                 slotProps={{ textField: { size: 'small' } }}
                 sx={{
                   flex: 1,
@@ -280,8 +301,8 @@ export const EditAgreementDialog: React.FC<EditAgreementDialogProps> = ({
 
               <DatePicker
                 label="Fecha entrega"
-                value={dayjs(formData.deliveryDate)}
-                onChange={(date) => setFormData({ ...formData, deliveryDate: date?.toISOString() || '' })}
+                value={formData.deliveryDate}
+                onChange={(date) => setFormData({ ...formData, deliveryDate: date })}
                 slotProps={{ textField: { size: 'small' } }}
                 sx={{
                   flex: 1,
@@ -308,6 +329,40 @@ export const EditAgreementDialog: React.FC<EditAgreementDialogProps> = ({
                 }}
               />
             </Box>
+
+            {lists.length > 0 && (
+              <FormControl size="small" sx={{ mt: 1 }}>
+                <InputLabel sx={{ color: 'var(--text-secondary)' }}>Lista</InputLabel>
+                <Select
+                  value={formData.listId}
+                  label="Lista"
+                  onChange={(e) => setFormData({ ...formData, listId: e.target.value })}
+                  sx={{
+                    borderRadius: '8px',
+                    backgroundColor: 'var(--surface-secondary)',
+                    '&:hover': {
+                      backgroundColor: 'var(--surface-secondary)',
+                    },
+                    '&.Mui-focused': {
+                      backgroundColor: 'var(--surface-secondary)',
+                      boxShadow: '0 0 0 3px rgba(0, 113, 227, 0.1)',
+                    },
+                    '& .MuiOutlinedInput-notchedOutline': {
+                      borderColor: 'var(--border-color)',
+                    },
+                    '& .MuiSelect-select': {
+                      color: 'var(--text-primary)',
+                    },
+                  }}
+                >
+                  {lists.map((list) => (
+                    <MenuItem key={list.id} value={list.id}>
+                      {list.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
 
             <TextField
               label="Relato"
@@ -397,12 +452,14 @@ export const EditAgreementDialog: React.FC<EditAgreementDialogProps> = ({
                 color: 'var(--text-primary)',
               },
             }}
+            disabled={loading}
           >
             Cancelar
           </Button>
           <Button
             type="submit"
             variant="contained"
+            disabled={loading}
             sx={{
               backgroundColor: '#0071e3',
               color: '#fff',

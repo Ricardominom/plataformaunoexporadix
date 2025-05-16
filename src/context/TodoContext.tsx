@@ -1,10 +1,19 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { Todo, TodoList, TodoPriority } from '../types/todo';
 import { useNotification } from './NotificationContext';
+import { useAuth } from './AuthContext';
 import dayjs from 'dayjs';
-
-// Import mock data
-import todosData from '../mocks/todos.json';
+import { 
+  fetchTodos, 
+  fetchLists, 
+  createTodoApi, 
+  updateTodoApi, 
+  deleteTodoApi, 
+  toggleTodoApi, 
+  createListApi, 
+  updateListApi, 
+  deleteListApi 
+} from '../services/api';
 
 interface TodoContextType {
   todos: Todo[];
@@ -16,73 +25,64 @@ interface TodoContextType {
   setSelectedFilter: (filter: string) => void;
   setSelectedList: (listId: string) => void;
   getTodosCount: (filter: string) => number;
-  toggleTodo: (todoId: string) => void;
-  addTodo: (todo: Omit<Todo, 'id'>) => void;
-  updateTodo: (todo: Todo) => void;
-  deleteTodo: (todoId: string) => void;
-  addList: (list: Omit<TodoList, 'id'>) => void;
-  updateList: (list: TodoList) => void;
-  deleteList: (listId: string) => void;
+  toggleTodo: (todoId: string) => Promise<void>;
+  addTodo: (todo: Omit<Todo, 'id'>) => Promise<void>;
+  updateTodo: (todo: Todo) => Promise<void>;
+  deleteTodo: (todoId: string) => Promise<void>;
+  addList: (list: Omit<TodoList, 'id'>) => Promise<void>;
+  updateList: (list: TodoList) => Promise<void>;
+  deleteList: (listId: string) => Promise<void>;
   filteredTodos: Todo[];
 }
 
 const TodoContext = createContext<TodoContextType | undefined>(undefined);
 
 export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [todos, setTodos] = useState<Todo[]>(todosData.todos);
-  const [lists, setLists] = useState<TodoList[]>(todosData.lists);
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [lists, setLists] = useState<TodoList[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedFilter, setSelectedFilter] = useState('today');
   const [selectedList, setSelectedList] = useState('1');
-  
   const { addNotification } = useNotification();
+  const { user } = useAuth();
 
-  // Load todos from localStorage on mount
-  useEffect(() => {
-    const loadTodos = () => {
-      try {
-        setLoading(true);
-        const savedTodos = localStorage.getItem('todos');
-        const savedLists = localStorage.getItem('todoLists');
-        
-        if (savedTodos) {
-          setTodos(JSON.parse(savedTodos));
-        }
-        
-        if (savedLists) {
-          setLists(JSON.parse(savedLists));
-        }
-        
-        setError(null);
-      } catch (err) {
-        setError('Error loading todos');
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    loadTodos();
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [listsRes, todosRes] = await Promise.all([
+        fetchLists(),
+        fetchTodos(),
+      ]);
+      setLists(listsRes.data || listsRes);
+      setTodos(todosRes.data || todosRes);
+      setError(null);
+    } catch (err) {
+      setError('Error cargando datos');
+      setLists([]);
+      setTodos([]);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  // Save todos to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('todos', JSON.stringify(todos));
-  }, [todos]);
+    if (user) {
+      loadData();
+    } else {
+      setLists([]);
+      setTodos([]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
-  // Save lists to localStorage whenever they change
-  useEffect(() => {
-    localStorage.setItem('todoLists', JSON.stringify(lists));
-  }, [lists]);
-
+  // Contador de tareas según filtro
   const getTodosCount = (filter: string): number => {
     const today = dayjs().startOf('day');
-
     return todos.filter(todo => {
       switch (filter) {
         case 'today':
-          return !todo.completed && dayjs(todo.dueDate).startOf('day').isSame(today);
+          return !todo.completed && todo.dueDate && dayjs(todo.dueDate).startOf('day').isSame(today);
         case 'scheduled':
           return !todo.completed && todo.dueDate;
         case 'all':
@@ -95,82 +95,107 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }).length;
   };
 
-  const toggleTodo = (todoId: string) => {
-    const todo = todos.find(t => t.id === todoId);
-    if (todo) {
-      const updatedTodo = { ...todo, completed: !todo.completed };
-      setTodos(prevTodos =>
-        prevTodos.map(t => t.id === todoId ? updatedTodo : t)
-      );
-      
-      if (updatedTodo.completed) {
-        addNotification('todo', 'updated', updatedTodo);
-      }
+  // Toggle tarea completada
+  const toggleTodo = async (todoId: string) => {
+    setLoading(true);
+    try {
+      await toggleTodoApi(todoId);
+      await loadData(); // Recarga desde la API
+    } catch (err) {
+      setError('Error actualizando tarea');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const addTodo = (todo: Omit<Todo, 'id'>) => {
-    const newTodo: Todo = {
-      ...todo,
-      id: (Math.max(...todos.map(t => parseInt(t.id)), 0) + 1).toString(),
-    };
-    
-    setTodos(prevTodos => [newTodo, ...prevTodos]);
-    addNotification('todo', 'created', newTodo);
-  };
-
-  const updateTodo = (todo: Todo) => {
-    setTodos(prevTodos =>
-      prevTodos.map(t => t.id === todo.id ? todo : t)
-    );
-    addNotification('todo', 'updated', todo);
-  };
-
-  const deleteTodo = (todoId: string) => {
-    const todoToDelete = todos.find(t => t.id === todoId);
-    if (todoToDelete) {
-      setTodos(prevTodos => prevTodos.filter(t => t.id !== todoId));
-      addNotification('todo', 'deleted', todoToDelete);
+  // Crear tarea
+  const addTodo = async (todo: Omit<Todo, 'id' | 'userId'>) => {
+    setLoading(true);
+    try {
+      // No enviar userId, el backend lo toma del token
+      await createTodoApi(todo);
+      await loadData(); // Recarga desde la API
+    } catch (err) {
+      setError('Error creando tarea');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const addList = (list: Omit<TodoList, 'id'>) => {
-    const newList: TodoList = {
-      ...list,
-      id: (Math.max(...lists.map(l => parseInt(l.id)), 0) + 1).toString(),
-    };
-    
-    setLists(prevLists => [...prevLists, newList]);
-    addNotification('list', 'created', {
-      id: newList.id,
-      title: newList.name,
-      listId: newList.id,
-      completed: false,
-      createdAt: new Date().toISOString(),
-    });
+  // Actualizar tarea
+  const updateTodo = async (todo: Todo) => {
+    setLoading(true);
+    try {
+      await updateTodoApi(todo.id, todo);
+      await loadData(); // Recarga desde la API
+    } catch (err) {
+      setError('Error actualizando tarea');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const updateList = (list: TodoList) => {
-    setLists(prevLists =>
-      prevLists.map(l => l.id === list.id ? list : l)
-    );
+  // Eliminar tarea
+  const deleteTodo = async (todoId: string) => {
+    setLoading(true);
+    try {
+      await deleteTodoApi(todoId);
+      await loadData(); // Recarga desde la API
+    } catch (err) {
+      setError('Error eliminando tarea');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const deleteList = (listId: string) => {
-    setLists(prevLists => prevLists.filter(l => l.id !== listId));
-    setTodos(prevTodos => prevTodos.filter(t => t.listId !== listId));
+  // Crear lista
+  const addList = async (list: Omit<TodoList, 'id' | 'userId'>) => {
+    setLoading(true);
+    try {
+      // No enviar userId, el backend lo toma del token
+      await createListApi(list);
+      await loadData(); // Recarga desde la API
+    } catch (err) {
+      setError('Error creando lista');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Filtered todos based on current filter and search
+  // Actualizar lista
+  const updateList = async (list: TodoList) => {
+    setLoading(true);
+    try {
+      await updateListApi(list.id, list);
+      await loadData(); // Recarga desde la API
+    } catch (err) {
+      setError('Error actualizando lista');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Eliminar lista (y tareas asociadas)
+  const deleteList = async (listId: string) => {
+    setLoading(true);
+    try {
+      await deleteListApi(listId);
+      await loadData(); // Recarga desde la API
+    } catch (err) {
+      setError('Error eliminando lista');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Filtrado de tareas según filtro y lista seleccionada
   const filteredTodos = React.useMemo(() => {
     const today = dayjs().startOf('day');
     let filtered = [...todos];
-
-    // Apply status filter
     filtered = filtered.filter(todo => {
       switch (selectedFilter) {
         case 'today':
-          return !todo.completed && dayjs(todo.dueDate).startOf('day').isSame(today);
+          return !todo.completed && todo.dueDate && dayjs(todo.dueDate).startOf('day').isSame(today);
         case 'all':
           if (selectedList !== 'all') {
             return !todo.completed && todo.listId === selectedList;
@@ -184,8 +209,6 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
           return false;
       }
     });
-
-    // Sort todos
     return filtered.sort((a, b) => {
       if (a.completed !== b.completed) return a.completed ? 1 : -1;
       const priorityOrder = { high: 0, medium: 1, low: 2, none: 3 };

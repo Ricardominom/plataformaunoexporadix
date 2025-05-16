@@ -1,6 +1,7 @@
 import React from 'react';
 import { Grid, Box, Typography } from '@mui/material';
 import { motion } from 'framer-motion';
+import { useTheme } from '../../../context/ThemeContext';
 
 // Import existing dashboard components
 import { RecentAgreements } from './RecentAgreements';
@@ -74,6 +75,9 @@ export const DarkDashboard: React.FC<DarkDashboardProps> = ({
     todos,
     accountStatus,
 }) => {
+    const { theme } = useTheme();
+    const isDarkMode = theme === 'dark';
+
     // Animation variants
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -99,13 +103,19 @@ export const DarkDashboard: React.FC<DarkDashboardProps> = ({
     };
 
     return (
-        <Box sx={{ backgroundColor: '#000000', color: '#FFFFFF', pt: 2, pb: 6 }}>
+        <Box sx={{ 
+            backgroundColor: isDarkMode ? '#000000' : '#f5f5f7', 
+            color: isDarkMode ? '#FFFFFF' : '#1d1d1f', 
+            pt: 2, 
+            pb: 6,
+            transition: 'background-color 0.3s ease, color 0.3s ease'
+        }}>
             {/* Dashboard Title with Green Line Underneath */}
             <Box sx={{ mb: 4, px: 3 }}>
                 <Typography
                     variant="h5"
                     sx={{
-                        color: '#FFFFFF',
+                        color: isDarkMode ? '#FFFFFF' : '#1d1d1f',
                         fontWeight: 600,
                         fontSize: '1.25rem',
                         mb: 1 // Add margin below the text
@@ -117,7 +127,7 @@ export const DarkDashboard: React.FC<DarkDashboardProps> = ({
                 <Box 
                     sx={{ 
                         height: '4px',
-                        backgroundColor: '#00CC88',
+                        backgroundColor: isDarkMode ? '#00CC88' : '#0071e3',
                         width: '100%',
                         borderRadius: '2px'
                     }}
@@ -130,47 +140,60 @@ export const DarkDashboard: React.FC<DarkDashboardProps> = ({
                 animate="visible"
             >
                 <Box sx={{ 
-                    backgroundColor: '#000000', 
-                    color: '#FFFFFF',
+                    backgroundColor: isDarkMode ? '#000000' : '#f5f5f7', 
+                    color: isDarkMode ? '#FFFFFF' : '#1d1d1f',
+                    transition: 'background-color 0.3s ease, color 0.3s ease',
                     '& .MuiPaper-root': {
-                        backgroundColor: '#1E1E1E',
-                        border: '1px solid #333333',
-                        color: '#FFFFFF',
+                        backgroundColor: isDarkMode ? '#1E1E1E' : '#FFFFFF',
+                        border: isDarkMode ? '1px solid #333333' : '1px solid rgba(0, 0, 0, 0.1)',
+                        color: isDarkMode ? '#FFFFFF' : '#1d1d1f',
+                        transition: 'background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease',
                     },
                     '& .MuiTypography-root': {
-                        color: '#FFFFFF',
+                        color: isDarkMode ? '#FFFFFF' : '#1d1d1f',
+                        transition: 'color 0.3s ease',
                     },
                     '& .MuiTypography-h6': {
-                        color: '#00CC88',
+                        color: isDarkMode ? '#00CC88' : '#0071e3',
+                        transition: 'color 0.3s ease',
                     },
                     '& .MuiTableCell-head': {
-                        color: '#BBBBBB',
-                        borderBottom: '1px solid #333333',
+                        color: isDarkMode ? '#BBBBBB' : '#86868b',
+                        borderBottom: isDarkMode ? '1px solid #333333' : '1px solid rgba(0, 0, 0, 0.1)',
+                        transition: 'color 0.3s ease, border-color 0.3s ease',
                     },
                     '& .MuiTableCell-body': {
-                        color: '#FFFFFF',
-                        borderBottom: '1px solid #333333',
+                        color: isDarkMode ? '#FFFFFF' : '#1d1d1f',
+                        borderBottom: isDarkMode ? '1px solid #333333' : '1px solid rgba(0, 0, 0, 0.1)',
+                        transition: 'color 0.3s ease, border-color 0.3s ease',
                     },
                     '& .MuiTableRow-root:hover': {
-                        backgroundColor: 'rgba(255, 255, 255, 0.05) !important',
+                        backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05) !important' : 'rgba(0, 0, 0, 0.02) !important',
+                        transition: 'background-color 0.3s ease',
                     },
                     '& .MuiLinearProgress-root': {
-                        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                        backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+                        transition: 'background-color 0.3s ease',
                     },
                     '& .MuiLinearProgress-bar': {
-                        backgroundColor: '#00CC88',
+                        backgroundColor: isDarkMode ? '#00CC88' : '#0071e3',
+                        transition: 'background-color 0.3s ease',
                     },
                     '& .MuiDivider-root': {
-                        borderColor: '#333333',
+                        borderColor: isDarkMode ? '#333333' : 'rgba(0, 0, 0, 0.1)',
+                        transition: 'border-color 0.3s ease',
                     },
                     '& .MuiChip-root': {
-                        borderColor: '#333333',
+                        borderColor: isDarkMode ? '#333333' : 'rgba(0, 0, 0, 0.1)',
+                        transition: 'border-color 0.3s ease',
                     },
                     '& .MuiListItemButton-root:hover': {
-                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                        backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
+                        transition: 'background-color 0.3s ease',
                     },
                     '& .MuiCheckbox-root': {
-                        color: '#BBBBBB',
+                        color: isDarkMode ? '#BBBBBB' : '#86868b',
+                        transition: 'color 0.3s ease',
                     },
                 }}>
                     <Grid container spacing={4}> {/* Increased spacing between grid items */}

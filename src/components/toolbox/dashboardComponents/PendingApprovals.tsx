@@ -8,12 +8,24 @@ import { TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useMoneyApprovals } from '../../../hooks/useMoneyApprovals';
 import { MoneyApprovalsModal } from './MoneyApprovalsModal';
+import { useTheme } from '../../../context/ThemeContext';
 
 interface PendingApprovalsProps {
     count: number;
 }
 
 export const PendingApprovals: React.FC<PendingApprovalsProps> = ({ count: initialCount }) => {
+    const { theme } = useTheme();
+    const isDarkMode = theme === 'dark';
+    
+    // Define theme-dependent colors
+    const accentColor = isDarkMode ? '#00CC88' : '#0071e3';
+    const accentColorLight = isDarkMode ? '#00FFAA' : '#40a9ff';
+    const bgGradient = isDarkMode 
+        ? 'linear-gradient(135deg, #00CC88 0%, #007755 100%)' 
+        : 'linear-gradient(135deg, #0071e3 0%, #40a9ff 100%)';
+    const textColor = '#FFFFFF';
+
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { count } = useMoneyApprovals();
 
@@ -47,10 +59,11 @@ export const PendingApprovals: React.FC<PendingApprovalsProps> = ({ count: initi
                     position: 'relative',
                     cursor: 'pointer',
                     overflow: 'hidden',
-                    background: 'linear-gradient(135deg, #00CC88 0%, #007755 100%)',
-                    border: '1px solid #00CC88',
-                    boxShadow: '0 8px 24px rgba(0, 204, 136, 0.2)',
-                    color: '#FFFFFF',
+                    background: bgGradient,
+                    border: `1px solid ${accentColor}`,
+                    boxShadow: `0 8px 24px ${accentColor}30`,
+                    color: textColor,
+                    transition: 'background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
                     '&::before': {
                         content: '""',
                         position: 'absolute',
@@ -119,10 +132,13 @@ export const PendingApprovals: React.FC<PendingApprovalsProps> = ({ count: initi
                             sx={{
                                 fontSize: '2.5rem',
                                 fontWeight: 800,
-                                background: 'linear-gradient(135deg, #007755 0%, #00AA77 100%)',
+                                background: isDarkMode 
+                                    ? 'linear-gradient(135deg, #007755 0%, #00AA77 100%)' 
+                                    : 'linear-gradient(135deg, #0071e3 0%, #40a9ff 100%)',
                                 WebkitBackgroundClip: 'text',
                                 WebkitTextFillColor: 'transparent',
                                 textShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                transition: 'background 0.3s ease',
                             }}
                         >
                             {count}

@@ -3,12 +3,24 @@ import { Paper, Typography, Box, Chip, List, ListItemButton, ListItemIcon, ListI
 import { Calendar, Star, Clock, CheckCircle2, Circle, AlertCircle } from 'lucide-react';
 import { useTodos } from '../../../context/TodoContext';
 import dayjs from 'dayjs';
+import { useTheme } from '../../../context/ThemeContext';
 
 interface TodosOverviewProps {
     todos?: any[]; // We'll ignore this prop and use the context instead
 }
 
 export const TodosOverview: React.FC<TodosOverviewProps> = () => {
+    const { theme } = useTheme();
+    const isDarkMode = theme === 'dark';
+    
+    // Define theme-dependent colors
+    const accentColor = isDarkMode ? '#00CC88' : '#0071e3';
+    const accentColorLight = isDarkMode ? '#00FFAA' : '#40a9ff';
+    const bgColor = isDarkMode ? '#1E1E1E' : '#FFFFFF';
+    const borderColor = isDarkMode ? '#333333' : 'rgba(0, 0, 0, 0.1)';
+    const textPrimary = isDarkMode ? '#FFFFFF' : '#1d1d1f';
+    const textSecondary = isDarkMode ? '#BBBBBB' : '#86868b';
+
     // Use the shared TodoContext instead of component props
     const { 
         todos, 
@@ -44,27 +56,30 @@ export const TodosOverview: React.FC<TodosOverviewProps> = () => {
         <Paper
             sx={{
                 borderRadius: '12px',
-                backgroundColor: '#1E1E1E',
-                border: '1px solid #333333',
+                backgroundColor: bgColor,
+                border: `1px solid ${borderColor}`,
                 overflow: 'hidden',
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
+                transition: 'background-color 0.3s ease, border-color 0.3s ease',
             }}
         >
             <Box sx={{ 
                 p: 2, 
-                borderBottom: '1px solid #333333',
+                borderBottom: `1px solid ${borderColor}`,
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center'
+                alignItems: 'center',
+                transition: 'border-color 0.3s ease',
             }}>
                 <Typography
                     variant="h6"
                     sx={{
                         fontSize: '1.125rem',
                         fontWeight: 600,
-                        color: '#00CC88',
+                        color: accentColor,
+                        transition: 'color 0.3s ease',
                     }}
                 >
                     TO-DOs
@@ -73,20 +88,22 @@ export const TodosOverview: React.FC<TodosOverviewProps> = () => {
                     label={`${displayTodos.length} tareas`}
                     size="small"
                     sx={{
-                        backgroundColor: currentFilter.bgColor,
-                        color: currentFilter.color,
+                        backgroundColor: `${accentColor}20`,
+                        color: accentColor,
                         fontWeight: 500,
                         fontSize: '0.75rem',
+                        transition: 'background-color 0.3s ease, color 0.3s ease',
                     }}
                 />
             </Box>
 
             <Box sx={{ 
                 display: 'flex', 
-                borderBottom: '1px solid #333333',
-                backgroundColor: '#2C2C2C', // Darker gray background for filter section
+                borderBottom: `1px solid ${borderColor}`,
+                backgroundColor: isDarkMode ? '#2C2C2C' : '#F5F5F7', // Background for filter section
                 p: 0.5,
-                gap: 0.5
+                gap: 0.5,
+                transition: 'background-color 0.3s ease, border-color 0.3s ease',
             }}>
                 {filters.map((filter) => (
                     <Box
@@ -101,12 +118,12 @@ export const TodosOverview: React.FC<TodosOverviewProps> = () => {
                             gap: 0.5,
                             cursor: 'pointer',
                             borderRadius: '8px',
-                            backgroundColor: selectedFilter === filter.filter ? filter.bgColor : 'transparent',
-                            color: selectedFilter === filter.filter ? filter.color : '#BBBBBB',
+                            backgroundColor: selectedFilter === filter.filter ? `${accentColor}20` : 'transparent',
+                            color: selectedFilter === filter.filter ? accentColor : textSecondary,
                             transition: 'all 0.2s ease',
                             '&:hover': {
-                                backgroundColor: selectedFilter === filter.filter ? filter.bgColor : 'rgba(0, 204, 136, 0.1)',
-                                color: filter.color,
+                                backgroundColor: selectedFilter === filter.filter ? `${accentColor}20` : `${accentColor}10`,
+                                color: accentColor,
                             },
                         }}
                     >
@@ -123,7 +140,8 @@ export const TodosOverview: React.FC<TodosOverviewProps> = () => {
                     flex: 1, 
                     p: 0, 
                     overflowY: 'auto',
-                    backgroundColor: '#2C2C2C', // Darker gray background for tasks area
+                    backgroundColor: isDarkMode ? '#2C2C2C' : '#F5F5F7', // Background for tasks area
+                    transition: 'background-color 0.3s ease',
                 }}
             >
                 {displayTodos.map((todo, index) => (
@@ -135,7 +153,7 @@ export const TodosOverview: React.FC<TodosOverviewProps> = () => {
                                 opacity: todo.completed ? 0.6 : 1,
                                 transition: 'all 0.2s ease',
                                 '&:hover': {
-                                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                                    backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(0, 0, 0, 0.05)',
                                 },
                             }}
                             onClick={() => toggleTodo(todo.id)}
@@ -145,9 +163,9 @@ export const TodosOverview: React.FC<TodosOverviewProps> = () => {
                                     edge="start"
                                     checked={todo.completed}
                                     sx={{
-                                        color: '#BBBBBB',
+                                        color: textSecondary,
                                         '&.Mui-checked': {
-                                            color: '#00CC88',
+                                            color: accentColor,
                                         },
                                         transition: 'color 0.2s ease',
                                         padding: '4px',
@@ -160,9 +178,10 @@ export const TodosOverview: React.FC<TodosOverviewProps> = () => {
                                         <Typography
                                             sx={{
                                                 fontSize: '0.8rem',
-                                                color: todo.completed ? '#BBBBBB' : '#FFFFFF',
+                                                color: todo.completed ? textSecondary : textPrimary,
                                                 textDecoration: todo.completed ? 'line-through' : 'none',
                                                 fontWeight: 500,
+                                                transition: 'color 0.3s ease',
                                             }}
                                         >
                                             {todo.title}
@@ -173,10 +192,11 @@ export const TodosOverview: React.FC<TodosOverviewProps> = () => {
                                             icon={getPriorityInfo(todo.priority).icon}
                                             sx={{
                                                 height: '18px',
-                                                backgroundColor: 'rgba(0, 204, 136, 0.2)',
-                                                color: '#00CC88',
+                                                backgroundColor: `${accentColor}20`,
+                                                color: accentColor,
                                                 '& .MuiChip-icon': { color: 'inherit' },
                                                 '& .MuiChip-label': { px: 1, fontSize: '0.65rem', fontWeight: 500 },
+                                                transition: 'background-color 0.3s ease, color 0.3s ease',
                                             }}
                                         />
                                     </Box>
@@ -185,8 +205,9 @@ export const TodosOverview: React.FC<TodosOverviewProps> = () => {
                                     <Typography
                                         sx={{
                                             fontSize: '0.7rem',
-                                            color: '#BBBBBB',
+                                            color: textSecondary,
                                             mt: 0.5,
+                                            transition: 'color 0.3s ease',
                                         }}
                                     >
                                         {todo.dueDate ? `Vence: ${dayjs(todo.dueDate).format('D MMM')}` : 'Sin fecha'}
@@ -201,13 +222,13 @@ export const TodosOverview: React.FC<TodosOverviewProps> = () => {
                             />
                         </ListItemButton>
                         {index < displayTodos.length - 1 && (
-                            <Divider sx={{ borderColor: '#444444' }} />
+                            <Divider sx={{ borderColor: isDarkMode ? '#444444' : 'rgba(0, 0, 0, 0.1)', transition: 'border-color 0.3s ease' }} />
                         )}
                     </React.Fragment>
                 ))}
                 {displayTodos.length === 0 && (
                     <Box sx={{ p: 3, textAlign: 'center' }}>
-                        <Typography sx={{ color: '#BBBBBB', fontSize: '0.875rem' }}>
+                        <Typography sx={{ color: textSecondary, fontSize: '0.875rem', transition: 'color 0.3s ease' }}>
                             No hay tareas para mostrar
                         </Typography>
                     </Box>

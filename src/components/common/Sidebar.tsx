@@ -206,40 +206,28 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
+          justifyContent: 'flex-start',
+          gap: 2,
           cursor: 'pointer',
           borderRadius: '12px',
           mx: 2,
           mb: 2,
-          background: 'linear-gradient(135deg, var(--brand-primary) 0%, #40a9ff 100%)',
-          boxShadow: '0 4px 12px rgba(0, 113, 227, 0.2)',
+          background: 'transparent',
+          border: '1px solid var(--border-color)',
           transition: 'all 0.3s ease',
           '&:hover': {
-            boxShadow: '0 6px 16px rgba(0, 113, 227, 0.3)',
+            backgroundColor: 'var(--hover-bg)',
           }
         }}
       >
-        <motion.div
-          initial={{ scale: 1 }}
-          whileHover={{ scale: 1.1, rotate: 5 }}
-          transition={{ type: "spring", stiffness: 400, damping: 10 }}
-        >
-          <Box
-            sx={{
-              width: 48,
-              height: 48,
-              borderRadius: '12px',
-              backgroundColor: 'rgba(255, 255, 255, 0.2)',
-              backdropFilter: 'blur(4px)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#FFFFFF',
-              mb: 1.5,
-            }}
-          >
-            <Briefcase size={24} />
-          </Box>
-        </motion.div>
+        <img 
+          src="https://raw.githubusercontent.com/Ricardominom/plataformaunoexporadix/refs/heads/main/logoalpha.png"
+          alt="Alpha Office Logo"
+          style={{
+            height: '50px',
+            objectFit: 'contain'
+          }}
+        />
         <Typography
           variant="h6"
           component={motion.h6}
@@ -248,28 +236,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
           sx={{
             fontSize: '1rem',
             fontWeight: 600,
-            color: '#FFFFFF',
+            color: 'var(--text-primary)',
             textAlign: 'center',
             letterSpacing: '-0.01em',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center'
           }}
         >
           Alpha Office
-        </Typography>
-        <Typography
-          variant="body2"
-          component={motion.p}
-          initial={{ opacity: 0.9 }}
-          whileHover={{ opacity: 1 }}
-          sx={{
-            fontSize: '0.75rem',
+          <span style={{
+            fontSize: '0.75rem', 
             fontWeight: 500,
-            color: 'rgba(255, 255, 255, 0.9)',
-            textAlign: 'center',
-            letterSpacing: '0.02em',
-            textTransform: 'uppercase',
-          }}
-        >
-          team management
+            color: 'var(--text-secondary)',
+            marginTop: '2px'
+          }}>
+            team management
+          </span>
         </Typography>
       </Box>
 

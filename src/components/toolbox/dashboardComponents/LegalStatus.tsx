@@ -2,6 +2,7 @@ import React from 'react';
 import { Paper, Box, Typography, LinearProgress, Chip } from '@mui/material';
 import { TrendingUp, TrendingDown, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useTheme } from '../../../context/ThemeContext';
 
 interface LegalStatusItem {
     category: string;
@@ -15,6 +16,20 @@ interface LegalStatusProps {
 }
 
 export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
+    const { theme } = useTheme();
+    const isDarkMode = theme === 'dark';
+    
+    // Define theme-dependent colors
+    const accentColor = isDarkMode ? '#00CC88' : '#0071e3';
+    const accentColorLight = isDarkMode ? '#00FFAA' : '#40a9ff';
+    const accentGradient = isDarkMode 
+        ? 'linear-gradient(135deg, #00FFAA 0%, #007755 100%)' 
+        : 'linear-gradient(135deg, #40a9ff 0%, #0071e3 100%)';
+    const bgColor = isDarkMode ? '#1E1E1E' : '#FFFFFF';
+    const borderColor = isDarkMode ? '#333333' : 'rgba(0, 0, 0, 0.1)';
+    const textPrimary = isDarkMode ? '#FFFFFF' : '#1d1d1f';
+    const textSecondary = isDarkMode ? '#BBBBBB' : '#86868b';
+
     // If no items are provided, use these default items
     const defaultItems: LegalStatusItem[] = [
         { category: "Contratos", completed: 15, total: 20, growth: 25 },
@@ -56,7 +71,7 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
         <Paper
             component={motion.div}
             whileHover={{ 
-                boxShadow: '0 15px 35px rgba(0, 204, 136, 0.25)'
+                boxShadow: `0 15px 35px ${accentColor}25`
             }}
             sx={{
                 p: 3,
@@ -64,10 +79,13 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                background: 'linear-gradient(135deg, #1E1E1E 0%, #252525 100%)',
+                background: isDarkMode 
+                    ? 'linear-gradient(135deg, #1E1E1E 0%, #252525 100%)' 
+                    : 'linear-gradient(135deg, #FFFFFF 0%, #F8F8F8 100%)',
                 position: 'relative',
-                border: '1px solid #00CC88',
-                boxShadow: '0 8px 24px rgba(0, 204, 136, 0.15)',
+                border: `1px solid ${accentColor}`,
+                boxShadow: `0 8px 24px ${accentColor}25`,
+                transition: 'background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
                 '&::before': {
                     content: '""',
                     position: 'absolute',
@@ -75,8 +93,9 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                     left: 0,
                     right: 0,
                     height: '6px',
-                    background: 'linear-gradient(90deg, #00CC88 0%, #007755 100%)',
-                    boxShadow: '0 0 20px rgba(0, 204, 136, 0.5)',
+                    background: `linear-gradient(90deg, ${accentColor} 0%, ${accentColorLight} 100%)`,
+                    boxShadow: `0 0 20px ${accentColor}50`,
+                    transition: 'background 0.3s ease, box-shadow 0.3s ease',
                 },
                 '&::after': {
                     content: '""',
@@ -85,7 +104,8 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                     left: 0,
                     right: 0,
                     height: '1px',
-                    background: 'linear-gradient(90deg, rgba(0, 204, 136, 0.5) 0%, rgba(0, 119, 85, 0.5) 50%, rgba(0, 204, 136, 0.5) 100%)',
+                    background: `linear-gradient(90deg, ${accentColor}50 0%, ${accentColorLight}50 50%, ${accentColor}50 100%)`,
+                    transition: 'background 0.3s ease',
                 }
             }}
         >
@@ -95,10 +115,12 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                     fontSize: '1.25rem',
                     fontWeight: 700,
                     mb: 2, // Reduced margin
-                    background: 'linear-gradient(135deg, #00FFAA 0%, #007755 100%)',
+                    background: isDarkMode 
+                        ? 'linear-gradient(135deg, #00FFAA 0%, #007755 100%)' : accentGradient,
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     textShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+                    transition: 'background 0.3s ease'
                 }}
             >
                 BALANCE LEGAL
@@ -115,22 +137,26 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                     justifyContent: 'space-between',
                     p: 2,
                     borderRadius: '10px',
-                    background: 'linear-gradient(135deg, rgba(0, 204, 136, 0.1) 0%, rgba(0, 119, 85, 0.1) 100%)',
-                    border: '1px solid rgba(0, 204, 136, 0.2)',
-                    boxShadow: '0 4px 12px rgba(0, 204, 136, 0.1)',
+                    background: isDarkMode 
+                        ? 'linear-gradient(135deg, rgba(0, 204, 136, 0.1) 0%, rgba(0, 119, 85, 0.1) 100%)'
+                        : `linear-gradient(135deg, ${accentColor}10 0%, ${accentColorLight}10 100%)`,
+                    border: isDarkMode ? '1px solid rgba(0, 204, 136, 0.2)' : `1px solid ${accentColor}20`,
+                    boxShadow: isDarkMode ? '0 4px 12px rgba(0, 204, 136, 0.1)' : `0 4px 12px ${accentColor}10`,
+                    transition: 'background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
                 }}
             >
                 <Box>
-                    <Typography sx={{ fontSize: '0.8rem', color: '#BBBBBB', mb: 0.5 }}>
+                    <Typography sx={{ fontSize: '0.8rem', color: textSecondary, mb: 0.5, transition: 'color 0.3s ease' }}>
                         Progreso general
                     </Typography>
                     <Typography sx={{ 
                         fontSize: '1.5rem', 
                         fontWeight: 700, 
-                        background: 'linear-gradient(135deg, #00FFAA 0%, #007755 100%)',
+                        background: accentGradient,
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
                         textShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                        transition: 'background 0.3s ease',
                     }}>
                         {overallPercentage}%
                     </Typography>
@@ -139,19 +165,23 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                     icon={getStatusIcon(getStatus(totalCompleted, totalItems))}
                     label={totalCompleted} 
                     sx={{ 
-                        background: 'linear-gradient(90deg, rgba(0, 204, 136, 0.3) 0%, rgba(0, 119, 85, 0.3) 100%)',
-                        color: '#00FFAA',
-                        border: '1px solid rgba(0, 204, 136, 0.4)',
-                        boxShadow: '0 2px 8px rgba(0, 204, 136, 0.2)',
+                        background: isDarkMode 
+                            ? 'linear-gradient(90deg, rgba(0, 204, 136, 0.3) 0%, rgba(0, 119, 85, 0.3) 100%)'
+                            : `linear-gradient(90deg, ${accentColor}30 0%, ${accentColorLight}30 100%)`,
+                        color: isDarkMode ? '#00FFAA' : accentColorLight,
+                        border: isDarkMode ? '1px solid rgba(0, 204, 136, 0.4)' : `1px solid ${accentColor}40`,
+                        boxShadow: isDarkMode ? '0 2px 8px rgba(0, 204, 136, 0.2)' : `0 2px 8px ${accentColor}20`,
                         '& .MuiChip-icon': {
-                            color: '#00FFAA'
+                            color: isDarkMode ? '#00FFAA' : accentColorLight,
+                            transition: 'color 0.3s ease',
                         },
                         height: '28px', // Slightly taller
                         '& .MuiChip-label': {
                             fontSize: '0.8rem',
                             padding: '0 8px',
                             fontWeight: 700,
-                        }
+                        },
+                        transition: 'background 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
                     }}
                 />
             </Box>
@@ -168,9 +198,11 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                         sx={{
                             p: 1.5,
                             borderRadius: '8px',
-                            background: 'linear-gradient(135deg, rgba(0, 204, 136, 0.05) 0%, rgba(0, 119, 85, 0.05) 100%)',
-                            border: '1px solid rgba(0, 204, 136, 0.1)',
-                            transition: 'all 0.2s ease',
+                            background: isDarkMode 
+                                ? 'linear-gradient(135deg, rgba(0, 204, 136, 0.05) 0%, rgba(0, 119, 85, 0.05) 100%)'
+                                : `linear-gradient(135deg, ${accentColor}05 0%, ${accentColorLight}05 100%)`,
+                            border: isDarkMode ? '1px solid rgba(0, 204, 136, 0.1)' : `1px solid ${accentColor}10`,
+                            transition: 'all 0.2s ease, background 0.3s ease, border-color 0.3s ease',
                         }}
                     >
                         <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}> {/* Reduced margin */}
@@ -178,9 +210,10 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                                 <Typography
                                     variant="body2"
                                     sx={{
-                                        color: '#FFFFFF',
+                                        color: textPrimary,
                                         fontWeight: 600,
                                         fontSize: '0.9rem', // Slightly larger
+                                        transition: 'color 0.3s ease',
                                     }}
                                 >
                                     {item.category}
@@ -190,17 +223,20 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                                         display: 'flex',
                                         alignItems: 'center',
                                         gap: 0.5,
-                                        color: item.growth >= 0 ? '#00FFAA' : '#FF3B30',
+                                        color: item.growth >= 0 ? (isDarkMode ? '#00FFAA' : accentColorLight) : '#FF3B30',
                                         fontSize: '0.7rem', // Smaller font
                                         background: item.growth >= 0 
-                                            ? 'linear-gradient(90deg, rgba(0, 204, 136, 0.2) 0%, rgba(0, 255, 170, 0.2) 100%)'
+                                            ? (isDarkMode 
+                                                ? 'linear-gradient(90deg, rgba(0, 204, 136, 0.2) 0%, rgba(0, 255, 170, 0.2) 100%)'
+                                                : `linear-gradient(90deg, ${accentColor}20 0%, ${accentColorLight}20 100%)`)
                                             : 'linear-gradient(90deg, rgba(255, 59, 48, 0.2) 0%, rgba(255, 149, 0, 0.2) 100%)',
                                         px: 1,
                                         py: 0.25,
                                         borderRadius: '10px',
                                         boxShadow: item.growth >= 0 
-                                            ? '0 2px 6px rgba(0, 204, 136, 0.2)'
+                                            ? (isDarkMode ? '0 2px 6px rgba(0, 204, 136, 0.2)' : `0 2px 6px ${accentColor}20`)
                                             : '0 2px 6px rgba(255, 59, 48, 0.2)',
+                                        transition: 'background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease',
                                     }}
                                 >
                                     {item.growth >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
@@ -210,12 +246,13 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                             <Typography
                                 variant="body2"
                                 sx={{
-                                    color: '#FFFFFF',
+                                    color: textPrimary,
                                     fontSize: '0.9rem', // Slightly larger
                                     fontWeight: 600,
-                                    background: 'linear-gradient(135deg, #00FFAA 0%, #00CC88 100%)',
+                                    background: accentGradient,
                                     WebkitBackgroundClip: 'text',
                                     WebkitTextFillColor: 'transparent',
+                                    transition: 'background 0.3s ease, color 0.3s ease',
                                 }}
                             >
                                 {item.completed}/{item.total}
@@ -227,11 +264,13 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                             sx={{
                                 height: 8, // Thicker progress bar
                                 borderRadius: 4,
-                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
                                 '& .MuiLinearProgress-bar': {
                                     borderRadius: 4,
-                                    background: 'linear-gradient(90deg, #00CC88 0%, #00FFAA 100%)',
-                                    boxShadow: '0 0 12px rgba(0, 204, 136, 0.5)',
+                                    background: isDarkMode 
+                                        ? 'linear-gradient(90deg, #00CC88 0%, #00FFAA 100%)'
+                                        : `linear-gradient(90deg, ${accentColor} 0%, ${accentColorLight} 100%)`,
+                                    boxShadow: isDarkMode ? '0 0 12px rgba(0, 204, 136, 0.5)' : `0 0 12px ${accentColor}50`,
                                     '&::after': {
                                         content: '""',
                                         position: 'absolute',
@@ -244,10 +283,10 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                                         filter: 'blur(3px)',
                                     }
                                 },
-                                transition: 'all 0.3s ease',
+                                transition: 'all 0.3s ease, background-color 0.3s ease',
                                 '&:hover': {
                                     '& .MuiLinearProgress-bar': {
-                                        boxShadow: '0 0 15px rgba(0, 204, 136, 0.7)',
+                                        boxShadow: isDarkMode ? '0 0 15px rgba(0, 204, 136, 0.7)' : `0 0 15px ${accentColor}70`,
                                     }
                                 }
                             }}
@@ -260,17 +299,21 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
             <Box sx={{ 
                 mt: 2, 
                 pt: 2, 
-                borderTop: '1px solid rgba(0, 204, 136, 0.3)',
-                background: 'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 204, 136, 0.15) 100%)',
+                borderTop: isDarkMode ? '1px solid rgba(0, 204, 136, 0.3)' : `1px solid ${accentColor}30`,
+                background: isDarkMode 
+                    ? 'linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 204, 136, 0.15) 100%)'
+                    : `linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, ${accentColor}15 100%)`,
+                transition: 'border-color 0.3s ease, background 0.3s ease',
             }}>
                 <Typography
                     variant="subtitle2"
                     sx={{
                         fontSize: '0.9rem',
-                        color: '#FFFFFF',
+                        color: textPrimary,
                         fontWeight: 700,
                         mb: 1.5,
                         textShadow: '0 1px 2px rgba(0, 0, 0, 0.2)',
+                        transition: 'color 0.3s ease',
                     }}
                 >
                     Resumen de estado legal
@@ -286,21 +329,23 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                             component={motion.div}
                             whileHover={{ 
                                 scale: 1.05,
-                                boxShadow: '0 8px 20px rgba(0, 204, 136, 0.3)'
+                                boxShadow: isDarkMode ? '0 8px 20px rgba(0, 204, 136, 0.3)' : `0 8px 20px ${accentColor}30`
                             }}
                             key={index}
                             sx={{
                                 flex: '1 0 30%',
                                 p: 1.5, // Reduced padding
-                                background: 'linear-gradient(135deg, rgba(0, 204, 136, 0.15) 0%, rgba(0, 119, 85, 0.15) 100%)',
+                                background: isDarkMode 
+                                    ? 'linear-gradient(135deg, rgba(0, 204, 136, 0.15) 0%, rgba(0, 119, 85, 0.15) 100%)'
+                                    : `linear-gradient(135deg, ${accentColor}15 0%, ${accentColorLight}15 100%)`,
                                 borderRadius: '8px',
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
                                 gap: 0.5, // Reduced gap
-                                boxShadow: '0 4px 12px rgba(0, 204, 136, 0.15)',
-                                border: '1px solid rgba(0, 204, 136, 0.2)',
-                                transition: 'all 0.3s ease',
+                                boxShadow: isDarkMode ? '0 4px 12px rgba(0, 204, 136, 0.15)' : `0 4px 12px ${accentColor}15`,
+                                border: isDarkMode ? '1px solid rgba(0, 204, 136, 0.2)' : `1px solid ${accentColor}20`,
+                                transition: 'all 0.3s ease, background 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease',
                             }}
                         >
                             <Box sx={{ 
@@ -310,24 +355,28 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                                 width: 32, // Slightly larger
                                 height: 32, // Slightly larger
                                 borderRadius: '50%',
-                                background: 'linear-gradient(135deg, rgba(0, 204, 136, 0.3) 0%, rgba(0, 119, 85, 0.3) 100%)',
-                                color: '#00FFAA',
-                                boxShadow: '0 0 10px rgba(0, 204, 136, 0.3)',
+                                background: isDarkMode 
+                                    ? 'linear-gradient(135deg, rgba(0, 204, 136, 0.3) 0%, rgba(0, 119, 85, 0.3) 100%)'
+                                    : `linear-gradient(135deg, ${accentColor}30 0%, ${accentColorLight}30 100%)`,
+                                color: isDarkMode ? '#00FFAA' : accentColorLight,
+                                boxShadow: isDarkMode ? '0 0 10px rgba(0, 204, 136, 0.3)' : `0 0 10px ${accentColor}30`,
+                                transition: 'background 0.3s ease, color 0.3s ease, box-shadow 0.3s ease',
                             }}>
                                 {stat.icon}
                             </Box>
                             <Typography sx={{ 
                                 fontSize: '1.3rem', 
                                 fontWeight: 700, 
-                                color: '#FFFFFF',
-                                background: 'linear-gradient(135deg, #00FFAA 0%, #00CC88 100%)',
+                                color: textPrimary,
+                                background: accentGradient,
                                 WebkitBackgroundClip: 'text',
                                 WebkitTextFillColor: 'transparent',
                                 textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+                                transition: 'background 0.3s ease, color 0.3s ease',
                             }}>
                                 {stat.value}
                             </Typography>
-                            <Typography sx={{ fontSize: '0.7rem', color: '#BBBBBB', textAlign: 'center' }}>
+                            <Typography sx={{ fontSize: '0.7rem', color: textSecondary, textAlign: 'center', transition: 'color 0.3s ease' }}>
                                 {stat.label}
                             </Typography>
                         </Box>
@@ -335,7 +384,7 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                 </Box>
                 
                 <Box sx={{ mt: 2 }}> {/* Slightly increased margin */}
-                    <Typography sx={{ fontSize: '0.75rem', color: '#BBBBBB', mb: 0.5, fontWeight: 600 }}>
+                    <Typography sx={{ fontSize: '0.75rem', color: textSecondary, mb: 0.5, fontWeight: 600, transition: 'color 0.3s ease' }}>
                         Progreso general
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
@@ -346,11 +395,13 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                                 flex: 1,
                                 height: 10, // Thicker progress bar
                                 borderRadius: 5,
-                                backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                                backgroundColor: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
                                 '& .MuiLinearProgress-bar': {
                                     borderRadius: 5,
-                                    background: 'linear-gradient(90deg, #00CC88 0%, #00FFAA 100%)',
-                                    boxShadow: '0 0 15px rgba(0, 204, 136, 0.5)',
+                                    background: isDarkMode 
+                                        ? 'linear-gradient(90deg, #00CC88 0%, #00FFAA 100%)'
+                                        : `linear-gradient(90deg, ${accentColor} 0%, ${accentColorLight} 100%)`,
+                                    boxShadow: isDarkMode ? '0 0 15px rgba(0, 204, 136, 0.5)' : `0 0 15px ${accentColor}50`,
                                     '&::after': {
                                         content: '""',
                                         position: 'absolute',
@@ -363,10 +414,10 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                                         filter: 'blur(3px)',
                                     }
                                 },
-                                transition: 'all 0.3s ease',
+                                transition: 'all 0.3s ease, background-color 0.3s ease',
                                 '&:hover': {
                                     '& .MuiLinearProgress-bar': {
-                                        boxShadow: '0 0 20px rgba(0, 204, 136, 0.7)',
+                                        boxShadow: isDarkMode ? '0 0 20px rgba(0, 204, 136, 0.7)' : `0 0 20px ${accentColor}70`,
                                     }
                                 }
                             }}
@@ -374,10 +425,11 @@ export const LegalStatus: React.FC<LegalStatusProps> = ({ items = [] }) => {
                         <Typography sx={{ 
                             fontSize: '1rem', 
                             fontWeight: 700,
-                            background: 'linear-gradient(135deg, #00FFAA 0%, #00CC88 100%)',
+                            background: accentGradient,
                             WebkitBackgroundClip: 'text',
                             WebkitTextFillColor: 'transparent',
                             textShadow: '0 1px 2px rgba(0, 0, 0, 0.1)',
+                            transition: 'background 0.3s ease',
                         }}>
                             {overallPercentage}%
                         </Typography>

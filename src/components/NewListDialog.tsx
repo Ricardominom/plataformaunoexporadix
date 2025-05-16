@@ -12,11 +12,11 @@ import {
 } from '@mui/material';
 import { CirclePicker } from 'react-color';
 import { X } from 'lucide-react';
+import { useTodos } from '../context/TodoContext';
 
 interface NewListDialogProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (list: { name: string; color: string }) => void;
 }
 
 const colorOptions = [
@@ -33,17 +33,26 @@ const colorOptions = [
 export const NewListDialog: React.FC<NewListDialogProps> = ({
   open,
   onClose,
-  onSubmit,
 }) => {
   const [formData, setFormData] = useState({
     name: '',
     color: '#ff9500',
   });
+  const [loading, setLoading] = useState(false);
+  const { addList } = useTodos();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
-    onClose();
+    setLoading(true);
+    try {
+      await addList({
+        ...formData,
+      });
+      setFormData({ name: '', color: '#ff9500' });
+      onClose();
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -183,6 +192,7 @@ export const NewListDialog: React.FC<NewListDialogProps> = ({
           <Button
             type="submit"
             variant="contained"
+            disabled={loading}
             sx={{
               backgroundColor: '#0071e3',
               color: '#fff',

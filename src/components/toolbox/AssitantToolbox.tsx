@@ -27,7 +27,8 @@ export const AssistantToolbox: React.FC = () => {
             pb: 4,
             px: { xs: 2, sm: 3, md: 4 },
             minHeight: '100vh',
-            backgroundColor: '#121212', // Dark background
+            backgroundColor: theme === 'dark' ? '#121212' : '#f5f5f7', // Theme-aware background
+            transition: 'background-color 0.3s ease',
         }}>
             <Container maxWidth="xl">
                 {/* Dark Dashboard Component */}

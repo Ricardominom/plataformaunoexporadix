@@ -18,16 +18,11 @@ import { DatePicker } from '@mui/x-date-pickers';
 import { X } from 'lucide-react';
 import dayjs from 'dayjs';
 import { TodoPriority } from '../types/todo';
+import { useTodos } from '../context/TodoContext';
 
 interface NewReminderDialogProps {
   open: boolean;
   onClose: () => void;
-  onSubmit: (reminder: {
-    title: string;
-    notes?: string;
-    dueDate: string;
-    priority: TodoPriority;
-  }) => void;
 }
 
 const priorityOptions: { value: TodoPriority; label: string }[] = [
@@ -40,7 +35,6 @@ const priorityOptions: { value: TodoPriority; label: string }[] = [
 export const NewReminderDialog: React.FC<NewReminderDialogProps> = ({
   open,
   onClose,
-  onSubmit,
 }) => {
   const [formData, setFormData] = useState({
     title: '',
@@ -48,20 +42,32 @@ export const NewReminderDialog: React.FC<NewReminderDialogProps> = ({
     dueDate: dayjs(),
     priority: 'none' as TodoPriority,
   });
+  const [loading, setLoading] = useState(false);
+  const { addTodo, selectedList } = useTodos();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({
-      ...formData,
-      dueDate: formData.dueDate.toISOString(),
-    });
-    setFormData({
-      title: '',
-      notes: '',
-      dueDate: dayjs(),
-      priority: 'none',
-    });
-    onClose();
+    setLoading(true);
+    try {
+      await addTodo({
+        title: formData.title,
+        notes: formData.notes,
+        dueDate: formData.dueDate.toISOString(),
+        priority: formData.priority,
+        listId: selectedList,
+        completed: false,
+        createdAt: new Date().toISOString(),
+      });
+      setFormData({
+        title: '',
+        notes: '',
+        dueDate: dayjs(),
+        priority: 'none',
+      });
+      onClose();
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -276,6 +282,7 @@ export const NewReminderDialog: React.FC<NewReminderDialogProps> = ({
           <Button
             type="submit"
             variant="contained"
+            disabled={loading}
             sx={{
               backgroundColor: '#0071e3',
               color: '#fff',

@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   Avatar,
   Box,
@@ -30,22 +30,33 @@ import {
   AlertCircle,
   CheckCircle2,
   Clock,
+  Download,
 } from 'lucide-react';
 import { AgreementTable } from '../components/agreements/AgreementTable';
 import { NewAgreementDialog } from '../components/agreements/NewAgreementDialog';
 import { EditAgreementDialog } from '../components/agreements/EditAgreementDialog';
 import { NewListDialog } from '../components/todos/NewListDialog';
+import {
+  fetchLists,
+  createListApi,
+  deleteListApi,
+  createAgreementApi,
+  updateAgreementApi,
+  deleteAgreementApi,
+} from '../services/api';
+import api from '../services/api';
 import { Agreement, AgreementStatus } from '../types/agreement';
-import { Dayjs } from 'dayjs';
 import { useAuth } from '../context/AuthContext';
 import { useNotification } from '../context/NotificationContext';
-import { useAgreements } from '../hooks/useAgreements';
 import { AgreementStats } from '../components/agreements/AgreementStats';
 
 export const AgreementsPage: React.FC = () => {
   const { user, hasShownWelcome, setHasShownWelcome } = useAuth();
   const { addNotification } = useNotification();
-  const { agreements, lists, loading, updateAgreementStatus, setAgreements, setLists } = useAgreements();
+
+  const [agreements, setAgreements] = useState<Agreement[]>([]);
+  const [lists, setLists] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const [currentTab, setCurrentTab] = useState(0);
   const [searchTerm, setSearchTerm] = useState('');
@@ -54,6 +65,27 @@ export const AgreementsPage: React.FC = () => {
   const [editingAgreement, setEditingAgreement] = useState<Agreement | null>(null);
   const [deletingAgreement, setDeletingAgreement] = useState<Agreement | null>(null);
   const [deletingList, setDeletingList] = useState<{ id: string; name: string } | null>(null);
+
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [listsRes, agreementsRes] = await Promise.all([
+        fetchLists(),
+        api.get('/agreements'),
+      ]);
+      setLists(listsRes.data || listsRes);
+      setAgreements(agreementsRes.data.data || agreementsRes.data);
+    } catch (err) {
+      setLists([]);
+      setAgreements([]);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   useEffect(() => {
     if (!hasShownWelcome) {
@@ -91,11 +123,17 @@ export const AgreementsPage: React.FC = () => {
     });
   }, [searchTerm, agreements]);
 
-  const handleStatusChange = (id: string, status: AgreementStatus, isSJStatus = false) => {
-    updateAgreementStatus(id, status, isSJStatus);
-    const agreement = agreements.find(a => a.id === id);
-    if (agreement) {
-      addNotification('agreement', 'updated', agreement);
+  const handleStatusChange = async (id: string, status: AgreementStatus, isSJStatus = false) => {
+    setLoading(true);
+    try {
+      await api.patch(`/agreements/${id}/status`, { status, isSJStatus });
+      await loadData();
+      const agreement = agreements.find(a => a.id === id);
+      if (agreement) {
+        addNotification('agreement', 'updated', agreement);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -103,84 +141,116 @@ export const AgreementsPage: React.FC = () => {
     setEditingAgreement(agreement);
   };
 
-  const handleEditSubmit = (updatedAgreement: Agreement) => {
-    setAgreements(agreements.map(agreement =>
-      agreement.id === updatedAgreement.id ? updatedAgreement : agreement
-    ));
-    addNotification('agreement', 'updated', updatedAgreement);
-    setEditingAgreement(null);
+  const handleEditSubmit = async (updatedAgreement: Agreement) => {
+    setLoading(true);
+    try {
+      await updateAgreementApi(updatedAgreement.id, updatedAgreement);
+      await loadData();
+      addNotification('agreement', 'updated', updatedAgreement);
+      setEditingAgreement(null);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDelete = (agreement: Agreement) => {
     setDeletingAgreement(agreement);
   };
 
-  const confirmDelete = () => {
+  const confirmDelete = async () => {
     if (deletingAgreement) {
-      addNotification('agreement', 'deleted', deletingAgreement);
-      setAgreements(agreements.filter(a => a.id !== deletingAgreement.id));
-      setDeletingAgreement(null);
+      setLoading(true);
+      try {
+        await deleteAgreementApi(deletingAgreement.id);
+        await loadData();
+        addNotification('agreement', 'deleted', deletingAgreement);
+      } finally {
+        setDeletingAgreement(null);
+        setLoading(false);
+      }
     }
   };
 
-  const handleNewAgreement = (agreement: {
+  const handleNewAgreement = async (agreement: {
     element: string;
     responsible: string;
     status: AgreementStatus;
-    requestDate: Dayjs;
-    deliveryDate: Dayjs;
+    requestDate: any;
+    deliveryDate: any;
     description: string;
     sjRequest: string;
     sjStatus: AgreementStatus;
     deliverable?: File | null;
     deliverableName?: string;
-    listId: string; // Añadido para recibir el listId seleccionado en el formulario
+    listId: string;
   }) => {
-    const newId = (Math.max(...agreements.map(a => parseInt(a.id))) + 1).toString();
-    const newAgreement: Agreement = {
-      ...agreement,
-      id: newId,
-      // Ya no asignamos listId aquí, viene del formulario
-      requestDate: agreement.requestDate.format('YYYY-MM-DD'),
-      deliveryDate: agreement.deliveryDate.format('YYYY-MM-DD'),
-    };
-
-    setAgreements([newAgreement, ...agreements]);
-    addNotification('agreement', 'created', newAgreement);
-    setIsNewAgreementOpen(false);
+    setLoading(true);
+    try {
+      const payload = {
+        ...agreement,
+        requestDate: agreement.requestDate.format('YYYY-MM-DD'),
+        deliveryDate: agreement.deliveryDate.format('YYYY-MM-DD'),
+      };
+      await createAgreementApi(payload);
+      await loadData();
+      addNotification('agreement', 'created', payload);
+      setIsNewAgreementOpen(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleNewList = (list: { name: string; color: string }) => {
-    const newList = {
-      id: (lists.length + 1).toString(),
-      name: list.name,
-      color: list.color,
-    };
-
-    setLists([...lists, newList]);
-    setCurrentTab(lists.length);
-    addNotification('list', 'created', {
-      id: newList.id,
-      title: newList.name,
-      listId: newList.id,
-      completed: false,
-      createdAt: new Date().toISOString(),
-    });
-    setIsNewListOpen(false);
+  const handleNewList = async (list: { name: string; color: string }) => {
+    setLoading(true);
+    try {
+      await createListApi(list);
+      await loadData();
+      addNotification('list', 'created', {
+        title: list.name,
+        listId: '',
+        completed: false,
+        createdAt: new Date().toISOString(),
+      });
+      setIsNewListOpen(false);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleDeleteList = (list: { id: string; name: string }) => {
     setDeletingList(list);
   };
 
-  const confirmDeleteList = () => {
+  const confirmDeleteList = async () => {
     if (deletingList) {
-      setLists(lists.filter(l => l.id !== deletingList.id));
-      setAgreements(agreements.filter(a => a.listId !== deletingList.id));
-      if (currentTab >= lists.length - 1) {
-        setCurrentTab(0);
+      setLoading(true);
+      try {
+        await deleteListApi(deletingList.id);
+        await loadData();
+      } finally {
+        setDeletingList(null);
+        setLoading(false);
       }
-      setDeletingList(null);
+    }
+  };
+
+  const handleDownloadDeliverable = async (agreement: Agreement) => {
+    if (!agreement.deliverablePath) return;
+    try {
+      const res = await api.get(`/agreements/${agreement.id}/deliverable`, {
+        responseType: 'blob',
+      });
+      const filename = agreement.deliverableName || 'archivo';
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('No se pudo descargar el archivo.');
     }
   };
 
@@ -259,7 +329,6 @@ export const AgreementsPage: React.FC = () => {
           </Fade>
         )}
 
-        {/* Page Header */}
         <Box sx={{ mb: 6 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 4 }}>
             <Box>
@@ -340,10 +409,8 @@ export const AgreementsPage: React.FC = () => {
             </Box>
           </Box>
 
-          {/* Stats Cards */}
           <AgreementStats counts={getStatusCounts} />
 
-          {/* Search and Filters */}
           <Box sx={{ mt: 4, mb: 3 }}>
             <TextField
               fullWidth
@@ -390,7 +457,6 @@ export const AgreementsPage: React.FC = () => {
           </Box>
         </Box>
 
-        {/* Tabs for Lists */}
         <Paper
           sx={{
             mb: 4,
@@ -413,7 +479,7 @@ export const AgreementsPage: React.FC = () => {
                   backgroundColor: lists[currentTab]?.color || 'var(--brand-primary)',
                 },
                 '& .MuiTabs-flexContainer': {
-                  gap: 1.5, // Add gap between tabs
+                  gap: 1.5,
                 },
               }}
               TabIndicatorProps={{
@@ -435,15 +501,14 @@ export const AgreementsPage: React.FC = () => {
                         py: 0.5,
                         px: 1.5,
                         borderRadius: '16px',
-                        // Inverted behavior: unselected is vibrant, selected is more subtle
                         backgroundColor: currentTab === index
-                          ? `${list.color}70` // 70% opacity when selected
-                          : list.color, // Full opacity when not selected
-                        color: '#fff', // White text for both states for better contrast
+                          ? `${list.color}70`
+                          : list.color,
+                        color: '#fff',
                         transition: 'all 0.2s ease',
                         boxShadow: currentTab === index
-                          ? 'none' // No shadow when selected
-                          : `0 2px 8px ${list.color}40`, // Shadow when not selected
+                          ? 'none'
+                          : `0 2px 8px ${list.color}40`,
                       }}
                     >
                       <Typography
@@ -504,7 +569,6 @@ export const AgreementsPage: React.FC = () => {
           </Box>
         </Paper>
 
-        {/* Agreements Table */}
         <AgreementTable
           agreements={currentTabAgreements}
           onStatusChange={handleStatusChange}
@@ -512,15 +576,15 @@ export const AgreementsPage: React.FC = () => {
           onDelete={handleDelete}
           onResponsibleChange={() => { }}
           onNewAgreement={() => setIsNewAgreementOpen(true)}
+          onDownloadDeliverable={handleDownloadDeliverable}
         />
 
-        {/* Dialogs */}
         <NewAgreementDialog
           open={isNewAgreementOpen}
           onClose={() => setIsNewAgreementOpen(false)}
           onSubmit={handleNewAgreement}
-          lists={lists} // Pasamos todas las listas disponibles
-          currentListId={lists[currentTab]?.id} // Pasamos la lista actual como predeterminada
+          lists={lists}
+          currentListId={lists[currentTab]?.id}
         />
 
         <EditAgreementDialog
@@ -528,7 +592,7 @@ export const AgreementsPage: React.FC = () => {
           onClose={() => setEditingAgreement(null)}
           onSubmit={handleEditSubmit}
           agreement={editingAgreement}
-          lists={lists} // Agregar esta línea para pasar la lista de listas
+          lists={lists}
         />
 
         <NewListDialog

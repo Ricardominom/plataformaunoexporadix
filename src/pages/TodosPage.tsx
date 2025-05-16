@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Box,
   Paper,
@@ -53,38 +53,8 @@ export const TodosPage: React.FC = () => {
     setSelectedList, 
     getTodosCount, 
     toggleTodo, 
-    addTodo, 
-    addList,
     filteredTodos
   } = useTodos();
-
-  const handleNewList = (list: { name: string; color: string }) => {
-    addList({
-      ...list,
-      userId: '1',
-    });
-    setIsNewListOpen(false);
-  };
-
-  const handleNewReminder = (reminder: {
-    title: string;
-    notes?: string;
-    dueDate: string;
-    priority: TodoPriority;
-    listId: string;
-  }) => {
-    addTodo({
-      listId: reminder.listId,
-      title: reminder.title,
-      notes: reminder.notes,
-      dueDate: reminder.dueDate,
-      priority: reminder.priority,
-      completed: false,
-      createdAt: new Date().toISOString(),
-      userId: '1',
-    });
-    setIsNewReminderOpen(false);
-  };
 
   const filters = [
     { icon: <Calendar size={16} />, label: 'Hoy', filter: 'today', color: '#0071e3' },
@@ -95,16 +65,38 @@ export const TodosPage: React.FC = () => {
 
   const currentFilter = filters.find(f => f.filter === selectedFilter)!;
 
+  // Obtener usuario y rol desde localStorage
+  const user = useMemo(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || '{}');
+    } catch {
+      return {};
+    }
+  }, []);
+  const isPresidente = user?.role === 'Presidente';
+  const userId = user?.id;
+
+  // Filtrar listas y todos según el rol
+  const visibleLists = useMemo(() => {
+    if (isPresidente) return lists;
+    return lists.filter(list => list.userId === String(userId));
+  }, [lists, isPresidente, userId]);
+
+  const visibleTodos = useMemo(() => {
+    if (isPresidente) return filteredTodos;
+    return filteredTodos.filter(todo => todo.userId === String(userId));
+  }, [filteredTodos, isPresidente, userId]);
+
   // Filter todos based on search term
-  const searchFilteredTodos = React.useMemo(() => {
-    if (!searchTerm) return filteredTodos;
+  const searchFilteredTodos = useMemo(() => {
+    if (!searchTerm) return visibleTodos;
     
     const searchLower = searchTerm.toLowerCase();
-    return filteredTodos.filter(todo =>
+    return visibleTodos.filter(todo =>
       todo.title.toLowerCase().includes(searchLower) ||
       todo.notes?.toLowerCase().includes(searchLower)
     );
-  }, [filteredTodos, searchTerm]);
+  }, [visibleTodos, searchTerm]);
 
   const getPriorityInfo = (priority: string) => {
     const info = {
@@ -263,7 +255,7 @@ export const TodosPage: React.FC = () => {
               >
                 Mis listas
               </Typography>
-              {lists.map((list) => (
+              {visibleLists.map((list) => (
                 <ListItemButton
                   key={list.id}
                   selected={selectedList === list.id && selectedFilter === 'all'}
@@ -456,13 +448,11 @@ export const TodosPage: React.FC = () => {
       <NewListDialog
         open={isNewListOpen}
         onClose={() => setIsNewListOpen(false)}
-        onSubmit={handleNewList}
       />
 
       <NewReminderDialog
         open={isNewReminderOpen}
         onClose={() => setIsNewReminderOpen(false)}
-        onSubmit={handleNewReminder}
       />
     </Box>
   );

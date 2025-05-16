@@ -7,6 +7,7 @@ import {
 import { motion } from 'framer-motion';
 import { useAuth } from '../../context/AuthContext';
 import { DarkDashboard } from './dashboardComponents/DarkDashboard';
+import { useTheme } from '../../context/ThemeContext';
 
 // Import mock data from centralized data module
 import {
@@ -20,6 +21,7 @@ import {
 
 export const PresidentToolbox: React.FC = () => {
     const { user } = useAuth();
+    const { theme } = useTheme();
 
     return (
         <Box sx={{
@@ -27,7 +29,8 @@ export const PresidentToolbox: React.FC = () => {
             pb: 4,
             px: { xs: 2, sm: 3, md: 4 },
             minHeight: '100vh',
-            backgroundColor: '#121212', // Dark background
+            backgroundColor: theme === 'dark' ? '#121212' : '#f5f5f7', // Theme-aware background
+            transition: 'background-color 0.3s ease',
         }}>
             <Container maxWidth="xl">
                 {/* Dark Dashboard Component */}

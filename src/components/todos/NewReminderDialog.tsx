@@ -26,13 +26,6 @@ import { useTodos } from '../../context/TodoContext';
 interface NewReminderDialogProps {
     open: boolean;
     onClose: () => void;
-    onSubmit: (reminder: {
-        title: string;
-        notes?: string;
-        dueDate: string;
-        priority: TodoPriority;
-        listId: string;
-    }) => void;
 }
 
 const priorityOptions: { value: TodoPriority; label: string; icon: React.ReactNode; color: string }[] = [
@@ -45,9 +38,8 @@ const priorityOptions: { value: TodoPriority; label: string; icon: React.ReactNo
 export const NewReminderDialog: React.FC<NewReminderDialogProps> = ({
     open,
     onClose,
-    onSubmit,
 }) => {
-    const { lists } = useTodos();
+    const { lists, addTodo } = useTodos();
     const [formData, setFormData] = useState({
         title: '',
         notes: '',
@@ -59,6 +51,7 @@ export const NewReminderDialog: React.FC<NewReminderDialogProps> = ({
         title?: string;
         listId?: string;
     }>({});
+    const [loading, setLoading] = useState(false);
 
     // Reset form when dialog opens
     useEffect(() => {
@@ -92,15 +85,31 @@ export const NewReminderDialog: React.FC<NewReminderDialogProps> = ({
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         
-        if (validateForm()) {
-            onSubmit({
-                ...formData,
+        if (!validateForm()) return;
+        setLoading(true);
+        try {
+            await addTodo({
+                title: formData.title,
+                notes: formData.notes,
                 dueDate: formData.dueDate.toISOString(),
+                priority: formData.priority,
+                listId: formData.listId,
+                completed: false,
+                createdAt: new Date().toISOString(),
+            });
+            setFormData({
+                title: '',
+                notes: '',
+                dueDate: dayjs(),
+                priority: 'none',
+                listId: lists.length > 0 ? lists[0].id : '',
             });
             onClose();
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -468,6 +477,7 @@ export const NewReminderDialog: React.FC<NewReminderDialogProps> = ({
                     <Button
                         type="submit"
                         variant="contained"
+                        disabled={loading}
                         sx={{
                             backgroundColor: '#0071e3',
                             color: '#fff',

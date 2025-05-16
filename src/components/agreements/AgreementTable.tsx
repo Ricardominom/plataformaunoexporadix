@@ -16,7 +16,7 @@ import {
     MenuItem,
     Tooltip,
 } from '@mui/material';
-import { FileDown, MessageSquare, Edit2, Trash2 } from 'lucide-react';
+import { FileDown, MessageSquare, Edit2, Trash2, Download } from 'lucide-react';
 import { Agreement, AgreementStatus } from '../../types/agreement';
 import { statusOptions, getStatusColor } from '../../utils/statusUtils';
 
@@ -27,6 +27,7 @@ interface AgreementTableProps {
     onDelete: (agreement: Agreement) => void;
     onResponsibleChange: (id: string, responsible: string) => void;
     onNewAgreement?: () => void;
+    onDownloadDeliverable?: (agreement: Agreement) => void;
 }
 
 const TableHeader = memo(() => {
@@ -114,7 +115,8 @@ const AgreementRow = memo<{
     onEdit: (agreement: Agreement) => void;
     onDelete: (agreement: Agreement) => void;
     onDownload: (agreement: Agreement) => void;
-}>(({ agreement, onStatusChange, onEdit, onDelete, onDownload }) => (
+    onDownloadDeliverable?: (agreement: Agreement) => void;
+}>(({ agreement, onStatusChange, onEdit, onDelete, onDownload, onDownloadDeliverable }) => (
     <TableRow
         sx={{
             '&:hover': {
@@ -207,6 +209,17 @@ const AgreementRow = memo<{
                     <FileDown size={16} />
                 </IconButton>
             </Tooltip>
+            {agreement.deliverablePath && (
+                <Tooltip title="Descargar archivo">
+                    <IconButton
+                        onClick={() => onDownloadDeliverable && onDownloadDeliverable(agreement)}
+                        size="small"
+                        color="primary"
+                    >
+                        <Download size={18} />
+                    </IconButton>
+                </Tooltip>
+            )}
         </TableCell>
         <TableCell>
             <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
@@ -243,6 +256,7 @@ export const AgreementTable = memo<AgreementTableProps>(({
     onEdit,
     onDelete,
     onResponsibleChange,
+    onDownloadDeliverable,
 }) => {
     const handleDownload = (agreement: Agreement) => {
         console.log('Descargando documento:', agreement.id);
@@ -270,6 +284,7 @@ export const AgreementTable = memo<AgreementTableProps>(({
                             onEdit={onEdit}
                             onDelete={onDelete}
                             onDownload={handleDownload}
+                            onDownloadDeliverable={onDownloadDeliverable}
                         />
                     ))}
                 </TableBody>

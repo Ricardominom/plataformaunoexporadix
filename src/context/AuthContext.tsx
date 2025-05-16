@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { User } from '../types/user';
-import { users } from '../data/users';
+import { loginApi } from '../services/api'; // Import the mock login API
 
 interface AuthContextType {
     user: User | null;
@@ -28,23 +28,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, [user]);
 
     const login = async (email: string, password: string): Promise<boolean> => {
-        // Simulate network request
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        const foundUser = users.find(u => u.email === email && u.password === password);
-        if (foundUser) {
-            const { password: _, email: __, ...userWithoutCredentials } = foundUser;
-            setUser(userWithoutCredentials);
-            setHasShownWelcome(false); // Reset welcome message flag on new login
+        try {
+            // Call the mock login API
+            const response = await loginApi(email, password);
+            const { token, user: userData } = response.data;
+            localStorage.setItem('token', token);
+            localStorage.setItem('user', JSON.stringify(userData));
+            setUser(userData);
+            setHasShownWelcome(false);
             return true;
+        } catch (error: any) {
+            // Opcional: puedes devolver el mensaje del backend si existe
+            // Ejemplo: error.response?.data?.message
+            return false;
         }
-        return false;
     };
 
     const logout = () => {
         setUser(null);
-        setHasShownWelcome(false); // Reset welcome message flag on logout
+        setHasShownWelcome(false);
         localStorage.removeItem('user');
+        localStorage.removeItem('token');
     };
 
     return (
