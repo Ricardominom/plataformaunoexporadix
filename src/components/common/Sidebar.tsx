@@ -220,9 +220,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
           }
         }}
       >
-        <img 
+        <img
           src="https://raw.githubusercontent.com/Ricardominom/plataformaunoexporadix/refs/heads/main/logoalpha.png"
-          alt="Alpha Office Logo"
+          alt="Alpha System Logo"
           style={{
             height: '50px',
             objectFit: 'contain'
@@ -244,9 +244,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
             alignItems: 'center'
           }}
         >
-          Alpha Office
+          Alpha System
           <span style={{
-            fontSize: '0.75rem', 
+            fontSize: '0.75rem',
             fontWeight: 500,
             color: 'var(--text-secondary)',
             marginTop: '2px'
@@ -436,7 +436,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ user }) => {
                     lineHeight: 1.2,
                   }}
                 >
-                  Alpha Office
+                  Alpha System
                 </Typography>
                 <Typography
                   variant="body2"
