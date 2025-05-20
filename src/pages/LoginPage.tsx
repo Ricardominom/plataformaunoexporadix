@@ -1,16 +1,16 @@
 import React, { useState, FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  Box,
   Typography,
   TextField,
   Button,
   InputAdornment,
   IconButton,
-  Box,
   Paper
 } from '@mui/material';
 import { motion } from 'framer-motion';
-import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Moon, Sun } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../hooks/useTheme';
 
@@ -80,116 +80,155 @@ export function Login() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: isDark ? '#0A0B14' : '#f0f4f8',
+        backgroundColor: isDark ? '#0A0B14' : '#e0e7ff',
         position: 'relative',
         overflow: 'hidden',
         px: { xs: 2, sm: 4, md: 6, lg: 8 }
       }}
     >
       {/* Animated background shapes */}
-      <Box sx={{
-        position: 'absolute',
-        inset: 0,
-        overflow: 'hidden',
-        zIndex: 0,
-        transition: 'all 0.5s ease'
-      }}>
+      <Box
+        sx={{
+          position: 'absolute',
+          inset: 0,
+          overflow: 'hidden',
+          zIndex: 0,
+          transition: 'all 0.5s ease'
+        }}
+      >
         {/* Large floating circles */}
-        <Box sx={{
-          position: 'absolute',
-          width: '800px',
-          height: '800px',
-          backgroundColor: isDark
-            ? 'rgba(26, 31, 77, 0.3)'
-            : 'rgba(0, 113, 227, 0.15)',
-          borderRadius: '50%',
-          top: '-50%',
-          left: '-25%',
-          filter: 'blur(48px)',
-          animation: 'float 10s infinite ease-in-out, moveX 25s infinite ease-in-out',
-          opacity: 0.7,
-          transition: 'background-color 0.5s ease'
-        }}></Box>
-        <Box sx={{
-          position: 'absolute',
-          width: '600px',
-          height: '600px',
-          backgroundColor: isDark
-            ? 'rgba(36, 41, 87, 0.3)'
-            : 'rgba(64, 169, 255, 0.15)',
-          borderRadius: '50%',
-          bottom: '-25%',
-          right: '-25%',
-          filter: 'blur(32px)',
-          animation: 'float 12s infinite ease-in-out, moveY 18s infinite ease-in-out',
-          opacity: 0.7,
-          transition: 'background-color 0.5s ease'
-        }}></Box>
+        <Box
+          sx={{
+            position: 'absolute',
+            width: '800px',
+            height: '800px',
+            backgroundColor: isDark
+              ? 'rgba(26, 31, 77, 0.6)'
+              : 'rgba(79, 70, 229, 0.3)',
+            borderRadius: '50%',
+            top: '-50%',
+            left: '-25%',
+            filter: 'blur(60px)',
+            animation: 'float 10s infinite ease-in-out, moveXSlow 25s infinite ease-in-out',
+            opacity: 0.8,
+            transition: 'background-color 0.5s ease'
+          }}
+        />
+        <Box
+          sx={{
+            position: 'absolute',
+            width: '600px',
+            height: '600px',
+            backgroundColor: isDark
+              ? 'rgba(36, 41, 87, 0.6)'
+              : 'rgba(99, 102, 241, 0.3)',
+            borderRadius: '50%',
+            bottom: '-25%',
+            right: '-25%',
+            filter: 'blur(50px)',
+            animation: 'float 12s infinite ease-in-out, moveYFast 18s infinite ease-in-out',
+            opacity: 0.8,
+            transition: 'background-color 0.5s ease'
+          }}
+        />
 
         {/* Medium floating shapes */}
-        <Box sx={{
-          position: 'absolute',
-          width: '500px',
-          height: '500px',
-          backgroundColor: isDark
-            ? 'rgba(46, 52, 108, 0.3)'
-            : 'rgba(0, 113, 227, 0.1)',
-          borderRadius: '50%',
-          top: '25%',
-          left: '25%',
-          filter: 'blur(24px)',
-          animation: 'float 8s infinite ease-in-out, moveX 15s infinite ease-in-out',
-          opacity: 0.6,
-          transition: 'background-color 0.5s ease'
-        }}></Box>
-        <Box sx={{
-          position: 'absolute',
-          width: '450px',
-          height: '450px',
-          backgroundColor: isDark
-            ? 'rgba(56, 62, 129, 0.3)'
-            : 'rgba(64, 169, 255, 0.1)',
-          borderRadius: '50%',
-          bottom: '33%',
-          right: '33%',
-          filter: 'blur(24px)',
-          animation: 'float 14s infinite ease-in-out, moveY 22s infinite ease-in-out',
-          opacity: 0.6,
-          transition: 'background-color 0.5s ease'
-        }}></Box>
+        <Box
+          sx={{
+            position: 'absolute',
+            width: '500px',
+            height: '500px',
+            backgroundColor: isDark
+              ? 'rgba(46, 52, 108, 0.6)'
+              : 'rgba(129, 140, 248, 0.3)',
+            borderRadius: '50%',
+            top: '25%',
+            left: '25%',
+            filter: 'blur(40px)',
+            animation: 'float 8s infinite ease-in-out, moveXFast 15s infinite ease-in-out',
+            opacity: 0.7,
+            transition: 'background-color 0.5s ease'
+          }}
+        />
+        <Box
+          sx={{
+            position: 'absolute',
+            width: '450px',
+            height: '450px',
+            backgroundColor: isDark
+              ? 'rgba(56, 62, 129, 0.6)'
+              : 'rgba(165, 180, 252, 0.3)',
+            borderRadius: '50%',
+            bottom: '33%',
+            right: '33%',
+            filter: 'blur(40px)',
+            animation: 'float 14s infinite ease-in-out, moveYSlow 22s infinite ease-in-out',
+            opacity: 0.7,
+            transition: 'background-color 0.5s ease'
+          }}
+        />
 
         {/* Small accent shapes */}
-        <Box sx={{
-          position: 'absolute',
-          width: '300px',
-          height: '300px',
-          backgroundColor: isDark
-            ? 'rgba(66, 72, 150, 0.3)'
-            : 'rgba(0, 113, 227, 0.2)',
-          borderRadius: '50%',
-          top: '33%',
-          right: '25%',
-          filter: 'blur(16px)',
-          animation: 'float 6s infinite ease-in-out, moveX 20s infinite ease-in-out',
-          opacity: 0.5,
-          transition: 'background-color 0.5s ease'
-        }}></Box>
-        <Box sx={{
-          position: 'absolute',
-          width: '250px',
-          height: '250px',
-          backgroundColor: isDark
-            ? 'rgba(76, 82, 171, 0.3)'
-            : 'rgba(64, 169, 255, 0.2)',
-          borderRadius: '50%',
-          bottom: '25%',
-          left: '33%',
-          filter: 'blur(16px)',
-          animation: 'float 9s infinite ease-in-out, moveY 17s infinite ease-in-out',
-          opacity: 0.5,
-          transition: 'background-color 0.5s ease'
-        }}></Box>
+        <Box
+          sx={{
+            position: 'absolute',
+            width: '300px',
+            height: '300px',
+            backgroundColor: isDark
+              ? 'rgba(66, 72, 150, 0.6)'
+              : 'rgba(79, 70, 229, 0.4)',
+            borderRadius: '50%',
+            top: '33%',
+            right: '25%',
+            filter: 'blur(30px)',
+            animation: 'float 6s infinite ease-in-out, moveX 20s infinite ease-in-out',
+            opacity: 0.7,
+            transition: 'background-color 0.5s ease'
+          }}
+        />
+        <Box
+          sx={{
+            position: 'absolute',
+            width: '250px',
+            height: '250px',
+            backgroundColor: isDark
+              ? 'rgba(76, 82, 171, 0.6)'
+              : 'rgba(99, 102, 241, 0.4)',
+            borderRadius: '50%',
+            bottom: '25%',
+            left: '33%',
+            filter: 'blur(30px)',
+            animation: 'float 9s infinite ease-in-out, moveY 17s infinite ease-in-out',
+            opacity: 0.7,
+            transition: 'background-color 0.5s ease'
+          }}
+        />
       </Box>
+
+      {/* Theme toggle button - outside the card */}
+      <IconButton
+        onClick={toggleTheme}
+        sx={{
+          position: 'absolute',
+          top: 20,
+          right: 20,
+          color: isDark ? 'white' : '#1e293b',
+          backgroundColor: isDark
+            ? 'rgba(42, 46, 67, 0.6)'
+            : 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(10px)',
+          border: isDark
+            ? '1px solid rgba(255, 255, 255, 0.1)'
+            : '1px solid rgba(0, 0, 0, 0.1)',
+          '&:hover': {
+            backgroundColor: isDark
+              ? 'rgba(42, 46, 67, 0.8)'
+              : 'rgba(255, 255, 255, 0.9)',
+          }
+        }}
+      >
+        {isDark ? <Sun size={20} /> : <Moon size={20} />}
+      </IconButton>
 
       <Paper
         component={motion.div}
@@ -198,14 +237,14 @@ export function Login() {
         transition={{ duration: 0.5 }}
         elevation={0}
         sx={{
-          maxWidth: '450px',
+          maxWidth: '380px',
           width: '100%',
           backgroundColor: isDark
-            ? 'rgba(42, 46, 67, 0.6)'
-            : 'rgba(255, 255, 255, 0.8)',
-          backdropFilter: 'blur(15px)',
-          p: { xs: 2, sm: 2.5 },
-          borderRadius: '16px',
+            ? 'rgba(42, 46, 67, 0.7)'
+            : 'rgba(255, 255, 255, 0.7)',
+          backdropFilter: 'blur(20px)',
+          p: { xs: 2, sm: 3 },
+          borderRadius: '10px',
           boxShadow: isDark
             ? '0 10px 25px rgba(0, 0, 0, 0.3)'
             : '0 10px 25px rgba(0, 0, 0, 0.1)',
@@ -222,7 +261,7 @@ export function Login() {
           }
         }}
       >
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 4 }}>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
           <motion.div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
@@ -233,8 +272,8 @@ export function Login() {
               src="https://raw.githubusercontent.com/Ricardominom/plataformaunoexporadix/refs/heads/main/logoalpha.png"
               alt="Alpha Office Logo"
               style={{
-                height: '60px',
-                marginBottom: '8px',
+                height: '50px',
+                marginBottom: '12px',
                 objectFit: 'contain'
               }}
             />
@@ -244,8 +283,8 @@ export function Login() {
             variant="h4"
             component="h1"
             sx={{
-              fontWeight: 700,
-              fontSize: '1.1rem',
+              fontWeight: 300,
+              fontSize: '1.5rem',
               textAlign: 'center',
               mb: 0.5,
               color: isDark ? 'white' : '#1e293b'
@@ -257,7 +296,7 @@ export function Login() {
           <Typography
             sx={{
               color: isDark ? 'rgba(156, 163, 175, 1)' : 'rgba(71, 85, 105, 1)',
-              fontSize: '0.8rem',
+              fontSize: '0.85rem',
               textAlign: 'center',
               mb: 0.5
             }}
@@ -267,7 +306,7 @@ export function Login() {
         </Box>
 
         <form onSubmit={handleSubmit}>
-          <Box sx={{ mb: 4, display: 'flex', flexDirection: 'column', gap: 3 }}>
+          <Box sx={{ mb: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
             <Typography
               sx={{
                 mb: 0.25,
@@ -301,14 +340,14 @@ export function Login() {
                   sx: {
                     color: isDark ? 'white' : '#1e293b',
                     backgroundColor: isDark
-                      ? 'rgba(42, 46, 67, 0.4)'
-                      : 'rgba(255, 255, 255, 0.5)',
+                      ? 'rgba(42, 46, 67, 0.5)'
+                      : 'rgba(255, 255, 255, 0.6)',
                     border: isDark
                       ? '1px solid rgba(107, 114, 128, 0.3)'
                       : '1px solid rgba(0, 0, 0, 0.1)',
-                    borderRadius: '8px',
-                    padding: '8px 8px 8px 40px',
-                    height: '40px',
+                    borderRadius: '10px',
+                    padding: '6px 6px 6px 40px',
+                    height: '36px',
                     '&:hover': {
                       borderColor: isDark
                         ? 'rgba(107, 114, 128, 0.5)'
@@ -379,14 +418,14 @@ export function Login() {
                   sx: {
                     color: isDark ? 'white' : '#1e293b',
                     backgroundColor: isDark
-                      ? 'rgba(42, 46, 67, 0.4)'
-                      : 'rgba(255, 255, 255, 0.5)',
+                      ? 'rgba(42, 46, 67, 0.5)'
+                      : 'rgba(255, 255, 255, 0.6)',
                     border: isDark
                       ? '1px solid rgba(107, 114, 128, 0.3)'
                       : '1px solid rgba(0, 0, 0, 0.1)',
-                    borderRadius: '8px',
-                    padding: '8px 8px 8px 40px',
-                    height: '40px',
+                    borderRadius: '10px',
+                    padding: '6px 6px 6px 40px',
+                    height: '36px',
                     '&:hover': {
                       borderColor: isDark
                         ? 'rgba(107, 114, 128, 0.5)'
@@ -413,11 +452,11 @@ export function Login() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
-              style={{ marginTop: '-10px', marginBottom: '10px' }}
+              style={{ marginTop: '-5px', marginBottom: '10px' }}
             >
               <Box
                 sx={{
-                  p: 1.5,
+                  p: 1,
                   borderRadius: 2,
                   backgroundColor: isDark
                     ? 'rgba(239, 68, 68, 0.2)'
@@ -457,26 +496,6 @@ export function Login() {
             </motion.div>
           )}
 
-          {/* Theme toggle button */}
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-            <Button
-              onClick={toggleTheme}
-              size="small"
-              sx={{
-                color: isDark ? 'rgba(156, 163, 175, 1)' : 'rgba(71, 85, 105, 1)',
-                fontSize: '0.75rem',
-                textTransform: 'none',
-                '&:hover': {
-                  backgroundColor: isDark
-                    ? 'rgba(255, 255, 255, 0.05)'
-                    : 'rgba(0, 0, 0, 0.05)',
-                }
-              }}
-            >
-              {isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-            </Button>
-          </Box>
-
           <motion.div
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.95 }}
@@ -487,21 +506,21 @@ export function Login() {
               variant="contained"
               disabled={isLoading}
               sx={{
-                py: 1,
-                height: '40px',
+                py: 0.75,
+                height: '36px',
                 backgroundColor: isDark
-                  ? 'rgba(42, 46, 67, 0.8)'
-                  : '#1e293b',
+                  ? 'rgba(42, 46, 67, 0.9)'
+                  : 'rgba(79, 70, 229, 0.9)',
                 color: isDark ? 'white' : 'white',
-                borderRadius: '8px',
+                borderRadius: '10px',
                 textTransform: 'none',
                 fontWeight: 500,
-                fontSize: '0.95rem',
+                fontSize: '0.9rem',
                 boxShadow: 'none',
                 '&:hover': {
                   backgroundColor: isDark
                     ? 'rgba(42, 46, 67, 1)'
-                    : '#334155',
+                    : 'rgba(79, 70, 229, 1)',
                 },
                 mb: 0
               }}
@@ -537,8 +556,8 @@ export function Login() {
         {/* Demo Credentials Section */}
         <Box
           sx={{
-            pt: 1.5,
-            mt: 1.5,
+            pt: 1,
+            mt: 1,
             borderTop: isDark
               ? '1px solid rgba(255, 255, 255, 0.1)'
               : '1px solid rgba(0, 0, 0, 0.1)'
@@ -582,7 +601,7 @@ export function Login() {
               justifyContent: 'center',
               gap: 0.5,
               mx: 'auto',
-              maxWidth: '320px'
+              maxWidth: '300px'
             }}
           >
             {[
@@ -601,21 +620,21 @@ export function Login() {
                   px: 0.75,
                   py: 0.15,
                   backgroundColor: isDark
-                    ? 'rgba(255, 255, 255, 0.08)'
-                    : 'rgba(0, 0, 0, 0.05)',
+                    ? 'rgba(255, 255, 255, 0.1)'
+                    : 'rgba(79, 70, 229, 0.1)',
                   borderRadius: '6px',
                   fontSize: '0.65rem',
                   fontWeight: 500,
                   color: isDark ? 'rgba(255, 255, 255, 0.8)' : 'rgba(71, 85, 105, 1)',
                   border: isDark
                     ? '1px solid rgba(255, 255, 255, 0.1)'
-                    : '1px solid rgba(0, 0, 0, 0.1)',
+                    : '1px solid rgba(79, 70, 229, 0.2)',
                   cursor: 'pointer',
                   transition: 'all 0.2s ease',
                   '&:hover': {
                     backgroundColor: isDark
-                      ? 'rgba(255, 255, 255, 0.15)'
-                      : 'rgba(0, 0, 0, 0.1)',
+                      ? 'rgba(255, 255, 255, 0.2)'
+                      : 'rgba(79, 70, 229, 0.2)',
                     transform: 'translateY(-2px)',
                     boxShadow: isDark
                       ? '0 4px 8px rgba(0, 0, 0, 0.3)'
